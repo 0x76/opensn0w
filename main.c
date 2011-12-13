@@ -105,6 +105,26 @@ int upload_image(char* filename, int mode) {
 				return -1;
 			}
 		}
+	} else if(mode == 2) { /* logos */
+		snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.s5l%dx.img3", 
+                 device->model, filename, device->chip_id);
+		printf("logo binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
+	} else if(mode == 3) { /* kernelcache */
+		snprintf(path, 255, "%s.release.%c%c%c", 
+                 filename, device->model[0], device->model[1], device->model[2]);
+		printf("kernel binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
 	}
 
 	if (client->mode != kDfuMode) {
@@ -221,15 +241,28 @@ int main(int argc, char **argv) {
 	upload_image("iBSS", 0);
 	client = irecv_reconnect(client, 10);
 
-	/* upload iBEC */
-	upload_image("iBEC", 0);
-	client = irecv_reconnect(client, 10);
+	/* upload logo */
+	if(device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
+		upload_image("applelogo-640x960", 2);
+	else
+		upload_image("applelogo-320x480", 2);
+
+	irecv_send_command(client, "setpicture 1");
+	irecv_send_command(client, "bgcolor 0 0 0");
 
 	/* upload kernel */
+	upload_image("kernelcache", 3);
 
-	/* upload ramdisk */
+    irecv_send_command(client, "go kernel bootargs rd=disk0s1s1 -v keepsyms=1");
 
-	/* bootx */
+    printf("Fixing recovery loop\n");
+	irecv_setenv(client, "boot-args", "-v");
+	irecv_setenv(client, "auto-boot", "true");
+	irecv_saveenv(client);
+
+	printf("booting\n");
+	irecv_send_command(client, "bootx");
+
 
 	/* device is ready to run */
 
