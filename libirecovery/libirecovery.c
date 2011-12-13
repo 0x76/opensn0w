@@ -1176,7 +1176,7 @@ irecv_error_t irecv_get_device(irecv_client_t client, irecv_device_t* device) {
 		break;
 
 	case CPID_IPAD1G:
-		// iPhone3,1 iPad4,1 and iPad1,1 all share the same ChipID
+		// iPhone3,1 iPod4,1 and iPad1,1 all share the same ChipID
 		//   so we need to check the BoardID
 		if (irecv_get_bdid(client, &bdid) < 0) {
 			break;

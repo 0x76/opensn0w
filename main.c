@@ -30,7 +30,7 @@ irecv_client_t client = NULL;
 			"\n" \
 			"Options:\n" \
 			"\t-v                           Verbose mode. Useful for debugging.\n" \
-                        "\t-w url                       Get necessary files from a remote IPSW.\n" \
+            "\t-w url                       Get necessary files from a remote IPSW.\n" \
 			"\t-h                           Help.\n" \
 			"\t-k kernelcache               Boot using specified kernel.\n" \
 			"\t-i ipsw                      Use specified ipsw to retrieve files from\n" \
@@ -262,7 +262,6 @@ int main(int argc, char **argv) {
 
 	printf("booting\n");
 	irecv_send_command(client, "bootx");
-
 
 	/* device is ready to run */
 
