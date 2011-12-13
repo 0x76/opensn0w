@@ -66,6 +66,65 @@ int poll_device_for_dfu() {
 	return 0;
 }
 
+int fetch_image(const char* path, const char* output) {
+	printf("Fetching %s...\n", path);
+	if (download_file_from_zip(device->url, path, output, NULL)
+			!= 0) {
+		printf("Unable to fetch %s\n", path);
+		return -1;
+	}
+
+	return 0;
+}
+
+int upload_image(char* filename, int mode) {
+	char path[255];
+	struct stat buf;
+	irecv_error_t error = IRECV_E_SUCCESS;
+
+	printf("Checking if %s already exists\n", filename);
+
+	memset(path, 0, 255);
+
+	if(mode == 0) { /* dfu */
+		snprintf(path, 255, "Firmware/dfu/%s.%s.RELEASE.dfu", filename, device->model);
+		printf("dfu binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
+	} else if(mode == 1) { /* all_flash */
+		snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.%s.img3", 
+                 device->model, filename, device->model);
+		printf("all_flash binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
+	}
+
+	if (client->mode != kDfuMode) {
+		printf("Resetting device counters\n");
+		error = irecv_reset_counters(client);
+		if (error != IRECV_E_SUCCESS) {
+			printf("%s\n", irecv_strerror(error));
+			return -1;
+		}
+	}
+
+	printf("Uploading %s to device\n", filename);
+	error = irecv_send_file(client, filename, 1);
+	if (error != IRECV_E_SUCCESS) {
+		printf("%s\n", irecv_strerror(error));
+		return -1;
+	}
+	return 0;
+}
+
 int main(int argc, char **argv) {
 	int c;
 	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL;
@@ -117,9 +176,9 @@ int main(int argc, char **argv) {
 	printf("Initializing libirecovery\n");
 	irecv_init();
 
-#ifdef DEBUG
+//#ifdef DEBUG
 	irecv_set_debug_level(3);
-#endif
+//#endif
 
 	/* Poll for DFU mode */
 	while(poll_device_for_dfu()) {
@@ -156,9 +215,15 @@ int main(int argc, char **argv) {
 
 	printf("Bootrom is pwned now! :D\n");
 
+	client = irecv_reconnect(client, 3);
+
 	/* upload iBSS */
+	upload_image("iBSS", 0);
+	client = irecv_reconnect(client, 10);
 
 	/* upload iBEC */
+	upload_image("iBEC", 0);
+	client = irecv_reconnect(client, 10);
 
 	/* upload kernel */
 

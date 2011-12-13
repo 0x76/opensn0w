@@ -28,6 +28,7 @@
 #include <getopt.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include "libpartial.h"
 
 extern irecv_device_t device;
 extern irecv_client_t client;
