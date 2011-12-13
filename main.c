@@ -253,9 +253,9 @@ int main(int argc, char **argv) {
 	/* upload kernel */
 	upload_image("kernelcache", 3);
 
-    irecv_send_command(client, "go kernel bootargs rd=disk0s1s1 -v keepsyms=1");
+	irecv_send_command(client, "go kernel bootargs rd=disk0s1s1 -v keepsyms=1");
 
-    printf("Fixing recovery loop\n");
+	printf("Fixing recovery loop\n");
 	irecv_setenv(client, "boot-args", "-v");
 	irecv_setenv(client, "auto-boot", "true");
 	irecv_saveenv(client);
