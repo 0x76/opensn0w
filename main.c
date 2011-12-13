@@ -30,6 +30,7 @@ irecv_client_t client = NULL;
 			"\n" \
 			"Options:\n" \
 			"\t-v                           Verbose mode. Useful for debugging.\n" \
+                        "\t-w url                       Get necessary files from a remote IPSW.\n" \
 			"\t-h                           Help.\n" \
 			"\t-k kernelcache               Boot using specified kernel.\n" \
 			"\t-i ipsw                      Use specified ipsw to retrieve files from\n" \
@@ -46,16 +47,19 @@ bool file_exists(const char* fileName) {
 
 int poll_device_for_dfu() {
 	irecv_error_t err;
-	
+	static int try;
+
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		printf("Connect the device in DFU mode.\n");
+		printf("\rConnect the device in DFU mode. [%d]", try);
+		try++;
 		return 1;
 	}
 
 	if (client->mode != kDfuMode) {
-		printf("Connect the device in DFU mode.\n");
+		printf("\rConnect the device in DFU mode. [%d]", try);
 		irecv_close(client);
+		try++;
 		return 1;
 	}
 
@@ -64,7 +68,7 @@ int poll_device_for_dfu() {
 
 int main(int argc, char **argv) {
 	int c;
-	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL;
+	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL;
 	irecv_error_t err = IRECV_E_SUCCESS;
 
 	printf("opensn0w, an open source jailbreaking program.\n"
@@ -72,7 +76,7 @@ int main(int argc, char **argv) {
 
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "vhk:i:b:")) != -1) {
+	while ((c = getopt (argc, argv, "vhb:w:k:i:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
@@ -93,6 +97,9 @@ int main(int argc, char **argv) {
 				return -1;
 			}
 			kernelcache = optarg;
+			break;
+		case 'w':
+			url = optarg;
 			break;
 		case 'b':
 			if (!file_exists(optarg)) {
@@ -118,6 +125,7 @@ int main(int argc, char **argv) {
 	while(poll_device_for_dfu()) {
 		sleep(1);
 	}
+	puts("");
 
 	/* Got the handle */
 	printf("So we have a handle! :-)\n");
@@ -147,6 +155,18 @@ int main(int argc, char **argv) {
 	/* We are owned now! */
 
 	printf("Bootrom is pwned now! :D\n");
+
+	/* upload iBSS */
+
+	/* upload iBEC */
+
+	/* upload kernel */
+
+	/* upload ramdisk */
+
+	/* bootx */
+
+	/* device is ready to run */
 
 	printf("to be completed\n");
 

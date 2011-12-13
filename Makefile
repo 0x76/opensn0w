@@ -6,7 +6,7 @@ OBJS=main.o limera1n.o
 all: opensn0w
 
 opensn0w: $(OBJS)
-	$(CC) main.o -o $(OS_TARGET) $(LIBS)
+	$(CC) $(OBJS) -o $(OS_TARGET) $(LIBS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
