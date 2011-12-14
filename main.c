@@ -127,13 +127,12 @@ int upload_image(char* filename, int mode) {
 		}
 	}
 
-	if (client->mode != kDfuMode) {
-		printf("Resetting device counters\n");
-		error = irecv_reset_counters(client);
-		if (error != IRECV_E_SUCCESS) {
-			printf("%s\n", irecv_strerror(error));
-			return -1;
-		}
+	printf("Resetting device counters\n");
+	error = irecv_reset_counters(client);
+	if (error != IRECV_E_SUCCESS) {
+		printf("Unable to upload firmware image\n");
+		printf("%s\n", irecv_strerror(error));
+		return -1;
 	}
 
 	printf("Uploading %s to device\n", filename);
@@ -232,33 +231,25 @@ int main(int argc, char **argv) {
 	}
 
 	/* We are owned now! */
-
 	printf("Bootrom is pwned now! :D\n");
 
-	client = irecv_reconnect(client, 3);
-
 	/* upload iBSS */
+
+	/* FOR SOME REASON: THIS BREAKS ON 5.0. iBEC is not being uploaded properly. */
+
 	upload_image("iBSS", 0);
 	client = irecv_reconnect(client, 10);
 
-	/* upload logo */
-	if(device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
-		upload_image("applelogo-640x960", 2);
-	else
-		upload_image("applelogo-320x480", 2);
+	upload_image("iBEC", 0);
+	client = irecv_reconnect(client, 10);
 
-	irecv_send_command(client, "setpicture 1");
-	irecv_send_command(client, "bgcolor 0 0 0");
+	irecv_reset(client);
+	client = irecv_reconnect(client, 10);
+	irecv_set_interface(client, 0, 0);
+	irecv_set_interface(client, 1, 1);
 
 	/* upload kernel */
 	upload_image("kernelcache", 3);
-
-	irecv_send_command(client, "go kernel bootargs rd=disk0s1s1 -v keepsyms=1");
-
-	printf("Fixing recovery loop\n");
-	irecv_setenv(client, "boot-args", "-v");
-	irecv_setenv(client, "auto-boot", "true");
-	irecv_saveenv(client);
 
 	printf("booting\n");
 	irecv_send_command(client, "bootx");
