@@ -94,6 +94,44 @@ int patch_bootloaders(char* buffer, size_t length) {
 	return 0;
 }
 
+int patch_kernel(char* buffer, size_t length) {
+	int i;
+	for(i = 0; i < length; i++) {
+		char* candidate = &buffer[i];
+		if(!memcmp(candidate, kernel_CSED.original, kernel_CSED.length)) {
+			printf("Patching kernel CSED check... at 0x%08x\n", i);
+			memcpy(candidate, kernel_CSED.patched, kernel_CSED.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_AMFI.original, kernel_AMFI.length)) {
+			printf("Patching kernel AMFI check... at 0x%08x\n", i);
+			memcpy(candidate, kernel_AMFI.patched, kernel_AMFI.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel__PE_i_can_has_debugger.original, kernel__PE_i_can_has_debugger.length)) {
+			printf("Patching kernel _i_can_has_debugger check... at 0x%08x\n", i);
+			memcpy(candidate, kernel__PE_i_can_has_debugger.patched, kernel__PE_i_can_has_debugger.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_IOAESAccelerator.original, kernel_IOAESAccelerator.length)) {
+			printf("Patching kernel IOAESAccelerator check... at 0x%08x\n", i);
+			memcpy(candidate, kernel_IOAESAccelerator.patched, kernel_IOAESAccelerator.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_sigcheck.original, kernel_sigcheck.length)) {
+			printf("Patching kernel signature enforcement check... at 0x%08x\n", i);
+			memcpy(candidate, kernel_sigcheck.patched, kernel_sigcheck.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_xattr.original, kernel_xattr.length)) {
+			printf("Patching kernel xattr check... at 0x%08x\n", i);
+			memcpy(candidate, kernel_xattr.patched, kernel_xattr.length);
+			continue;
+		}
+	}
+	return 0;
+}
+
 int patch_file(char* filename) {
 	AbstractFile *template = NULL, *inFile, *certificate = NULL, *outFile, *newFile;
 	unsigned int* key = NULL;
@@ -177,6 +215,8 @@ int patch_file(char* filename) {
 
 	if(!strcasecmp(filename, "iBEC") || !strcasecmp(filename, "iBSS"))
 		patch_bootloaders(inData, inDataSize);
+	else if(!strcasecmp(filename, "kernelcache"))
+		patch_kernel(inData, inDataSize);
 
 	/* write patched contents */
 	printf("writing pwned file\n");

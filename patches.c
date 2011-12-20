@@ -57,3 +57,29 @@ patch iBSS_CHIP = {iBSS_CHIP_original, iBSS_CHIP_patch, 8};
 patch iBSS_SDOM = {iBSS_SDOM_original, iBSS_SDOM_patch, 8};
 patch iBSS_PROD = {iBSS_PROD_original, iBSS_PROD_patch, 8};
 
+/* kernel patches */
+unsigned char kernel_CSED_original[] = {0xdf, 0xf8, 0x88, 0x33, 0x1d, 0xee, 0x90, 0x0f, 0xa2, 0x6a, 0x1b, 0x68};
+unsigned char kernel_CSED_patch[] = {0xdf, 0xf8, 0x88, 0x33, 0x1d, 0xee, 0x90, 0x0f, 0xa2, 0x6a, 0x01, 0x23};
+
+unsigned char kernel_AMFI_original[] = {0xD0, 0x47, 0x01, 0x21, 0x40, 0xB1, 0x13, 0x35};
+unsigned char kernel_AMFI_patch[] = {0x00, 0x20, 0x01, 0x21, 0x40, 0xB1, 0x13, 0x35};
+
+unsigned char kernel__PE_i_can_has_debugger_original[] = {0x38, 0xB1, 0x05, 0x49, 0x09, 0x68, 0x00, 0x29};
+unsigned char kernel__PE_i_can_has_debugger_patch[] = {0x01, 0x20, 0x70, 0x47, 0x09, 0x68, 0x00, 0x29};
+
+unsigned char kernel_IOAESAccelerator_original[] = {0x67, 0xD0, 0x40, 0xF6};
+unsigned char kernel_IOAESAccelerator_patch[] = {0x00, 0x20, 0x40, 0xF6};
+
+unsigned char kernel_sigcheck_original[] = {0xFF, 0x31, 0xA7, 0xF1, 0x18, 0x04, 0x08, 0x46, 0xA5, 0x46, 0xBD, 0xE8, 0x00, 0x0D, 0xF0, 0xBD};
+unsigned char kernel_sigcheck_patch[] = {0xFF, 0x31, 0xA7, 0xF1, 0x18, 0x04, 0x00, 0x20, 0xA5, 0x46, 0xBD, 0xE8, 0x00, 0x0D, 0xF0, 0xBD};
+
+unsigned char kernel_xattr_original[] = {"com.apple.system."};
+unsigned char kernel_xattr_patch[] = {"com.apple.aaaaaa."};
+
+patch kernel_CSED = {kernel_CSED_original, kernel_CSED_patch, sizeof(kernel_CSED_original)};
+patch kernel_AMFI = {kernel_AMFI_original, kernel_AMFI_patch, sizeof(kernel_AMFI_original)};
+patch kernel__PE_i_can_has_debugger = {kernel__PE_i_can_has_debugger_original, kernel__PE_i_can_has_debugger_patch, sizeof(kernel__PE_i_can_has_debugger)};
+patch kernel_IOAESAccelerator = {kernel_IOAESAccelerator_original, kernel_IOAESAccelerator_patch, sizeof(kernel_IOAESAccelerator)};
+patch kernel_sigcheck = {kernel_sigcheck_original, kernel_sigcheck_patch, sizeof(kernel_sigcheck_patch)};
+patch kernel_xattr = {kernel_xattr_original, kernel_xattr_patch, sizeof(kernel_xattr)};
+

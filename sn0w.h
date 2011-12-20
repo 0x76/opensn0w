@@ -54,6 +54,13 @@ extern patch iBSS_CHIP;
 extern patch iBSS_SDOM;
 extern patch iBSS_PROD;
 
+extern patch kernel_CSED;
+extern patch kernel_AMFI;
+extern patch kernel__PE_i_can_has_debugger;
+extern patch kernel_IOAESAccelerator;
+extern patch kernel_sigcheck;
+extern patch kernel_xattr;
+
 int limera1n();
 void* our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);

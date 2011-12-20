@@ -80,7 +80,7 @@ int fetch_image(const char* path, const char* output) {
 	return 0;
 }
 
-int upload_image(char* filename, int mode) {
+int upload_image(char* filename, int mode, int patch) {
 	char path[255];
 	struct stat buf;
 	irecv_error_t error = IRECV_E_SUCCESS;
@@ -146,7 +146,8 @@ int upload_image(char* filename, int mode) {
 		}
 	}
 
-	patch_file(filename);
+	if(patch)
+		patch_file(filename);
 
 	buffer = malloc(strlen(filename) + 5);
 	if(!buffer) {
@@ -155,7 +156,10 @@ int upload_image(char* filename, int mode) {
 	}
 	memset(buffer, 0, strlen(filename) + 5);
 
-	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
+	if(patch)
+		snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
+	else
+		snprintf(buffer, strlen(filename) + 5, "%s", filename);
 
 	printf("Uploading %s to device\n", buffer);
 	error = irecv_send_file(client, buffer, 1);
@@ -274,23 +278,22 @@ int main(int argc, char **argv) {
 
 	/* FOR SOME REASON: THIS BREAKS ON 5.0. iBEC is not being uploaded properly. */
 
-	upload_image("iBSS", 0);
+	upload_image("iBSS", 0, 1);
 	client = irecv_reconnect(client, 10);
 
-	upload_image("iBEC", 0);
+	upload_image("iBEC", 0, 1);
 	client = irecv_reconnect(client, 10);
 
 	irecv_reset(client);
 	client = irecv_reconnect(client, 10);
 	irecv_set_interface(client, 0, 0);
+	irecv_set_interface(client, 1, 1);
 
 	/* upload kernel */
 	irecv_send_command(client, "go kernel bootargs -v rd=disk0s1s1 keepsyms=1");
 	irecv_send_command(client, "kernel bootargs -v rd=disk0s1s1 keepsyms=1");
 
-	irecv_set_interface(client, 1, 1);
-
-	upload_image("kernelcache", 3);
+	upload_image("kernelcache", 3, 1);
 	client = irecv_reconnect(client, 10);
 
 	printf("booting\n");
