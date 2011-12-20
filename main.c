@@ -86,45 +86,50 @@ int upload_image(char* filename, int mode) {
 
 	memset(path, 0, 255);
 
-	if(mode == 0) { /* dfu */
-		snprintf(path, 255, "Firmware/dfu/%s.%s.RELEASE.dfu", filename, device->model);
-		printf("dfu binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+	switch(mode) {
+		case 0:	/* dfu */
+			snprintf(path, 255, "Firmware/dfu/%s.%s.RELEASE.dfu", filename, device->model);
+			printf("dfu binary: IPSW path is %s\n", path);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+				}
 			}
-		}
-	} else if(mode == 1) { /* all_flash */
-		snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.%s.img3", 
-                 device->model, filename, device->model);
-		printf("all_flash binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+			break;
+		case 1: /* all_flash */
+			snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.%s.img3", 
+       	          device->model, filename, device->model);
+			printf("all_flash binary: IPSW path is %s\n", path);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+				}
 			}
-		}
-	} else if(mode == 2) { /* logos */
-		snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.s5l%dx.img3", 
-                 device->model, filename, device->chip_id);
-		printf("logo binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+			break;
+		case 2: /* logos */
+			snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.s5l%dx.img3", 
+       	          device->model, filename, device->chip_id);
+			printf("logo binary: IPSW path is %s\n", path);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+				}
 			}
-		}
-	} else if(mode == 3) { /* kernelcache */
-		snprintf(path, 255, "%s.release.%c%c%c", 
-                 filename, device->model[0], device->model[1], device->model[2]);
-		printf("kernel binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+			break;
+		case 3: /* kernelcache */
+			snprintf(path, 255, "%s.release.%c%c%c", 
+       	          filename, device->model[0], device->model[1], device->model[2]);
+			printf("kernel binary: IPSW path is %s\n", path);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+				}
 			}
-		}
+			break;
 	}
 
 	printf("Resetting device counters\n");
