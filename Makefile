@@ -1,16 +1,17 @@
 CC=gcc
-CFLAGS=-c -Wall -I. -g
+CFLAGS=-c -Wall -I. -g -Ixpwntool
 OS_TARGET=opensn0w
-LIBS=-lusb-1.0 -lcurl -lz -lreadline
-OBJS=main.o limera1n.o libpartial.o crtsup.o libirecovery.o patch.o patches.o
+LIBS=-lusb-1.0 -lcurl -lz -lreadline -lpng
+OBJS=main.o limera1n.o libpartial.o crtsup.o libirecovery.o patch.o patches.o img3.o nor_files.o \
+	img2.o 8900.o ibootim.o abstractfile.o lzss.o lzssfile.o
 all: opensn0w
 
 UNAME := $(shell uname -s)
 
 ifeq ($(UNAME),Darwin)
-	CFLAGS = -c -Wall -I. -g -I./include -I/usr/local/include -I/opt/local/include -Ilibusb-1.0
+	CFLAGS = -c -Wall -I. -g -I./include -I/usr/local/include -I/opt/local/include -Ilibusb-1.0  -Ixpwntool
 	LDFLAGS = -L/usr/lib -L/opt/local/lib 
-	LIBS =-lusb-1.0 -lcurl -lz -lreadline -framework CoreFoundation -framework IOKit
+	LIBS =-lusb-1.0 -lcurl -lz -lreadline -framework CoreFoundation -framework IOKit -lpng
 endif
 
 opensn0w: $(OBJS)
