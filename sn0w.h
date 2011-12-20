@@ -56,5 +56,6 @@ extern patch iBSS_PROD;
 
 int limera1n();
 void* our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
+void hex_dump(void *data, int size);
 
 #endif

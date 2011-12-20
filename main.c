@@ -281,13 +281,18 @@ int main(int argc, char **argv) {
 	client = irecv_reconnect(client, 10);
 
 	irecv_reset(client);
-	sleep(3);
+	sleep(10);
 	client = irecv_reconnect(client, 10);
 	irecv_set_interface(client, 0, 0);
-	irecv_set_interface(client, 1, 1);
 
 	/* upload kernel */
+	irecv_send_command(client, "go kernel bootargs -v rd=disk0s1s1 keepsyms=1");
+	irecv_send_command(client, "kernel bootargs -v rd=disk0s1s1 keepsyms=1");
+
+	irecv_set_interface(client, 1, 1);
+
 	upload_image("kernelcache", 3);
+	client = irecv_reconnect(client, 10);
 
 	printf("booting\n");
 	irecv_send_command(client, "bootx");

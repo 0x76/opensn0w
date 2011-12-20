@@ -761,9 +761,32 @@ irecv_error_t irecv_send_buffer(irecv_client_t client, unsigned char* buffer, un
 			event.size = count;
 			client->progress_callback(client, &event);
 		} else {
-			debug("Sent: %d bytes - %lu of %lu\n", bytes, count, length);
+			int i = 0;
+			double progress = ((double) count/ (double) length) * 100.0;
+			if(progress < 0) {
+				//return;
+			}
+
+			if(progress > 100) {
+				progress = 100;
+			}
+
+			debug("\r[");
+			for(i = 0; i < 50; i++) {
+				if(i < progress / 2) {
+					debug("=");
+				} else {
+					debug(" ");
+				}
+			}
+
+			debug("] %3.1f%%", progress);
+			if(progress == 100) {
+				debug("\n");
+			}
 		}
 	}
+	debug("\n");
 
 	if (dfuNotifyFinished && !recovery_mode) {
 		irecv_control_transfer(client, 0x21, 1, 0, 0, (unsigned char*) buffer, 0, 1000);

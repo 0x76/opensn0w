@@ -41,8 +41,6 @@ Dictionary* get_key_dictionary_from_bundle(char* member) {
 	return NULL;
 }
 
-void hexdump(void *pAddressIn, long  lSize);
-
 int patch_bootloaders(char* buffer, size_t length) {
 	int i;
 	for(i = 0; i < length; i++) {
@@ -143,6 +141,9 @@ int patch_file(char* filename) {
 	inData = (char*) malloc(inDataSize);
 	inFile->read(inFile, inData, inDataSize);
 	inFile->close(inFile);
+
+	/* debug 8) */
+	hex_dump(inData, 0x240);
 
 	/* zero buffer */
 	buffer = malloc(strlen(filename) + 5);
