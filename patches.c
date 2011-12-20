@@ -47,13 +47,13 @@ unsigned char iBSS_ECID_patch[] = {0x03, 0x94, 0x00, 0x20, 0x00, 0x20, 0x00, 0x2
 unsigned char iBSS_SHSH_original[] = {0x4F, 0xF0, 0xFF, 0x30, 0x01, 0xE0, 0x4F, 0xF0, 0xFF, 0x30};
 unsigned char iBSS_SHSH_patch[] = {0x00, 0x20, 0x00, 0x20, 0x01, 0xE0, 0x00, 0x20, 0x00, 0x20};
 
-patch iBSS_SHSH = {iBSS_SHSH_original, iBSS_SHSH_patch};
-patch iBSS_ECID = {iBSS_ECID_original, iBSS_ECID_patch};
-patch iBSS_BORD = {iBSS_BORD_original, iBSS_BORD_patch};
-patch iBSS_CEPO = {iBSS_CEPO_original, iBSS_CEPO_patch};
-patch iBSS_SEPO = {iBSS_SEPO_original, iBSS_SEPO_patch};
-patch iBSS_TYPE = {iBSS_TYPE_original, iBSS_TYPE_patch};
-patch iBSS_CHIP = {iBSS_CHIP_original, iBSS_CHIP_patch};
-patch iBSS_SDOM = {iBSS_SDOM_original, iBSS_SDOM_patch};
-patch iBSS_PROD = {iBSS_PROD_original, iBSS_PROD_patch};
+patch iBSS_SHSH = {iBSS_SHSH_original, iBSS_SHSH_patch, 10};
+patch iBSS_ECID = {iBSS_ECID_original, iBSS_ECID_patch, 8};
+patch iBSS_BORD = {iBSS_BORD_original, iBSS_BORD_patch, 8};
+patch iBSS_CEPO = {iBSS_CEPO_original, iBSS_CEPO_patch, 8};
+patch iBSS_SEPO = {iBSS_SEPO_original, iBSS_SEPO_patch, 8};
+patch iBSS_TYPE = {iBSS_TYPE_original, iBSS_TYPE_patch, 8};
+patch iBSS_CHIP = {iBSS_CHIP_original, iBSS_CHIP_patch, 8};
+patch iBSS_SDOM = {iBSS_SDOM_original, iBSS_SDOM_patch, 8};
+patch iBSS_PROD = {iBSS_PROD_original, iBSS_PROD_patch, 8};
 

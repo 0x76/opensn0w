@@ -41,10 +41,65 @@ Dictionary* get_key_dictionary_from_bundle(char* member) {
 	return NULL;
 }
 
+void hexdump(void *pAddressIn, long  lSize);
+
+int patch_bootloaders(char* buffer, size_t length) {
+	int i;
+	for(i = 0; i < length; i++) {
+		char* candidate = &buffer[i];
+		if(!memcmp(candidate, iBSS_SDOM.original, iBSS_SDOM.length)) {
+			printf("Patching bootloader SDOM check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_SDOM.patched, iBSS_SDOM.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_PROD.original, iBSS_PROD.length)) {
+			printf("Patching bootloader PROD check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_PROD.patched, iBSS_PROD.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_CHIP.original, iBSS_CHIP.length)) {
+			printf("Patching bootloader CHIP check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_CHIP.patched, iBSS_CHIP.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_TYPE.original, iBSS_TYPE.length)) {
+			printf("Patching bootloader TYPE check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_TYPE.patched, iBSS_TYPE.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_SEPO.original, iBSS_SEPO.length)) {
+			printf("Patching bootloader SEPO check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_SEPO.patched, iBSS_SEPO.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_CEPO.original, iBSS_CEPO.length)) {
+			printf("Patching bootloader CEPO check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_CEPO.patched, iBSS_CEPO.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_BORD.original, iBSS_BORD.length)) {
+			printf("Patching bootloader BORD check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_BORD.patched, iBSS_BORD.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_ECID.original, iBSS_ECID.length)) {
+			printf("Patching bootloader ECID check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_ECID.patched, iBSS_ECID.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBSS_SHSH.original, iBSS_SHSH.length)) {
+			printf("Patching bootloader SHSH check... at 0x%08x\n", i);
+			memcpy(candidate, iBSS_SHSH.patched, iBSS_SHSH.length);
+			continue;
+		}
+	}
+	return 0;
+}
+
 int patch_file(char* filename) {
 	AbstractFile *template = NULL, *inFile, *certificate = NULL, *outFile, *newFile;
-	unsigned int key[32], iv[16];
-	unsigned int *pkey, *piv;
+	unsigned int* key = NULL;
+	unsigned int* iv = NULL;
 	char* inData;
 	size_t inDataSize;
 	char *buffer;
@@ -58,36 +113,32 @@ int patch_file(char* filename) {
 		return -1;
 	}
 
+	printf("getting keys\n");
 	data = get_key_dictionary_from_bundle(filename);
-
 	StringValue* keyValue = (StringValue*) getValueByKey(data, "Key");
 	StringValue* ivValue = (StringValue*) getValueByKey(data, "IV");
 
 	if(keyValue) {
-		sscanf(keyValue->value, "%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x"
-								"%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x",
-			&key[0], &key[1], &key[2], &key[3], &key[4], &key[5], &key[6], &key[7], &key[8],
-			&key[9], &key[10], &key[11], &key[12], &key[13], &key[14], &key[15],
-			&key[16], &key[17], &key[18], &key[19], &key[20], &key[21], &key[22], &key[23], &key[24],
-			&key[25], &key[26], &key[27], &key[28], &key[29], &key[30], &key[31]);
-		pkey = key;
+		size_t bytes;
+		printf("Key for %s: %s\n", filename, keyValue->value);
+		hexToInts(keyValue->value, &key, &bytes);
 	}
 
 	if(ivValue) {
-		sscanf(ivValue->value, "%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x",
-			&iv[0], &iv[1], &iv[2], &iv[3], &iv[4], &iv[5], &iv[6], &iv[7], &iv[8],
-			&iv[9], &iv[10], &iv[11], &iv[12], &iv[13], &iv[14], &iv[15]);
-		piv = iv;
+		size_t bytes;
+		printf("IV for %s: %s\n", filename, ivValue->value);
+		hexToInts(ivValue->value, &iv, &bytes);
 	}
 
 	/* open file */
-	inFile = openAbstractFile3(createAbstractFileFromFile(fopen(filename, "rb")), pkey, piv, 0);
+	inFile = openAbstractFile3(createAbstractFileFromFile(fopen(filename, "rb")), key, iv, 0);
 	if(!inFile) {
 		printf("Cannot open %s.\n", filename);
 		return -1;
 	}
 
 	/* read it */
+	printf("reading data from initial abstract\n");
 	inDataSize = (size_t) inFile->getLength(inFile);
 	inData = (char*) malloc(inDataSize);
 	inFile->read(inFile, inData, inDataSize);
@@ -104,7 +155,7 @@ int patch_file(char* filename) {
 	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
 
 	/* open output */
-	printf("opening %s as an abstract file\n", filename);
+	printf("opening %s (output) as an abstract file\n", filename);
 
 	outFile = createAbstractFileFromFile(fopen(buffer, "wb"));
 	if(!outFile) {
@@ -114,11 +165,17 @@ int patch_file(char* filename) {
 
 	printf("pwned file is %s, will upload later\n", buffer);
 
-	newFile = duplicateAbstractFile2(template, outFile, pkey, piv, certificate);
+	newFile = duplicateAbstractFile2(template, outFile, key, iv, certificate);
 	if(!newFile) {
 		printf("Cannot open newfile\n");
 		return -1;
 	}
+
+	/* pwn it 8) */
+	printf("pwning %s\n", filename);
+
+	if(!strcasecmp(filename, "iBEC") || !strcasecmp(filename, "iBSS"))
+		patch_bootloaders(inData, inDataSize);
 
 	/* write patched contents */
 	printf("writing pwned file\n");

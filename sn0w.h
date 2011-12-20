@@ -33,6 +33,7 @@
 #include "xpwn/libxpwn.h"
 #include "xpwn/nor_files.h"
 #include <xpwn/plist.h>
+#include <ctype.h>
 
 extern irecv_device_t device;
 extern irecv_client_t client;
@@ -40,6 +41,7 @@ extern irecv_client_t client;
 typedef struct _patch {
 	unsigned char* original;
 	unsigned char* patched;
+	unsigned int length;
 } patch, *patch_t;
 
 extern patch iBSS_SHSH;
