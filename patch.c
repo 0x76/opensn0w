@@ -20,30 +20,62 @@
 #include "sn0w.h"
 
 int patch_file(char* filename) {
-	FILE *fp = fopen(filename, "rb");
-	int size, i;
-	char *filelocation, *buffer;
+	AbstractFile *template = NULL, *inFile, *certificate = NULL, *outFile, *newFile;
+	unsigned int key[16];
+	unsigned int iv[16];
+	char* inData;
+	size_t inDataSize;
+	char *buffer;
 
-	/* check to make sure the file exists */
-	if(!fp)
+	template = createAbstractFileFromFile(fopen(filename, "rb"));
+
+	/* open base template */
+	if(!template) {
+		printf("Cannot open template.\n");
 		return -1;
-
-	/* get size */
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-
-	/* alloc buffer */
-	buffer = malloc(size);
-
-	if(!buffer)
-		return -1;
-
-	/* read file into it */
-	fread(buffer, 1, size, fp);
-
-	/* NOT DONE */
-	for(i = 0; i < size; i++) {
-		filelocation = &buffer[i];
 	}
+
+	/* open file */
+	inFile = openAbstractFile3(createAbstractFileFromFile(fopen(filename, "rb")), key, iv, 0);
+	if(!inFile) {
+		printf("Cannot open %s.\n", filename);
+		return -1;
+	}
+
+	/* read it */
+	inDataSize = (size_t) inFile->getLength(inFile);
+	inData = (char*) malloc(inDataSize);
+	inFile->read(inFile, inData, inDataSize);
+	inFile->close(inFile);
+
+	/* zero buffer */
+	buffer = malloc(strlen(filename) + 4);
+	if(!buffer) {
+		printf("Cannot allocate memory\n");
+		return -1;
+	}
+	memset(buffer, 0, strlen(filename) + 4);
+
+	snprintf(buffer, strlen(filename) + 4, "%s.pwn", filename);
+
+	/* open output */
+	outFile = createAbstractFileFromFile(fopen(buffer, "wb"));
+	if(!outFile) {
+		printf("Cannot open outfile\n");
+		return -1;
+	}
+
+	newFile = duplicateAbstractFile2(template, outFile, key, iv, certificate);
+	if(!newFile) {
+		printf("Cannot open newfile\n");
+		return -1;
+	}
+
+	/* write patched contents */
+	newFile->write(newFile, inData, inDataSize);
+	newFile->close(newFile);
+
+	free(buffer);
+
+	return 0;
 }

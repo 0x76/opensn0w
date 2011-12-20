@@ -34,6 +34,7 @@
 
 extern char endianness;
 
+#ifndef LIBPARTIAL_H
 static inline void flipEndian(unsigned char* x, int length) {
   int i;
   unsigned char tmp;
@@ -98,6 +99,7 @@ typedef struct io_func_struct {
   writeFunc write;
   closeFunc close;
 } io_func;
+#endif
 
 struct AbstractFile;
 

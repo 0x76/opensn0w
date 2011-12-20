@@ -29,6 +29,9 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 #include "libpartial.h"
+#include "common.h"
+#include "xpwn/libxpwn.h"
+#include "xpwn/nor_files.h"
 
 extern irecv_device_t device;
 extern irecv_client_t client;
