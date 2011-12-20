@@ -23,6 +23,7 @@ bool verboseflag = false;
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
+int Img3DecryptLast = TRUE;
 
 #define usage(x) \
 	printf("Usage: %s [OPTION]\n" \
@@ -280,6 +281,7 @@ int main(int argc, char **argv) {
 	client = irecv_reconnect(client, 10);
 
 	irecv_reset(client);
+	sleep(3);
 	client = irecv_reconnect(client, 10);
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);

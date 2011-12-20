@@ -1,13 +1,15 @@
 #ifndef PLIST_H
 #define PLIST_H
 
+#include <abstractfile.h>
+
 enum DictTypes {
 	DictionaryType = 1,
 	ArrayType,
 	StringType,
+	DataType,
 	IntegerType,
-	BoolType,
-	DataType
+	BoolType
 };
 
 typedef struct DictValue {
@@ -24,7 +26,6 @@ typedef struct StringValue {
 
 typedef struct DataValue {
 	DictValue dValue;
-	int len;
 	char* value;
 } DataValue;
 
@@ -59,16 +60,18 @@ extern "C" {
 #endif
 	void createArray(ArrayValue* myself, char* xml);
 	void createDictionary(Dictionary* myself, char* xml);
+	Dictionary* createDictionaryFromAbstractFile(AbstractFile* file);
 	void releaseArray(ArrayValue* myself);
 	void releaseDictionary(Dictionary* myself);
 	char* getXmlFromArrayValue(ArrayValue* myself, int tabsCount);
 	char* getXmlFromDictionary(Dictionary* myself, int tabsCount);
 	Dictionary* createRoot(char* xml);
 	char* getXmlFromRoot(Dictionary* root);
-	char* getXmlFromRoot(Dictionary* root);
 	DictValue* getValueByKey(Dictionary* myself, const char* key);
 	void addStringToArray(ArrayValue* array, char* str);
 	void removeKey(Dictionary* dict, char* key);
+	void addStringToDictionary(Dictionary* dict, const char* key, const char* value);
+	void addDataToDictionary(Dictionary* dict, const char* key, const char* value);
 	void addBoolToDictionary(Dictionary* dict, const char* key, int value);
 	void addIntegerToDictionary(Dictionary* dict, const char* key, int value);
 	void addValueToDictionary(Dictionary* dict, const char* key, DictValue* value);

@@ -2,5 +2,8 @@ opensn0w
 *.o
 *.a
 *.*~
+iBEC*
+iBSS*
+kernelcache*
 libirecovery/*.a
 .DS_Store
