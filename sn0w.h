@@ -60,6 +60,11 @@ extern patch kernel__PE_i_can_has_debugger;
 extern patch kernel_IOAESAccelerator;
 extern patch kernel_sigcheck;
 extern patch kernel_xattr;
+extern patch kernel_redsn0w_unknown0;
+extern patch kernel_redsn0w_unknown1;
+extern patch kernel_redsn0w_unknown2;
+extern patch kernel_redsn0w_unknown3;
+
 
 int limera1n();
 void* our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);

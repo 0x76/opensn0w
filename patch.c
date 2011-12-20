@@ -128,6 +128,26 @@ int patch_kernel(char* buffer, size_t length) {
 			memcpy(candidate, kernel_xattr.patched, kernel_xattr.length);
 			continue;
 		}
+		if(!memcmp(candidate, kernel_redsn0w_unknown0.original, kernel_redsn0w_unknown0.length)) {
+			printf("Patching unknown kernel check (redsn0w 0)... at 0x%08x\n", i);
+			memcpy(candidate, kernel_redsn0w_unknown0.patched, kernel_redsn0w_unknown0.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_redsn0w_unknown1.original, kernel_redsn0w_unknown1.length)) {
+			printf("Patching unknown kernel check (redsn0w 1)... at 0x%08x\n", i);
+			memcpy(candidate, kernel_redsn0w_unknown1.patched, kernel_redsn0w_unknown1.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_redsn0w_unknown2.original, kernel_redsn0w_unknown2.length)) {
+			printf("Patching unknown kernel check (redsn0w 2)... at 0x%08x\n", i);
+			memcpy(candidate, kernel_redsn0w_unknown2.patched, kernel_redsn0w_unknown2.length);
+			continue;
+		}
+		if(!memcmp(candidate, kernel_redsn0w_unknown3.original, kernel_redsn0w_unknown3.length)) {
+			printf("Patching unknown kernel check (redsn0w 3)... at 0x%08x\n", i);
+			memcpy(candidate, kernel_redsn0w_unknown3.patched, kernel_redsn0w_unknown3.length);
+			continue;
+		}
 	}
 	return 0;
 }
