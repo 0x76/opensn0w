@@ -175,19 +175,19 @@ static struct irecv_device irecv_devices[] __attribute__((unused)) = {
 	{  3, "iPod2,1",    "n72ap",  0,  8720,
 	"http://appldnld.apple.com/iPhone4/061-7937.20100908.ghj4f/iPod2,1_4.1_8B117_Restore.ipsw" },
 	{  4, "iPhone2,1",  "n88ap",  0,  8920,
-	"http://appldnld.apple.com/iPhone4/061-7938.20100908.F3rCk/iPhone2,1_4.1_8B117_Restore.ipsw" },
+	"http://appldnld.apple.com/iPhone4/041-8356.20111012.SQRDT/iPhone2,1_5.0_9A334_Restore.ipsw" },
 	{  5, "iPod3,1",    "n18ap",  2,  8922,
-	"http://appldnld.apple.com/iPhone4/061-7941.20100908.sV9KE/iPod3,1_4.1_8B117_Restore.ipsw" },
+	"http://appldnld.apple.com/iPhone4/061-8360.20111012.New3w/iPod3,1_5.0_9A334_Restore.ipsw" },
 	{  6, "iPad1,1",    "k48ap",  2,  8930,
-	"http://appldnld.apple.com/iPad/061-8801.20100811.CvfR5/iPad1,1_3.2.2_7B500_Restore.ipsw" },
+	"http://appldnld.apple.com/iPhone4/041-8357.20111012.DTOrM/iPad1,1_5.0_9A334_Restore.ipsw" },
 	{  7, "iPhone3,1",  "n90ap",  0,  8930,
-	"http://appldnld.apple.com/iPhone4/061-7939.20100908.Lcyg3/iPhone3,1_4.1_8B117_Restore.ipsw" },
+	"http://appldnld.apple.com/iPhone4/041-8358.20111012.FFc34/iPhone3,1_5.0_9A334_Restore.ipsw" },
 	{  8, "iPod4,1",    "n81ap",  8,  8930,
-	"http://appldnld.apple.com/iPhone4/061-8490.20100901.hyjtR/iPod4,1_4.1_8B117_Restore.ipsw" },
+	"http://appldnld.apple.com/iPhone4/061-9622.20111012.Evry3/iPod4,1_5.0_9A334_Restore.ipsw" },
 	{  9, "AppleTV2,1", "k66ap", 10,  8930,
-	"http://appldnld.apple.com/AppleTV/061-8940.20100926.Tvtnz/AppleTV2,1_4.1_8M89_Restore.ipsw" },
+	"http://appldnld.apple.com/AppleTV/061-9621.20111012.Vgijx/AppleTV2,1_4.4_9A334v_Restore.ipsw" },
 	{ 10, "iPhone3,3",  "n92ap",  6,  8930,
-	"http://appldnld.apple.com/iPhone4/041-0177.20110131.Pyvrz/iPhone3,3_4.2.6_8E200_Restore.ipsw" },
+	"http://appldnld.apple.com/iPhone4/041-9743.20111012.vjhfp/iPhone3,3_5.0_9A334_Restore.ipsw" },
 	{ -1,  NULL,        NULL,   -1,    -1,
 	NULL }
 } ;
@@ -202,12 +202,10 @@ irecv_error_t irecv_receive(irecv_client_t client);
 irecv_error_t irecv_send_exploit(irecv_client_t client);
 irecv_error_t irecv_execute_script(irecv_client_t client, const char* filename);
 irecv_error_t irecv_set_configuration(irecv_client_t client, int configuration);
-
 irecv_error_t irecv_event_subscribe(irecv_client_t client, irecv_event_type type, irecv_event_cb_t callback, void *user_data);
 irecv_error_t irecv_event_unsubscribe(irecv_client_t client, irecv_event_type type);
-
+irecv_error_t irecv_send_command(irecv_client_t client, const char* command);
 irecv_error_t irecv_send_file(irecv_client_t client, const char* filename, int dfuNotifyFinished);
-irecv_error_t irecv_send_command(irecv_client_t client, char* command);
 irecv_error_t irecv_send_buffer(irecv_client_t client, unsigned char* buffer, unsigned long length, int dfuNotifyFinished);
 
 irecv_error_t irecv_saveenv(irecv_client_t client);
