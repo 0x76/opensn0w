@@ -19,6 +19,28 @@
 
 #include "sn0w.h"
 
+extern Dictionary *firmwarePatches, *patchDict, *info;
+
+Dictionary* get_key_dictionary_from_bundle(char* member) {
+	firmwarePatches = (Dictionary*)getValueByKey(info, "FirmwarePatches");
+	patchDict = (Dictionary*) firmwarePatches->values;
+	StringValue* fileValue = (StringValue*) getValueByKey(patchDict, "File");
+
+	if(!strcasecmp(patchDict->dValue.key, member))
+		return patchDict;
+
+	while(patchDict != NULL) {
+		fileValue = (StringValue*) getValueByKey(patchDict, "File");
+
+		if(!strcmp(patchDict->dValue.key, member))
+			return patchDict;
+
+		patchDict = (Dictionary*) patchDict->dValue.next;
+	}
+
+	return NULL;
+}
+
 int patch_file(char* filename) {
 	AbstractFile *template = NULL, *inFile, *certificate = NULL, *outFile, *newFile;
 	unsigned int key[16];

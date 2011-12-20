@@ -22,6 +22,7 @@
 bool verboseflag = false;
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
+Dictionary *firmwarePatches, *patchDict, *info;
 
 #define usage(x) \
 	printf("Usage: %s [OPTION]\n" \
@@ -30,7 +31,8 @@ irecv_client_t client = NULL;
 			"\n" \
 			"Options:\n" \
 			"\t-v                           Verbose mode. Useful for debugging.\n" \
-            "\t-w url                       Get necessary files from a remote IPSW.\n" \
+			"\t-w url                       Get necessary files from a remote IPSW.\n" \
+			"\t-p plist                     Use firmware plist\n" \
 			"\t-h                           Help.\n" \
 			"\t-k kernelcache               Boot using specified kernel.\n" \
 			"\t-i ipsw                      Use specified ipsw to retrieve files from\n" \
@@ -132,12 +134,14 @@ int upload_image(char* filename, int mode) {
 			break;
 	}
 
-	printf("Resetting device counters\n");
-	error = irecv_reset_counters(client);
-	if (error != IRECV_E_SUCCESS) {
-		printf("Unable to upload firmware image\n");
-		printf("%s\n", irecv_strerror(error));
-		return -1;
+	if(client->mode != kDfuMode) {
+		printf("Resetting device counters\n");
+		error = irecv_reset_counters(client);
+		if (error != IRECV_E_SUCCESS) {
+			printf("Unable to upload firmware image\n");
+			printf("%s\n", irecv_strerror(error));	
+			return -1;
+		}
 	}
 
 	printf("Uploading %s to device\n", filename);
@@ -151,15 +155,17 @@ int upload_image(char* filename, int mode) {
 
 int main(int argc, char **argv) {
 	int c;
-	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL;
+	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL;
 	irecv_error_t err = IRECV_E_SUCCESS;
+	AbstractFile* plistFile;
+	StringValue* fileValue;
 
 	printf("opensn0w, an open source jailbreaking program.\n"
 		   "Compiled on: " __DATE__ " " __TIME__ "\n\n");
 
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "vhb:w:k:i:")) != -1) {
+	while ((c = getopt (argc, argv, "vhp:b:w:k:i:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
@@ -167,6 +173,8 @@ int main(int argc, char **argv) {
 		case 'h':
 			usage();
 			break;
+		case 'p':
+			plist = optarg;
 		case 'i':
 			if (!file_exists(optarg)) {
 				printf("Cannot open IPSW file '%s'\n", ipsw);
@@ -194,6 +202,18 @@ int main(int argc, char **argv) {
 		default:
 			usage();
 		}
+	}
+
+	if(!plist) {
+		printf("The plist is sort of required now.\n");
+		return -1;
+	}
+
+	if((plistFile = createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
+		plist = (char*) malloc(plistFile->getLength(plistFile));
+		plistFile->read(plistFile, plist, plistFile->getLength(plistFile));
+		plistFile->close(plistFile);
+		info = createRoot(plist);
 	}
 
 	/* to be done */

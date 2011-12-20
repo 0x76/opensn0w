@@ -32,6 +32,7 @@
 #include "common.h"
 #include "xpwn/libxpwn.h"
 #include "xpwn/nor_files.h"
+#include <xpwn/plist.h>
 
 extern irecv_device_t device;
 extern irecv_client_t client;
