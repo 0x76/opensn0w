@@ -8,7 +8,7 @@ all: opensn0w
 UNAME := $(shell uname -s)
 
 ifeq ($(UNAME),Darwin)
-	CFLAGS = -c -Wall -I. -g -I./include -I/usr/local/include -I/opt/local/include
+	CFLAGS = -c -Wall -I. -g -I./include -I/usr/local/include -I/opt/local/include -Ilibusb-1.0
 	LDFLAGS = -L/usr/lib -L/opt/local/lib 
 	LIBS =-lusb-1.0 -lcurl -lz -lreadline -framework CoreFoundation -framework IOKit
 endif
