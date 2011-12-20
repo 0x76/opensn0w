@@ -83,6 +83,7 @@ int upload_image(char* filename, int mode) {
 	char path[255];
 	struct stat buf;
 	irecv_error_t error = IRECV_E_SUCCESS;
+	char *buffer;
 
 	printf("Checking if %s already exists\n", filename);
 
@@ -144,8 +145,19 @@ int upload_image(char* filename, int mode) {
 		}
 	}
 
-	printf("Uploading %s to device\n", filename);
-	error = irecv_send_file(client, filename, 1);
+	patch_file(filename);
+
+	buffer = malloc(strlen(filename) + 5);
+	if(!buffer) {
+		printf("Cannot allocate memory\n");
+		return -1;
+	}
+	memset(buffer, 0, strlen(filename) + 5);
+
+	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
+
+	printf("Uploading %s to device\n", buffer);
+	error = irecv_send_file(client, buffer, 1);
 	if (error != IRECV_E_SUCCESS) {
 		printf("%s\n", irecv_strerror(error));
 		return -1;
@@ -158,7 +170,6 @@ int main(int argc, char **argv) {
 	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile* plistFile;
-	StringValue* fileValue;
 
 	printf("opensn0w, an open source jailbreaking program.\n"
 		   "Compiled on: " __DATE__ " " __TIME__ "\n\n");

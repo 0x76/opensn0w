@@ -32,7 +32,7 @@ Dictionary* get_key_dictionary_from_bundle(char* member) {
 	while(patchDict != NULL) {
 		fileValue = (StringValue*) getValueByKey(patchDict, "File");
 
-		if(!strcmp(patchDict->dValue.key, member))
+		if(!strcasecmp(patchDict->dValue.key, member))
 			return patchDict;
 
 		patchDict = (Dictionary*) patchDict->dValue.next;
@@ -43,11 +43,12 @@ Dictionary* get_key_dictionary_from_bundle(char* member) {
 
 int patch_file(char* filename) {
 	AbstractFile *template = NULL, *inFile, *certificate = NULL, *outFile, *newFile;
-	unsigned int key[16];
-	unsigned int iv[16];
+	unsigned int key[32], iv[16];
+	unsigned int *pkey, *piv;
 	char* inData;
 	size_t inDataSize;
 	char *buffer;
+	Dictionary* data;
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -57,8 +58,30 @@ int patch_file(char* filename) {
 		return -1;
 	}
 
+	data = get_key_dictionary_from_bundle(filename);
+
+	StringValue* keyValue = (StringValue*) getValueByKey(data, "Key");
+	StringValue* ivValue = (StringValue*) getValueByKey(data, "IV");
+
+	if(keyValue) {
+		sscanf(keyValue->value, "%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x"
+								"%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x",
+			&key[0], &key[1], &key[2], &key[3], &key[4], &key[5], &key[6], &key[7], &key[8],
+			&key[9], &key[10], &key[11], &key[12], &key[13], &key[14], &key[15],
+			&key[16], &key[17], &key[18], &key[19], &key[20], &key[21], &key[22], &key[23], &key[24],
+			&key[25], &key[26], &key[27], &key[28], &key[29], &key[30], &key[31]);
+		pkey = key;
+	}
+
+	if(ivValue) {
+		sscanf(ivValue->value, "%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x",
+			&iv[0], &iv[1], &iv[2], &iv[3], &iv[4], &iv[5], &iv[6], &iv[7], &iv[8],
+			&iv[9], &iv[10], &iv[11], &iv[12], &iv[13], &iv[14], &iv[15]);
+		piv = iv;
+	}
+
 	/* open file */
-	inFile = openAbstractFile3(createAbstractFileFromFile(fopen(filename, "rb")), key, iv, 0);
+	inFile = openAbstractFile3(createAbstractFileFromFile(fopen(filename, "rb")), pkey, piv, 0);
 	if(!inFile) {
 		printf("Cannot open %s.\n", filename);
 		return -1;
@@ -71,29 +94,34 @@ int patch_file(char* filename) {
 	inFile->close(inFile);
 
 	/* zero buffer */
-	buffer = malloc(strlen(filename) + 4);
+	buffer = malloc(strlen(filename) + 5);
 	if(!buffer) {
 		printf("Cannot allocate memory\n");
 		return -1;
 	}
-	memset(buffer, 0, strlen(filename) + 4);
+	memset(buffer, 0, strlen(filename) + 5);
 
-	snprintf(buffer, strlen(filename) + 4, "%s.pwn", filename);
+	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
 
 	/* open output */
+	printf("opening %s as an abstract file\n", filename);
+
 	outFile = createAbstractFileFromFile(fopen(buffer, "wb"));
 	if(!outFile) {
 		printf("Cannot open outfile\n");
 		return -1;
 	}
 
-	newFile = duplicateAbstractFile2(template, outFile, key, iv, certificate);
+	printf("pwned file is %s, will upload later\n", buffer);
+
+	newFile = duplicateAbstractFile2(template, outFile, pkey, piv, certificate);
 	if(!newFile) {
 		printf("Cannot open newfile\n");
 		return -1;
 	}
 
 	/* write patched contents */
+	printf("writing pwned file\n");
 	newFile->write(newFile, inData, inDataSize);
 	newFile->close(newFile);
 

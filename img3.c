@@ -610,7 +610,7 @@ AbstractFile* createAbstractFileFromImg3(AbstractFile* file) {
 			strcat(outputBuffer, curBuffer);
 		}
 		strcat(outputBuffer, "\n");
-		XLOG(4, outputBuffer);
+		//XLOG(4, outputBuffer);
 #endif
 		free(keySeed);
 	}
