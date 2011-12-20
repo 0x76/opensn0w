@@ -1,0 +1,59 @@
+/* OpenSn0w 
+ * Open source equivalent of redsn0w
+ * Brought to you by rms, acfrazier & Maximus
+ * Special thanks to iH8sn0w & MuscleNerd
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+
+#include "sn0w.h"
+
+/* iBSS patches */
+unsigned char iBSS_SDOM_original[] = {0x03, 0x93, 0xFF, 0xF7, 0x42, 0xFE, 0x00, 0x28};
+unsigned char iBSS_SDOM_patch[] = {0x03, 0x93, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_PROD_original[] = {0x03, 0x93, 0xFF, 0xF7, 0x2F, 0xFE, 0x00, 0x28};
+unsigned char iBSS_PROD_patch[] = {0x03, 0x93, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_CHIP_original[] = {0x03, 0x93, 0xFF, 0xF7, 0x10, 0xFE, 0x00, 0x28};
+unsigned char iBSS_CHIP_patch[] = {0x03, 0x93, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_TYPE_original[] = {0x03, 0x93, 0xFF, 0xF7, 0xFE, 0xFD, 0x00, 0x28};
+unsigned char iBSS_TYPE_patch[] = {0x03, 0x93, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_SEPO_original[] = {0x03, 0x95, 0xFF, 0xF7, 0xE8, 0xFD, 0x00, 0x28};
+unsigned char iBSS_SEPO_patch[] = {0x03, 0x95, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_CEPO_original[] = {0x03, 0x95, 0xFF, 0xF7, 0xD6, 0xFD, 0x00, 0x28};
+unsigned char iBSS_CEPO_patch[] = {0x03, 0x95, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_BORD_original[] = {0x03, 0x94, 0xFF, 0xF7, 0xC4, 0xFD, 0x00, 0x28};
+unsigned char iBSS_BORD_patch[] = {0x03, 0x94, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_ECID_original[] = {0x03, 0x94, 0xFF, 0xF7, 0xAF, 0xFD, 0x00, 0x28};
+unsigned char iBSS_ECID_patch[] = {0x03, 0x94, 0x00, 0x20, 0x00, 0x20, 0x00, 0x28};
+
+unsigned char iBSS_SHSH_original[] = {0x4F, 0xF0, 0xFF, 0x30, 0x01, 0xE0, 0x4F, 0xF0, 0xFF, 0x30};
+unsigned char iBSS_SHSH_patch[] = {0x00, 0x20, 0x00, 0x20, 0x01, 0xE0, 0x00, 0x20, 0x00, 0x20};
+
+patch iBSS_SHSH = {iBSS_SHSH_original, iBSS_SHSH_patch};
+patch iBSS_ECID = {iBSS_ECID_original, iBSS_ECID_patch};
+patch iBSS_BORD = {iBSS_BORD_original, iBSS_BORD_patch};
+patch iBSS_CEPO = {iBSS_CEPO_original, iBSS_CEPO_patch};
+patch iBSS_SEPO = {iBSS_SEPO_original, iBSS_SEPO_patch};
+patch iBSS_TYPE = {iBSS_TYPE_original, iBSS_TYPE_patch};
+patch iBSS_CHIP = {iBSS_CHIP_original, iBSS_CHIP_patch};
+patch iBSS_SDOM = {iBSS_SDOM_original, iBSS_SDOM_patch};
+patch iBSS_PROD = {iBSS_PROD_original, iBSS_PROD_patch};
+

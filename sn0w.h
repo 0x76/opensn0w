@@ -33,6 +33,22 @@
 extern irecv_device_t device;
 extern irecv_client_t client;
 
+typedef struct _patch {
+	unsigned char* original;
+	unsigned char* patched;
+} patch, *patch_t;
+
+extern patch iBSS_SHSH;
+extern patch iBSS_ECID;
+extern patch iBSS_BORD;
+extern patch iBSS_CEPO;
+extern patch iBSS_SEPO;
+extern patch iBSS_TYPE;
+extern patch iBSS_CHIP;
+extern patch iBSS_SDOM;
+extern patch iBSS_PROD;
+
 int limera1n();
+void* our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 
 #endif
