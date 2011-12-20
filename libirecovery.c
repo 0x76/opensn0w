@@ -26,7 +26,7 @@
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
 #ifdef __APPLE__
-#include "darwin_usb.h"
+#include <libusb-1.0/os/darwin_usb.h>
 #endif
 #else
 #define WIN32_LEAN_AND_MEAN
