@@ -281,7 +281,6 @@ int main(int argc, char **argv) {
 	client = irecv_reconnect(client, 10);
 
 	irecv_reset(client);
-	sleep(10);
 	client = irecv_reconnect(client, 10);
 	irecv_set_interface(client, 0, 0);
 

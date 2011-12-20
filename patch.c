@@ -129,7 +129,7 @@ int patch_file(char* filename) {
 	}
 
 	/* open file */
-	inFile = openAbstractFile3(createAbstractFileFromFile(fopen(filename, "rb")), key, iv, 0);
+	inFile = openAbstractFile2(createAbstractFileFromFile(fopen(filename, "rb")), key, iv);
 	if(!inFile) {
 		printf("Cannot open %s.\n", filename);
 		return -1;
