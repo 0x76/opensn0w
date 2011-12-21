@@ -25,6 +25,8 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 int Img3DecryptLast = TRUE;
 
+int UsingRamdisk = FALSE;
+
 #define usage(x) \
 	printf("Usage: %s [OPTION]\n" \
 			"Jailbreak an iOS device (iPhones/iPod touches/iPads)\n" \
@@ -38,6 +40,7 @@ int Img3DecryptLast = TRUE;
 			"\t-k kernelcache               Boot using specified kernel.\n" \
 			"\t-i ipsw                      Use specified ipsw to retrieve files from\n" \
 			"\t-b bootlogo.img3             Use specified bootlogo img3 file during startup.\n" \
+			"\t-r ramdisk.dmg               Boot specified ramdisk.\n" \
 			"\n", \
 			argv[0], \
 			"A4 devices"); \
@@ -134,6 +137,15 @@ int upload_image(char* filename, int mode, int patch) {
 				}
 			}
 			break;
+		case 4: /* anything else */
+			snprintf(path, 255, "%s", 
+       	          filename);
+			printf("regular path is %s\n", path);
+			if (stat(filename, &buf) != 0) {
+				printf("Unable to upload image\n");
+				return -1;
+			}
+			break;
 	}
 
 	if(client->mode != kDfuMode) {
@@ -172,7 +184,7 @@ int upload_image(char* filename, int mode, int patch) {
 
 int main(int argc, char **argv) {
 	int c;
-	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL;
+	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile* plistFile;
 
@@ -181,7 +193,7 @@ int main(int argc, char **argv) {
 
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "vhp:b:w:k:i:")) != -1) {
+	while ((c = getopt (argc, argv, "vhp:b:w:k:i:r:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
@@ -214,6 +226,13 @@ int main(int argc, char **argv) {
 				return -1;
 			}
 			bootlogo = optarg;
+			break;
+		case 'r':
+			if (!file_exists(optarg)) {
+				printf("Cannot open ramdisk file '%s'\n", optarg);
+				return -1;
+			}
+			ramdisk = optarg;
 			break;
 		default:
 			usage();
@@ -276,7 +295,8 @@ int main(int argc, char **argv) {
 
 	/* upload iBSS */
 
-	/* FOR SOME REASON: THIS BREAKS ON 5.0. iBEC is not being uploaded properly. */
+	if(ramdisk)
+		UsingRamdisk = TRUE;
 
 	upload_image("iBSS", 0, 1);
 	client = irecv_reconnect(client, 10);
@@ -290,8 +310,14 @@ int main(int argc, char **argv) {
 	irecv_set_interface(client, 1, 1);
 
 	/* upload kernel */
-	irecv_send_command(client, "go kernel bootargs -v rd=disk0s1s1 keepsyms=1");
-	irecv_send_command(client, "kernel bootargs -v rd=disk0s1s1 keepsyms=1");
+
+	if(ramdisk) {
+		upload_image(ramdisk, 4, 0);
+		client = irecv_reconnect(client, 10);
+
+		printf("sending ramdisk\n");
+		irecv_send_command(client, "ramdisk");
+	}
 
 	upload_image("kernelcache", 3, 1);
 	client = irecv_reconnect(client, 10);

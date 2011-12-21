@@ -50,6 +50,8 @@ unsigned char iBSS_SHSH_patch[] = {0x00, 0x20, 0x00, 0x20, 0x01, 0xE0, 0x00, 0x2
 unsigned char iBEC_bootargs_original[] = {"rd=md0 nand-enable-reformat=1 -progress"};
 unsigned char iBEC_bootargs_patch[] =    {"rd=disk0s1s1 debug=0x016E -v keepsyms=1"};
 
+unsigned char iBEC_bootargs_ramdisk[] =  {"rd=md0 -v debug=0x16E keepsyms=1       "};
+
 unsigned char iBEC_bootargs_jmp_original[] = {0x01, 0xF0, 0xE1, 0xF9, 0x96, 0x49, 0x00, 0x2C};
 unsigned char iBEC_bootargs_jmp_patch[] =    {0x01, 0xF0, 0xE1, 0xF9, 0x96, 0x49, 0x01, 0x2C};
 

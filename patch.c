@@ -20,6 +20,8 @@
 #include "sn0w.h"
 
 extern Dictionary *firmwarePatches, *patchDict, *info;
+extern unsigned char iBEC_bootargs_ramdisk[];
+extern int UsingRamdisk;
 
 Dictionary* get_key_dictionary_from_bundle(char* member) {
 	firmwarePatches = (Dictionary*)getValueByKey(info, "FirmwarePatches");
@@ -43,6 +45,11 @@ Dictionary* get_key_dictionary_from_bundle(char* member) {
 
 int patch_bootloaders(char* buffer, size_t length) {
 	int i;
+	
+	/* use md0 bootargs if ramdisk */
+	if(UsingRamdisk == TRUE) 
+		iBEC_bootargs.patched = iBEC_bootargs_ramdisk;
+
 	for(i = 0; i < length; i++) {
 		char* candidate = &buffer[i];
 		if(!memcmp(candidate, iBSS_SDOM.original, iBSS_SDOM.length)) {
