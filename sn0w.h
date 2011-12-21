@@ -54,6 +54,9 @@ extern patch iBSS_CHIP;
 extern patch iBSS_SDOM;
 extern patch iBSS_PROD;
 
+extern patch iBEC_bootargs;
+extern patch iBEC_bootargs_jmp;
+
 extern patch kernel_CSED;
 extern patch kernel_AMFI;
 extern patch kernel__PE_i_can_has_debugger;

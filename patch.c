@@ -90,6 +90,16 @@ int patch_bootloaders(char* buffer, size_t length) {
 			memcpy(candidate, iBSS_SHSH.patched, iBSS_SHSH.length);
 			continue;
 		}
+		if(!memcmp(candidate, iBEC_bootargs.original, iBEC_bootargs.length)) {
+			printf("Patching bootargs... at 0x%08x\n", i);
+			memcpy(candidate, iBEC_bootargs.patched, iBEC_bootargs.length);
+			continue;
+		}
+		if(!memcmp(candidate, iBEC_bootargs_jmp.original, iBEC_bootargs_jmp.length)) {
+			printf("Patching bootargs check... at 0x%08x\n", i);
+			memcpy(candidate, iBEC_bootargs_jmp.patched, iBEC_bootargs_jmp.length);
+			continue;
+		}
 	}
 	return 0;
 }

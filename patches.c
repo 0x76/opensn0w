@@ -47,6 +47,12 @@ unsigned char iBSS_ECID_patch[] = {0x03, 0x94, 0x00, 0x20, 0x00, 0x20, 0x00, 0x2
 unsigned char iBSS_SHSH_original[] = {0x4F, 0xF0, 0xFF, 0x30, 0x01, 0xE0, 0x4F, 0xF0, 0xFF, 0x30};
 unsigned char iBSS_SHSH_patch[] = {0x00, 0x20, 0x00, 0x20, 0x01, 0xE0, 0x00, 0x20, 0x00, 0x20};
 
+unsigned char iBEC_bootargs_original[] = {"rd=md0 nand-enable-reformat=1 -progress"};
+unsigned char iBEC_bootargs_patch[] =    {"rd=disk0s1s1 debug=0x016E -v keepsyms=1"};
+
+unsigned char iBEC_bootargs_jmp_original[] = {0x01, 0xF0, 0xE1, 0xF9, 0x96, 0x49, 0x00, 0x2C};
+unsigned char iBEC_bootargs_jmp_patch[] =    {0x01, 0xF0, 0xE1, 0xF9, 0x96, 0x49, 0x01, 0x2C};
+
 patch iBSS_SHSH = {iBSS_SHSH_original, iBSS_SHSH_patch, 10};
 patch iBSS_ECID = {iBSS_ECID_original, iBSS_ECID_patch, 8};
 patch iBSS_BORD = {iBSS_BORD_original, iBSS_BORD_patch, 8};
@@ -56,6 +62,9 @@ patch iBSS_TYPE = {iBSS_TYPE_original, iBSS_TYPE_patch, 8};
 patch iBSS_CHIP = {iBSS_CHIP_original, iBSS_CHIP_patch, 8};
 patch iBSS_SDOM = {iBSS_SDOM_original, iBSS_SDOM_patch, 8};
 patch iBSS_PROD = {iBSS_PROD_original, iBSS_PROD_patch, 8};
+
+patch iBEC_bootargs = {iBEC_bootargs_original, iBEC_bootargs_patch, sizeof(iBEC_bootargs_original)};
+patch iBEC_bootargs_jmp = {iBEC_bootargs_jmp_original, iBEC_bootargs_jmp_patch, sizeof(iBEC_bootargs_jmp_original)};
 
 /* kernel patches */
 unsigned char kernel_CSED_original[] = {0xdf, 0xf8, 0x88, 0x33, 0x1d, 0xee, 0x90, 0x0f, 0xa2, 0x6a, 0x1b, 0x68};
