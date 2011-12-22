@@ -1,8 +1,0 @@
-opensn0w, an open-source jailbreaking utility/framework.
-
-a lot of code is from xpwn, thanks to planetbeing and the iPhone Dev-Team for that.
-thanks to ChronicDev for their implementation of libirecovery and syringe,
-limera1n payload was used from that, along with libpartial, and a few fragments
-of code.
-
-license is GPL v3, chronic-dev's syringe is GPL v3, and xpwn is GPLv3 also.
