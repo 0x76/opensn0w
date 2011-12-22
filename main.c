@@ -174,7 +174,12 @@ int upload_image(char* filename, int mode, int patch) {
 		snprintf(buffer, strlen(filename) + 5, "%s", filename);
 
 	printf("Uploading %s to device\n", buffer);
-	error = irecv_send_file(client, buffer, 1);
+
+	if(client->mode != kDfuMode) 
+		error = irecv_send_file(client, buffer, 0);
+	else
+		error = irecv_send_file(client, buffer, 1);
+
 	if (error != IRECV_E_SUCCESS) {
 		printf("%s\n", irecv_strerror(error));
 		return -1;
@@ -294,7 +299,6 @@ int main(int argc, char **argv) {
 	printf("Bootrom is pwned now! :D\n");
 
 	/* upload iBSS */
-
 	if(ramdisk)
 		UsingRamdisk = TRUE;
 
@@ -309,19 +313,33 @@ int main(int argc, char **argv) {
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);
 
-	/* upload kernel */
+	/* upload logo */
+	if(device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
+		upload_image("applelogo-640x960", 2, 0);
+	else
+		upload_image("applelogo-320x480", 2, 0);
 
+	irecv_send_command(client, "setpicture 0");
+	irecv_send_command(client, "bgcolor 0 0 0");
+	client = irecv_reconnect(client, 10);
+
+	/* upload ramdisk */
 	if(ramdisk) {
 		upload_image(ramdisk, 4, 0);
-		client = irecv_reconnect(client, 10);
 
-		printf("sending ramdisk\n");
+		sleep(5);
+
+		printf("sending ramdisk command\n");
 		irecv_send_command(client, "ramdisk");
+
+		irecv_reset_counters(client);
 	}
 
+	/* upload kernel */
 	upload_image("kernelcache", 3, 1);
 	client = irecv_reconnect(client, 10);
 
+	/* BootX */
 	printf("booting\n");
 	irecv_send_command(client, "bootx");
 

@@ -140,11 +140,14 @@ int patch_kernel(char* buffer, size_t length) {
 			memcpy(candidate, kernel_sigcheck.patched, kernel_sigcheck.length);
 			continue;
 		}
+#ifndef BIG_ENDIAN
+		/* buggy on big endian, bad kernel on ps3. */
 		if(!memcmp(candidate, kernel_xattr.original, kernel_xattr.length)) {
 			printf("Patching kernel xattr check... at 0x%08x\n", i);
 			memcpy(candidate, kernel_xattr.patched, kernel_xattr.length);
 			continue;
 		}
+#endif
 		if(!memcmp(candidate, kernel_redsn0w_unknown0.original, kernel_redsn0w_unknown0.length)) {
 			printf("Patching unknown kernel check (redsn0w 0)... at 0x%08x\n", i);
 			memcpy(candidate, kernel_redsn0w_unknown0.patched, kernel_redsn0w_unknown0.length);

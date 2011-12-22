@@ -37,7 +37,12 @@
 #include "libpartial.h"
 
 static size_t count = 0;
+
+#ifdef BIG_ENDIAN
+char endianness = IS_BIG_ENDIAN;
+#else
 char endianness = IS_LITTLE_ENDIAN;
+#endif
 
 int download_file_from_zip(const char* url, const char* path, const char* output, PartialZipProgressCallback progressCallback) {
 	FILE* fd;

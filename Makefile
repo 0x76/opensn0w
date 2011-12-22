@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall -I. -g -Ixpwntool -fPIC
+CFLAGS=-Wall -I. -g -Ixpwntool -fPIC
 OS_TARGET=opensn0w
 LIBS=-lusb-1.0 -lcurl -lz -lreadline -lpng -lssl -lcrypto
 OBJS=main.o limera1n.o libpartial.o crtsup.o libirecovery.o patch.o patches.o img3.o nor_files.o \
@@ -15,7 +15,7 @@ ifeq ($(UNAME),Darwin)
 endif
 
 opensn0w: $(OBJS)
-	$(CC) $(OBJS) -o $(OS_TARGET) $(LIBS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(OS_TARGET) $(LIBS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
