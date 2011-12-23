@@ -9,7 +9,7 @@ loaders) and signature and sandboxing checks in the kernel.
 Why opensn0w?
 =============
 
-opensn0w is portable and open source jailbreaking utility. opensn0w
+opensn0w is a portable and open source jailbreaking utility. opensn0w
 has been compiled on both little endian and big endian systems. These
 include the Intel i386/x86_64 processor architecture and the Cell
 Broadband Engine in the PlayStation 3. We have successfully booted an
