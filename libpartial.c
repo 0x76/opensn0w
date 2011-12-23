@@ -35,8 +35,10 @@
 #endif
 
 #include "libpartial.h"
+#include "sn0w.h"
 
 static size_t count = 0;
+
 
 #ifdef BIG_ENDIAN
 char endianness = IS_BIG_ENDIAN;

@@ -35,6 +35,8 @@
 #include <xpwn/plist.h>
 #include <ctype.h>
 
+#undef BIG_ENDIAN
+
 extern irecv_device_t device;
 extern irecv_client_t client;
 
