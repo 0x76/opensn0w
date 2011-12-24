@@ -2,8 +2,6 @@
  * Open source equivalent of redsn0w
  * Brought to you by rms, acfrazier & Maximus
  * Special thanks to iH8sn0w & MuscleNerd
- * 
- * This file is from xpwn.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
