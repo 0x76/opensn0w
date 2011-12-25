@@ -140,7 +140,8 @@ int patch_kernel(char* buffer, size_t length) {
 			memcpy(candidate, kernel_sigcheck.patched, kernel_sigcheck.length);
 			continue;
 		}
-#ifndef BIG_ENDIAN
+#if 0
+		/* bug report from Hackintech: makes bad kernel */
 		/* buggy on big endian, bad kernel on ps3. */
 		if(!memcmp(candidate, kernel_xattr.original, kernel_xattr.length)) {
 			printf("Patching kernel xattr check... at 0x%08x\n", i);
