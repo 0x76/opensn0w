@@ -730,8 +730,10 @@ irecv_error_t irecv_send_buffer(irecv_client_t client, unsigned char* buffer, un
 		/* Use bulk transfer for recovery mode and control transfer for DFU and WTF mode */
 		if (recovery_mode) {
 			int ret = irecv_bulk_transfer(client, 0x04, &buffer[i * packet_size], size, &bytes, 1000);
-			if (ret < 0)
+			if (ret < 0) {
+				printf("[libusb] error %d\n", ret);
 				error = IRECV_E_UNKNOWN_ERROR;
+			}
 		} else {
 			bytes = irecv_control_transfer(client, 0x21, 1, 0, 0, &buffer[i * packet_size], size, 1000);
 		}

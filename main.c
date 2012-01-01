@@ -322,7 +322,6 @@ int main(int argc, char **argv) {
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);
 
-#if 0
 	/* upload logo */
 	if(device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
 		upload_image("applelogo-640x960", 2, 0);
@@ -331,6 +330,12 @@ int main(int argc, char **argv) {
 
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
+	client = irecv_reconnect(client, 10);
+
+	/* upload devicetree */
+	upload_image("DeviceTree", 1, 0);
+	client = irecv_reconnect(client, 10);
+	irecv_send_command(client, "devicetree");
 	client = irecv_reconnect(client, 10);
 
 	/* upload ramdisk */
@@ -344,7 +349,6 @@ int main(int argc, char **argv) {
 
 		irecv_reset_counters(client);
 	}
-#endif
 
 	/* upload kernel */
 	upload_image("kernelcache", 3, 1);
