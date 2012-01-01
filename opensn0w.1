@@ -1,0 +1,58 @@
+.IX Title "OPENSN0W 1"
+.TH OPENSN0W 1 "2012-01-01" "opensn0w" "Velocity Limitless UNIX Manual"
+.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+.\" way too many mistakes in technical documents.
+.if n .ad l
+.nh
+.SH "NAME"
+opensn0w \- jailbreak an iOS device
+.SH "SYNOPSIS"
+.IX Header "SYNOPSIS"
+\&\fBopensn0w\fR [\s-1OPTION\s0]
+.SH "DESCRIPTION"
+.IX Header "DESCRIPTION"
+opensn0w is an open source (licensed under the \s-1GNU\s0 General Public License
+version 3) and free jailbreaking program. The utility allows one to
+circumvent signature checks on iOS based devices from the \s-1DFU\s0 level, and 
+to also upload custom kernels and bootloaders, along with ramdisks and
+boot logo images.
+.SH "OPTIONS"
+.IX Header "OPTIONS"
+\&\fB\-v\fR            Enable program verbosity.
+.PP
+\&\fB\-w\fR [url]      Download required jailbreak files from [url].
+.PP
+\&\fB\-p\fR [plist]    Use [plist] for required key/IVs for file decryption for firmware binaries.
+.PP
+\&\fB\-h\fR            Display help.
+.PP
+\&\fB\-k\fR [kernel]   Boot using [kernel] as system kernelcache.
+.PP
+\&\fB\-i\fR [ipsw]     Copy files from [ipsw] instead of downloading them.
+.PP
+\&\fB\-b\fR [image]    Display [image] during system startup.
+.PP
+\&\fB\-r\fR [ramdisk]  Upload [ramdisk] to the system and boot with ramdisk as default root device.
+.PP
+\&\fB\-d\fR            Circumvent signature checks in \s-1DFU\s0 only.
+.PP
+\&\fB\-a\fR [args]     Use [args] as kernel boot-args (boot-arguments) string. This string cannot be more than 39 characters long.
+.SH "EXAMPLES"
+.IX Header "EXAMPLES"
+Boot an iPod touch 4G using 5.0:
+.PP
+.Vb 1
+\&   opensn0w \-p iPod4,1_Telluride9A334_5.0.plist
+.Ve
+.PP
+Boot an iPhone 4 \s-1GSM\s0 using 5.0 in debug mode and single user:
+.PP
+.Vb 1
+\&   opensn0w \-p iPhone3,1_Telluride9A334_5.0.plist \-a "debug=0x16E \-s \-v"
+.Ve
+.SH "EXIT STATUS"
+.IX Header "EXIT STATUS"
+opensn0w returns zero on success, non-zero is returned on failure.
+.SH "AUTHOR"
+.IX Header "AUTHOR"
+Velocity Limitless
