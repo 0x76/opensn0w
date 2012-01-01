@@ -48,11 +48,13 @@ int UsingRamdisk = FALSE;
 			"A4 devices"); \
 			exit(-1);
 
-void boot_args_process(char* args) {
+void boot_args_process(char *args)
+{
 	char buffer[39];
-	
-	if(strlen(args) > 39) {
-		printf("Boot-args is too long. Please shorten to 39 characters or less.\n");
+
+	if (strlen(args) > 39) {
+		printf
+		    ("Boot-args is too long. Please shorten to 39 characters or less.\n");
 		exit(-1);
 	}
 
@@ -61,15 +63,17 @@ void boot_args_process(char* args) {
 
 	printf("Booting with boot-args \"%s\"\n", buffer);
 
-    memcpy(iBEC_bootargs.patched, buffer, 39);
+	memcpy(iBEC_bootargs.patched, buffer, 39);
 }
 
-bool file_exists(const char* fileName) {
+bool file_exists(const char *fileName)
+{
 	struct stat buf;
 	return !stat(fileName, &buf);
 }
 
-int poll_device_for_dfu() {
+int poll_device_for_dfu()
+{
 	irecv_error_t err;
 	static int try;
 
@@ -90,10 +94,10 @@ int poll_device_for_dfu() {
 	return 0;
 }
 
-int fetch_image(const char* path, const char* output) {
+int fetch_image(const char *path, const char *output)
+{
 	printf("Fetching %s...\n", path);
-	if (download_file_from_zip(device->url, path, output, NULL)
-			!= 0) {
+	if (download_file_from_zip(device->url, path, output, NULL) != 0) {
 		printf("Unable to fetch %s\n", path);
 		return -1;
 	}
@@ -101,7 +105,8 @@ int fetch_image(const char* path, const char* output) {
 	return 0;
 }
 
-int upload_image(char* filename, int mode, int patch) {
+int upload_image(char *filename, int mode, int patch)
+{
 	char path[255];
 	struct stat buf;
 	irecv_error_t error = IRECV_E_SUCCESS;
@@ -111,89 +116,92 @@ int upload_image(char* filename, int mode, int patch) {
 
 	memset(path, 0, 255);
 
-	switch(mode) {
-		case 0:	/* dfu */
-			snprintf(path, 255, "Firmware/dfu/%s.%s.RELEASE.dfu", filename, device->model);
-			printf("dfu binary: IPSW path is %s\n", path);
-			if (stat(filename, &buf) != 0) {
-				if (fetch_image(path, filename) < 0) {
-					printf("Unable to upload DFU image\n");
-					return -1;
-				}
-			}
-			break;
-		case 1: /* all_flash */
-			snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.%s.img3", 
-       	          device->model, filename, device->model);
-			printf("all_flash binary: IPSW path is %s\n", path);
-			if (stat(filename, &buf) != 0) {
-				if (fetch_image(path, filename) < 0) {
-					printf("Unable to upload DFU image\n");
-					return -1;
-				}
-			}
-			break;
-		case 2: /* logos */
-			snprintf(path, 255, "Firmware/all_flash/all_flash.%s.production/%s.s5l%dx.img3", 
-       	          device->model, filename, device->chip_id);
-			printf("logo binary: IPSW path is %s\n", path);
-			if (stat(filename, &buf) != 0) {
-				if (fetch_image(path, filename) < 0) {
-					printf("Unable to upload DFU image\n");
-					return -1;
-				}
-			}
-			break;
-		case 3: /* kernelcache */
-			snprintf(path, 255, "%s.release.%c%c%c", 
-       	          filename, device->model[0], device->model[1], device->model[2]);
-			printf("kernel binary: IPSW path is %s\n", path);
-			if (stat(filename, &buf) != 0) {
-				if (fetch_image(path, filename) < 0) {
-					printf("Unable to upload DFU image\n");
-					return -1;
-				}
-			}
-			break;
-		case 4: /* anything else */
-			snprintf(path, 255, "%s", 
-       	          filename);
-			printf("regular path is %s\n", path);
-			if (stat(filename, &buf) != 0) {
-				printf("Unable to upload image\n");
+	switch (mode) {
+	case 0:		/* dfu */
+		snprintf(path, 255, "Firmware/dfu/%s.%s.RELEASE.dfu", filename,
+			 device->model);
+		printf("dfu binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
 				return -1;
 			}
-			break;
+		}
+		break;
+	case 1:		/* all_flash */
+		snprintf(path, 255,
+			 "Firmware/all_flash/all_flash.%s.production/%s.%s.img3",
+			 device->model, filename, device->model);
+		printf("all_flash binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
+		break;
+	case 2:		/* logos */
+		snprintf(path, 255,
+			 "Firmware/all_flash/all_flash.%s.production/%s.s5l%dx.img3",
+			 device->model, filename, device->chip_id);
+		printf("logo binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
+		break;
+	case 3:		/* kernelcache */
+		snprintf(path, 255, "%s.release.%c%c%c",
+			 filename, device->model[0], device->model[1],
+			 device->model[2]);
+		printf("kernel binary: IPSW path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			if (fetch_image(path, filename) < 0) {
+				printf("Unable to upload DFU image\n");
+				return -1;
+			}
+		}
+		break;
+	case 4:		/* anything else */
+		snprintf(path, 255, "%s", filename);
+		printf("regular path is %s\n", path);
+		if (stat(filename, &buf) != 0) {
+			printf("Unable to upload image\n");
+			return -1;
+		}
+		break;
 	}
 
-	if(client->mode != kDfuMode) {
+	if (client->mode != kDfuMode) {
 		printf("Resetting device counters\n");
 		error = irecv_reset_counters(client);
 		if (error != IRECV_E_SUCCESS) {
 			printf("Unable to upload firmware image\n");
-			printf("%s\n", irecv_strerror(error));	
+			printf("%s\n", irecv_strerror(error));
 			return -1;
 		}
 	}
 
-	if(patch)
+	if (patch)
 		patch_file(filename);
 
 	buffer = malloc(strlen(filename) + 5);
-	if(!buffer) {
+	if (!buffer) {
 		printf("Cannot allocate memory\n");
 		return -1;
 	}
 	memset(buffer, 0, strlen(filename) + 5);
 
-	if(patch)
+	if (patch)
 		snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
 	else
 		snprintf(buffer, strlen(filename) + 5, "%s", filename);
 
 	printf("Uploading %s to device\n", buffer);
 
-	if(client->mode != kDfuMode) 
+	if (client->mode != kDfuMode)
 		error = irecv_send_file(client, buffer, 0);
 	else
 		error = irecv_send_file(client, buffer, 1);
@@ -205,19 +213,21 @@ int upload_image(char* filename, int mode, int patch) {
 	return 0;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	int c;
-	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
+	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url =
+	    NULL, *plist = NULL, *ramdisk = NULL;
 	int pwndfu = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
-	AbstractFile* plistFile;
+	AbstractFile *plistFile;
 
 	printf("opensn0w, an open source jailbreaking program.\n"
-		   "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
 
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "vdhp:b:w:k:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdhp:b:w:k:i:r:a:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
@@ -242,7 +252,8 @@ int main(int argc, char **argv) {
 			break;
 		case 'k':
 			if (!file_exists(optarg)) {
-				printf("Cannot open kernelcache file '%s'\n", optarg);
+				printf("Cannot open kernelcache file '%s'\n",
+				       optarg);
 				return -1;
 			}
 			kernelcache = optarg;
@@ -252,14 +263,16 @@ int main(int argc, char **argv) {
 			break;
 		case 'b':
 			if (!file_exists(optarg)) {
-				printf("Cannot open bootlogo file '%s'\n", optarg);
+				printf("Cannot open bootlogo file '%s'\n",
+				       optarg);
 				return -1;
 			}
 			bootlogo = optarg;
 			break;
 		case 'r':
 			if (!file_exists(optarg)) {
-				printf("Cannot open ramdisk file '%s'\n", optarg);
+				printf("Cannot open ramdisk file '%s'\n",
+				       optarg);
 				return -1;
 			}
 			ramdisk = optarg;
@@ -269,14 +282,16 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if(!plist && pwndfu == false) {
+	if (!plist && pwndfu == false) {
 		printf("The plist is sort of required now.\n");
 		return -1;
 	}
 
-	if((plistFile = createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
-		plist = (char*) malloc(plistFile->getLength(plistFile));
-		plistFile->read(plistFile, plist, plistFile->getLength(plistFile));
+	if ((plistFile =
+	     createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
+		plist = (char *)malloc(plistFile->getLength(plistFile));
+		plistFile->read(plistFile, plist,
+				plistFile->getLength(plistFile));
 		plistFile->close(plistFile);
 		info = createRoot(plist);
 	}
@@ -290,7 +305,7 @@ int main(int argc, char **argv) {
 //#endif
 
 	/* Poll for DFU mode */
-	while(poll_device_for_dfu()) {
+	while (poll_device_for_dfu()) {
 		sleep(1);
 	}
 	puts("");
@@ -305,30 +320,35 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	printf("Device found: name: %s, processor s5l%dxsi\n", device->product, device->chip_id);
+	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
+	       device->chip_id);
 	printf("iBoot information: %s\n", client->serial);
 
 	/* What jailbreak exploit is this thing capable of? */
-	if(device->chip_id == 8930 || device->chip_id == 8922 || device->chip_id == 8920) {
-		printf("This device is compatible with the limera1n exploit. Sending.\n");
+	if (device->chip_id == 8930 || device->chip_id == 8922
+	    || device->chip_id == 8920) {
+		printf
+		    ("This device is compatible with the limera1n exploit. Sending.\n");
 		err = limera1n();
-		if(err) {
+		if (err) {
 			printf("Error during limera1ning.\n");
 			exit(-1);
 		}
-		if(pwndfu == true) {
-			printf("bootrom is owned. feel free to restore custom ipsws.\n");
+		if (pwndfu == true) {
+			printf
+			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 			exit(0);
 		}
 	} else {
-		printf("Support for the S5L%dX isn't done yet.\n", device->chip_id);
+		printf("Support for the S5L%dX isn't done yet.\n",
+		       device->chip_id);
 	}
 
 	/* We are owned now! */
 	printf("Bootrom is pwned now! :D\n");
 
 	/* upload iBSS */
-	if(ramdisk)
+	if (ramdisk)
 		UsingRamdisk = TRUE;
 
 	upload_image("iBSS", 0, 1);
@@ -343,7 +363,7 @@ int main(int argc, char **argv) {
 	irecv_set_interface(client, 1, 1);
 
 	/* upload logo */
-	if(device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
+	if (device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
 		upload_image("applelogo-640x960", 2, 0);
 	else
 		upload_image("applelogo-320x480", 2, 0);
@@ -359,7 +379,7 @@ int main(int argc, char **argv) {
 	client = irecv_reconnect(client, 10);
 
 	/* upload ramdisk */
-	if(ramdisk) {
+	if (ramdisk) {
 		upload_image(ramdisk, 4, 0);
 
 		sleep(5);
