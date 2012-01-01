@@ -28,24 +28,32 @@ int Img3DecryptLast = TRUE;
 int UsingRamdisk = FALSE;
 
 #define usage(x) \
-	printf("Usage: %s [OPTION]\n" \
-			"Jailbreak an iOS device (iPhones/iPod touches/iPads)\n" \
-			"Supported devices are: %s\n" \
+	printf("Usage: %s [OPTIONS]\n" \
+			"Jailbreak an iOS device, this includes the iPhone, iPad, iPod touch and\n" \
+            "Apple TV 2G.\n\n" \
+			"Currently supported devices are: %s\n" \
 			"\n" \
 			"Options:\n" \
-			"\t-v                           Verbose mode. Useful for debugging.\n" \
-			"\t-w url                       Get necessary files from a remote IPSW.\n" \
-			"\t-p plist                     Use firmware plist\n" \
-			"\t-h                           Help.\n" \
-			"\t-k kernelcache               Boot using specified kernel.\n" \
-			"\t-i ipsw                      Use specified ipsw to retrieve files from\n" \
-			"\t-b bootlogo.img3             Use specified bootlogo img3 file during startup.\n" \
-			"\t-r ramdisk.dmg               Boot specified ramdisk.\n" \
-			"\t-d                           Just pwn dfu mode.\n" \
-			"\t-a [boot-args]               Set device boot-args for boot.\n" \
-			"\n", \
+			"   -v                 Verbose mode. Useful for debugging.\n" \
+			"   -w url             Get necessary files from a remote IPSW.\n" \
+			"   -p plist           Use firmware plist\n" \
+			"   -h                 Help.\n" \
+			"   -k kernelcache     Boot using specified kernel.\n" \
+			"   -i ipsw            Use specified ipsw to retrieve files from\n" \
+			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
+			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
+			"   -d                 Just pwn dfu mode.\n" \
+			"   -a [boot-args]     Set device boot-args for boot.\n" \
+			"\n" \
+            "Exit status:\n" \
+            "  0  if OK,\n" \
+            " -1  if severe issues.\n" \
+            "\n" \
+            "Report %s bugs to rms@velocitylimitless.org\n" \
+            "%s homepage: <http://www.opensn0w.com>\n" \
+            "For complete documentation, see the UNIX manual. \n<man page needs to be written>\n", \
 			argv[0], \
-			"A4 devices"); \
+			"A4 devices", argv[0], argv[0]); \
 			exit(-1);
 
 void boot_args_process(char *args)
