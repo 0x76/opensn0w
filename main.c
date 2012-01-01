@@ -30,7 +30,7 @@ int UsingRamdisk = FALSE;
 #define usage(x) \
 	printf("Usage: %s [OPTIONS]\n" \
 			"Jailbreak an iOS device, this includes the iPhone, iPad, iPod touch and\n" \
-            "Apple TV 2G.\n\n" \
+			"Apple TV 2G.\n\n" \
 			"Currently supported devices are: %s\n" \
 			"\n" \
 			"Options:\n" \
@@ -45,13 +45,13 @@ int UsingRamdisk = FALSE;
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -a [boot-args]     Set device boot-args for boot.\n" \
 			"\n" \
-            "Exit status:\n" \
-            "  0  if OK,\n" \
-            " -1  if severe issues.\n" \
-            "\n" \
-            "Report %s bugs to rms@velocitylimitless.org\n" \
-            "%s homepage: <http://www.opensn0w.com>\n" \
-            "For complete documentation, see the UNIX manual. \n<man page needs to be written>\n", \
+			"Exit status:\n" \
+			"  0  if OK,\n" \
+			" -1  if severe issues.\n" \
+			"\n" \
+			"Report %s bugs to rms@velocitylimitless.org\n" \
+			"%s homepage: <http://www.opensn0w.com>\n" \
+			"For complete documentation, see the UNIX manual. \n<man page needs to be written>\n", \
 			argv[0], \
 			"A4 devices", argv[0], argv[0]); \
 			exit(-1);
