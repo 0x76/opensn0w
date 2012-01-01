@@ -42,10 +42,27 @@ int UsingRamdisk = FALSE;
 			"\t-b bootlogo.img3             Use specified bootlogo img3 file during startup.\n" \
 			"\t-r ramdisk.dmg               Boot specified ramdisk.\n" \
 			"\t-d                           Just pwn dfu mode.\n" \
+			"\t-a [boot-args]               Set device boot-args for boot.\n" \
 			"\n", \
 			argv[0], \
 			"A4 devices"); \
 			exit(-1);
+
+void boot_args_process(char* args) {
+	char buffer[39];
+	
+	if(strlen(args) > 39) {
+		printf("Boot-args is too long. Please shorten to 39 characters or less.\n");
+		exit(-1);
+	}
+
+	/* pad */
+	snprintf(buffer, 39, "%-39s", args);
+
+	printf("Booting with boot-args \"%s\"\n", buffer);
+
+    memcpy(iBEC_bootargs.patched, buffer, 39);
+}
 
 bool file_exists(const char* fileName) {
 	struct stat buf;
@@ -200,10 +217,13 @@ int main(int argc, char **argv) {
 
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "vdhp:b:w:k:i:r:")) != -1) {
+	while ((c = getopt (argc, argv, "vdhp:b:w:k:i:r:a:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
+			break;
+		case 'a':
+			boot_args_process(optarg);
 			break;
 		case 'd':
 			pwndfu = true;
