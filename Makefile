@@ -2,6 +2,7 @@ CC=gcc
 CFLAGS=-Wall -I. -g -Ixpwntool -fPIC
 OS_TARGET=opensn0w
 LDFLAGS=
+MANDIR=/usr/local/man/man1/
 BINDIR=/usr/local/bin/
 PLIST_DIR=/usr/local/share/opensn0w/
 LIBS=-lusb-1.0 -lcurl -lz -lreadline -lpng -lssl -lcrypto
@@ -27,7 +28,8 @@ clean:
 	rm -rf *.o opensn0w
 
 install:
-	install -d $(PLIST_DIR) $(BINDIR)
+	install -d $(PLIST_DIR) $(BINDIR) $(MANDIR)
 	install -m644 *.plist $(PLIST_DIR)
 	install -m755 opensn0w $(BINDIR)
+	install -m775 opensn0w.1 $(MANDIR)
 	@echo "Firmware bundles are in $(PLIST_DIR)/opensn0w."

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT([opensn0w], [0.0.0.0], [rms@velocitylimitless.org])
 AC_CONFIG_SRCDIR([sn0w.h])
 AC_CONFIG_HEADERS([config.h])
 
