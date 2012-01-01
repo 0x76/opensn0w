@@ -41,6 +41,7 @@ int UsingRamdisk = FALSE;
 			"\t-i ipsw                      Use specified ipsw to retrieve files from\n" \
 			"\t-b bootlogo.img3             Use specified bootlogo img3 file during startup.\n" \
 			"\t-r ramdisk.dmg               Boot specified ramdisk.\n" \
+			"\t-d                           Just pwn dfu mode.\n" \
 			"\n", \
 			argv[0], \
 			"A4 devices"); \
@@ -190,6 +191,7 @@ int upload_image(char* filename, int mode, int patch) {
 int main(int argc, char **argv) {
 	int c;
 	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
+	int pwndfu = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile* plistFile;
 
@@ -198,10 +200,13 @@ int main(int argc, char **argv) {
 
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "vhp:b:w:k:i:r:")) != -1) {
+	while ((c = getopt (argc, argv, "vdhp:b:w:k:i:r:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
+			break;
+		case 'd':
+			pwndfu = true;
 			break;
 		case 'h':
 			usage();
@@ -244,7 +249,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if(!plist) {
+	if(!plist && pwndfu == false) {
 		printf("The plist is sort of required now.\n");
 		return -1;
 	}
@@ -290,6 +295,10 @@ int main(int argc, char **argv) {
 		if(err) {
 			printf("Error during limera1ning.\n");
 			exit(-1);
+		}
+		if(pwndfu == true) {
+			printf("bootrom is owned. feel free to restore custom ipsws.\n");
+			exit(0);
 		}
 	} else {
 		printf("Support for the S5L%dX isn't done yet.\n", device->chip_id);
