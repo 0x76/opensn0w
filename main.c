@@ -56,8 +56,7 @@ int UsingRamdisk = FALSE;
 			"A4 devices", argv[0], argv[0]); \
 			exit(-1);
 
-void boot_args_process(char *args)
-{
+void boot_args_process(char *args) {
 	char buffer[39];
 
 	if (strlen(args) > 39) {
@@ -74,14 +73,12 @@ void boot_args_process(char *args)
 	memcpy(iBEC_bootargs.patched, buffer, 39);
 }
 
-bool file_exists(const char *fileName)
-{
+bool file_exists(const char *fileName) {
 	struct stat buf;
 	return !stat(fileName, &buf);
 }
 
-int poll_device_for_dfu()
-{
+int poll_device_for_dfu() {
 	irecv_error_t err;
 	static int try;
 
@@ -102,8 +99,7 @@ int poll_device_for_dfu()
 	return 0;
 }
 
-int fetch_image(const char *path, const char *output)
-{
+int fetch_image(const char *path, const char *output) {
 	printf("Fetching %s...\n", path);
 	if (download_file_from_zip(device->url, path, output, NULL) != 0) {
 		printf("Unable to fetch %s\n", path);
@@ -113,8 +109,13 @@ int fetch_image(const char *path, const char *output)
 	return 0;
 }
 
-int upload_image(char *filename, int mode, int patch)
-{
+size_t writeData(void *ptr, size_t size, size_t mem, FILE *stream) {
+	size_t written;
+	written = fwrite(ptr, size, mem, stream);
+	return written;
+}
+
+int upload_image(char *filename, int mode, int patch) {
 	char path[255];
 	struct stat buf;
 	irecv_error_t error = IRECV_E_SUCCESS;
@@ -221,11 +222,27 @@ int upload_image(char *filename, int mode, int patch)
 	return 0;
 }
 
-int main(int argc, char **argv)
-{
+int downloadFile(char *path) {
+	CURL *curl;
+	CURLcode ret;
+	FILE *fp;
+	char save[FILENAME_MAX] = "/tmp/ipsw.zip";
+	curl = curl_easy_init();
+	if (curl) {
+		fp = fopen(save, "wb");
+		curl_easy_setopt(curl, CURLOPT_URL, path);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeData);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+		ret = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		fclose(fp);
+	}
+}
+
+int main(int argc, char **argv) {
 	int c;
-	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url =
-	    NULL, *plist = NULL, *ramdisk = NULL;
+	iphoneWikiURLForInfo((char *)"TellurideVail", (char *)"9A5288d", (char *)"iPhone4");
+	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
 	int pwndfu = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
@@ -290,16 +307,17 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (url) {
+	
+	}
 	if (!plist && pwndfu == false) {
 		printf("The plist is sort of required now.\n");
 		return -1;
 	}
 
-	if ((plistFile =
-	     createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
+	if ((plistFile = createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
 		plist = (char *)malloc(plistFile->getLength(plistFile));
-		plistFile->read(plistFile, plist,
-				plistFile->getLength(plistFile));
+		plistFile->read(plistFile, plist, plistFile->getLength(plistFile));
 		plistFile->close(plistFile);
 		info = createRoot(plist);
 	}
@@ -347,7 +365,8 @@ int main(int argc, char **argv)
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 			exit(0);
 		}
-	} else {
+	}
+	else {
 		printf("Support for the S5L%dX isn't done yet.\n",
 		       device->chip_id);
 	}

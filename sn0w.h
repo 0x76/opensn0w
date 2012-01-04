@@ -20,6 +20,8 @@
 #ifndef _SN0W_H_
 #define _SN0W_H_
 
+#include "keys.h"
+#include <curl/curl.h>
 #include "libirecovery.h"
 #include <stdio.h>
 #include <unistd.h>
