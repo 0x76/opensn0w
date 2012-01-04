@@ -237,6 +237,7 @@ int downloadFile(char *path) {
 		curl_easy_cleanup(curl);
 		fclose(fp);
 	}
+	return 0;
 }
 
 int main(int argc, char **argv) {
