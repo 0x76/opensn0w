@@ -4,6 +4,24 @@
 <dict>
 	<key>FirmwarePatches</key>
 	<dict>
+		<key>UpdateRamdisk</key>
+		<dict>
+			<key>FileName</key>
+			<string>038-3711-001.dmg</string>
+			<key>IV</key>
+			<string>8240b5576be3d924d884d50f97f957c9</string>
+			<key>Key</key>
+			<string>d1e52447836c5b97a3ddf727a23524163ffe06bb9d6c5f3dbff86ee5ff5ef125</string>
+		</dict>
+		<key>RestoreRamdisk</key>
+		<dict>
+			<key>FileName</key>
+			<string>038-3715-001.dmg</string>
+			<key>IV</key>
+			<string>02d55437d1fd7c9d24aeb312a78dbd49</string>
+			<key>Key</key>
+			<string>3aeab4ceb61e011f3013873998bfcf01c585bb548f91e19c9085473f93f6a708</string>
+		</dict>
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>

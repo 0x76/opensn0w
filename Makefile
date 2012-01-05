@@ -29,7 +29,7 @@ clean:
 
 install:
 	install -d $(PLIST_DIR) $(BINDIR) $(MANDIR)
-	install -m644 *.plist $(PLIST_DIR)
+	install -m644 Keys/*.plist $(PLIST_DIR)
 	install -m755 opensn0w $(BINDIR)
 	install -m775 opensn0w.1 $(MANDIR)
 	@echo "Firmware bundles are in $(PLIST_DIR)/opensn0w."
