@@ -305,6 +305,12 @@ int main(int argc, char **argv) {
 		info = createRoot(plist);
 	}
     
+    Dictionary* temporaryDict = (Dictionary*)getValueByKey(Info, "FirmwareInfo");
+    temporaryDict = (Dictionary*)temporaryDict->values;
+    StringValue *urlKey = getValueByKey(temporaryDict, "URL");
+    if(urlKey)
+        device->url = urlKey->value;
+
     bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
     bundle = (Dictionary *) bundle->values;
     
