@@ -56,6 +56,76 @@ int UsingRamdisk = FALSE;
 			"A4 devices", argv[0], argv[0]); \
 			exit(-1);
 
+typedef enum _image_type {
+    ALL_FLASH = 0,
+    DFU,
+    ROOT
+} image_type_t;
+
+typedef enum _image_magic {
+    IMG3 = 0,
+    IMG2,
+    S5L8900,
+    DMG
+} image_magic_t;
+
+typedef struct _firmware_item {
+    char* key;
+    char* iv;
+    char* vfkey;
+    char* name;
+    image_type_t flags;
+    image_magic_t magic;
+} firmware_item, *firmware_item_t;
+
+typedef enum _firmware_images {
+    IBSS = 0,
+    DEVICETREE,
+    BATTERYCHARGING1,
+    GLYPHCHARGING,
+    BATTERYCHARGING0,
+    IBOOT,
+    BATTERYLOW0,
+    LLB,
+    IBEC,
+    KERNELCACHE,
+    FILESYSTEM,
+    APPLELOGO,
+    UPDATERAMDISK,
+    RESTORERAMDISK,
+    GLYPHPLUGIN,
+    RECOVERY,
+    BATTERYLOW1
+} firmware_images_t;
+
+char* image_names[] = {
+    "iBSS",
+    "DeviceTree",
+    "BatteryCharging1",
+    "GlyphCharging",
+    "BatteryCharging0",
+    "iBoot",
+    "BatteryLow0",
+    "LLB",
+    "iBEC",
+    "KernelCache"
+    "FileSystem",
+    "AppleLogo",
+    "UpdateRamdisk",
+    "RestoreRamdisk",
+    "GlyphPlugin",
+    "Recovery",
+    "BatteryLow1"
+};
+
+typedef struct _firmware {
+    firmware_item item[16];
+} firmware, *firmware_t;
+
+char* image_paths[] = {"Firmware/all_flash/all_flash.%s.production/%s", "Firmware/dfu/%s", "%s"};
+
+Dictionary *get_key_dictionary_from_bundle(char *member);
+
 void boot_args_process(char *args) {
 	char buffer[39];
 
@@ -115,84 +185,44 @@ size_t writeData(void *ptr, size_t size, size_t mem, FILE *stream) {
 	return written;
 }
 
-int upload_image(char *filename, int mode, int patch) {
+int upload_image(firmware_item item, int mode, int patch) {
 	char path[255];
 	struct stat buf;
 	irecv_error_t error = IRECV_E_SUCCESS;
 	char *buffer;
+    char* filename = item.name;
 
 	printf("Checking if %s already exists\n", filename);
 
 	memset(path, 0, 255);
 
-	switch (mode) {
-	case 0:		/* dfu */
-		snprintf(path, 255, "Firmware/dfu/%s.%s.RELEASE.dfu", filename,
-			 device->model);
-		printf("dfu binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+	switch(item.flags) {
+		case ALL_FLASH:
+            sprintf(path, image_paths[ALL_FLASH], device->model, item.name);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+					}
 			}
-		}
-		break;
-	case 1:		/* all_flash */
-		snprintf(path, 255,
-			 "Firmware/all_flash/all_flash.%s.production/%s.%s.img3",
-			 device->model, filename, device->model);
-		printf("all_flash binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+		case DFU:
+            sprintf(path, image_paths[DFU], item.name);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+                }
 			}
-		}
-		break;
-	case 2:		/* logos */
-		snprintf(path, 255,
-			 "Firmware/all_flash/all_flash.%s.production/%s.s5l%dx.img3",
-			 device->model, filename, device->chip_id);
-		printf("logo binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
+		case ROOT:
+            sprintf(path, image_paths[ROOT], item.name);
+			if (stat(filename, &buf) != 0) {
+				if (fetch_image(path, filename) < 0) {
+					printf("Unable to upload DFU image\n");
+					return -1;
+                }
 			}
-		}
-		break;
-	case 3:		/* kernelcache */
-		snprintf(path, 255, "%s.release.%c%c%c",
-			 filename, device->model[0], device->model[1],
-			 device->model[2]);
-		printf("kernel binary: IPSW path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
-			}
-		}
-		break;
-	case 4:		/* anything else */
-		snprintf(path, 255, "%s", filename);
-		printf("regular path is %s\n", path);
-		if (stat(filename, &buf) != 0) {
-			printf("Unable to upload image\n");
-			return -1;
-		}
-		break;
-	}
-
-	if (client->mode != kDfuMode) {
-		printf("Resetting device counters\n");
-		error = irecv_reset_counters(client);
-		if (error != IRECV_E_SUCCESS) {
-			printf("Unable to upload firmware image\n");
-			printf("%s\n", irecv_strerror(error));
-			return -1;
-		}
-	}
-
+    }
+    
 	if (patch)
 		patch_file(filename);
 
@@ -241,12 +271,14 @@ int downloadFile(char *path) {
 }
 
 int main(int argc, char **argv) {
-	int c;
-	iphoneWikiURLForInfo((char *)"TellurideVail", (char *)"9A5288d", (char *)"iPhone4");
+	int c, i;
 	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
 	int pwndfu = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
+  	Dictionary *bundle;
+    firmware Firmware; 
+    
 
 	printf("opensn0w, an open source jailbreaking program.\n"
 	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
@@ -308,9 +340,6 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (url) {
-	
-	}
 	if (!plist && pwndfu == false) {
 		printf("The plist is sort of required now.\n");
 		return -1;
@@ -321,6 +350,47 @@ int main(int argc, char **argv) {
 		plistFile->read(plistFile, plist, plistFile->getLength(plistFile));
 		plistFile->close(plistFile);
 		info = createRoot(plist);
+	}
+    
+    bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
+    bundle = (Dictionary *) bundle->values;
+    
+	while (bundle != NULL) {
+        i = 0;
+        while(i != 17) {
+            if(!strcmp(bundle->dValue.key, image_names[i])) {
+                StringValue *key = NULL, *iv = NULL, *name = NULL, *vfkey = NULL;
+
+                key = (StringValue *) getValueByKey(bundle, "Key");
+                iv = (StringValue *) getValueByKey(bundle, "IV");
+                name = (StringValue *) getValueByKey(bundle, "FileName");
+                vfkey = (StringValue *) getValueByKey(bundle, "VFDecryptKey");
+        
+                if(key)
+                    Firmware.item[i].key = key->value;
+                
+                if(iv)
+                    Firmware.item[i].iv = iv->value;
+                
+                if(name)
+                    Firmware.item[i].name = name->value;
+                
+                if(vfkey)
+                    Firmware.item[i].vfkey = vfkey->value;
+                
+                printf("[plist] (%s %s %s %s) [%s %d]\n", 
+                       Firmware.item[i].key,
+                       Firmware.item[i].iv,
+                       Firmware.item[i].name,
+                       Firmware.item[i].vfkey,
+                       image_names[i],
+                       i);
+                
+                break;
+            }
+            i++;
+        }
+		bundle = (Dictionary *) bundle->dValue.next;
 	}
 
 	/* to be done */
@@ -379,10 +449,10 @@ int main(int argc, char **argv) {
 	if (ramdisk)
 		UsingRamdisk = TRUE;
 
-	upload_image("iBSS", 0, 1);
+	upload_image(Firmware.item[IBSS], 0, 1);
 	client = irecv_reconnect(client, 10);
 
-	upload_image("iBEC", 0, 1);
+	upload_image(Firmware.item[IBEC], 0, 1);
 	client = irecv_reconnect(client, 10);
 
 	irecv_reset(client);
@@ -391,24 +461,21 @@ int main(int argc, char **argv) {
 	irecv_set_interface(client, 1, 1);
 
 	/* upload logo */
-	if (device->chip_id == 8930 && strcmp(device->model, "AppleTV2,1"))
-		upload_image("applelogo-640x960", 2, 0);
-	else
-		upload_image("applelogo-320x480", 2, 0);
+	upload_image(Firmware.item[APPLELOGO], 2, 0);
 
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
 	client = irecv_reconnect(client, 10);
 
 	/* upload devicetree */
-	upload_image("DeviceTree", 1, 0);
+	upload_image(Firmware.item[DEVICETREE], 1, 0);
 	client = irecv_reconnect(client, 10);
 	irecv_send_command(client, "devicetree");
 	client = irecv_reconnect(client, 10);
 
 	/* upload ramdisk */
 	if (ramdisk) {
-		upload_image(ramdisk, 4, 0);
+		upload_image(Firmware.item[RESTORERAMDISK], 4, 0);
 
 		sleep(5);
 
@@ -419,7 +486,7 @@ int main(int argc, char **argv) {
 	}
 
 	/* upload kernel */
-	upload_image("kernelcache", 3, 1);
+	upload_image(Firmware.item[KERNELCACHE], 3, 1);
 	client = irecv_reconnect(client, 10);
 
 	/* BootX */

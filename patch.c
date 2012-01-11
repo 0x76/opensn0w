@@ -242,6 +242,7 @@ int patch_file(char *filename)
 	size_t inDataSize;
 	char *buffer;
 	Dictionary *data;
+    char* tokenizedname;
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -252,7 +253,10 @@ int patch_file(char *filename)
 	}
 
 	printf("getting keys\n");
-	data = get_key_dictionary_from_bundle(filename);
+    
+    tokenizedname = strtok(filename, ".,");
+    
+	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
 	StringValue *ivValue = (StringValue *) getValueByKey(data, "IV");
 
@@ -318,9 +322,9 @@ int patch_file(char *filename)
 	/* pwn it 8) */
 	printf("pwning %s\n", filename);
 
-	if (!strcasecmp(filename, "iBEC") || !strcasecmp(filename, "iBSS"))
+	if (!strcasestr(filename, "iBEC") || !strcasestr(filename, "iBSS"))
 		patch_bootloaders(inData, inDataSize);
-	else if (!strcasecmp(filename, "kernelcache"))
+	else if (!strcasestr(filename, "kernelcache"))
 		patch_kernel(inData, inDataSize);
 
 	/* write patched contents */

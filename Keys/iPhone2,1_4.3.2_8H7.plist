@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FirmwareKeys</key>
+	<dict>
+		<key>iBSS</key>
+		<dict>
+			<key>FileName</key>
+			<string>iBSS.n88ap.RELEASE.dfu</string>
+			<key>IV</key>
+			<string>181ee0b292538b2052dbd119770d7348</string>
+			<key>Key</key>
+			<string>f131471b406795abf7ae70617dd30968e5ad6b847b84a1671d5801c04fc07643</string>
+		</dict>
+		<key>KernelCache</key>
+		<dict>
+			<key>FileName</key>
+			<string>kernelcache.release.n88</string>
+			<key>IV</key>
+			<string>a69d6cc5f006cd1facff95f2305e8c92</string>
+			<key>Key</key>
+			<string>eb528d11638e2c8567916fc6a336d140dd1f2a5045c471f05cf2b409e37c8fe3</string>
+		</dict>
+		<key>FileSystem</key>
+		<dict>
+			<key>VFDecryptKey</key>
+			<string>69A370C1B64B35F692E87E866BCD460A98A10C56ED05055EB7C675F101894EA504F7BC46</string>
+			<key>FileName</key>
+			<string>iPhone2,1_4.3.2_8H7_Restore/038-1022-007.dmg</string>
+		</dict>
+		<key>LLB</key>
+		<dict>
+			<key>FileName</key>
+			<string>LLB.n88ap.RELEASE.img3</string>
+			<key>IV</key>
+			<string>b889e456f735ee52858cca09df3c5909</string>
+			<key>Key</key>
+			<string>d700547fd945b5be12ec74f578838c746093ff7317e09fff1c88039989d2f7e3</string>
+		</dict>
+		<key>iBoot</key>
+		<dict>
+			<key>FileName</key>
+			<string>iBoot.n88ap.RELEASE.img3</string>
+			<key>IV</key>
+			<string>096984dbafb19c1c708e5c7b1299f269</string>
+			<key>Key</key>
+			<string>6d14c496a0fe42f49898b06c70dca353a6634f67003715830c0c45b6aa822cbc</string>
+		</dict>
+		<key>iBEC</key>
+		<dict>
+			<key>FileName</key>
+			<string>iBEC.n88ap.RELEASE.dfu</string>
+			<key>IV</key>
+			<string>0034860a2b91ffc9d09471d02f98d06d</string>
+			<key>Key</key>
+			<string>124ddf2693a216e33a6645e3624ba4cbeda541e42aed603162fc4c49a6795abf</string>
+		</dict>
+	</dict>
+	<key>FirmwareInfo</key>
+	<dict>
+		<key>Version</key>
+		<string>4.3.2</string>
+	</dict>
+</dict>
+</plist>

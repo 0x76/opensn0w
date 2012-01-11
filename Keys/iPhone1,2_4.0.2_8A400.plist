@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FirmwareKeys</key>
+	<dict>
+		<key>KernelCache</key>
+		<dict>
+			<key>FileName</key>
+			<string>kernelcache.release.n82</string>
+			<key>IV</key>
+			<string>9746365b664b2ab8cb8ed1b283cd63c5</string>
+			<key>Key</key>
+			<string>e869b1323671babf3f94998225a3c88f</string>
+		</dict>
+		<key>RestoreRamdisk</key>
+		<dict>
+			<key>FileName</key>
+			<string>018-8389-002.dmg</string>
+			<key>IV</key>
+			<string>d464c589db4c00bfe2c844e5cce76e23</string>
+			<key>Key</key>
+			<string>db611a918217b941e4736fb806cf8e95</string>
+		</dict>
+		<key>FileSystem</key>
+		<dict>
+			<key>VFDecryptKey</key>
+			<string>AA5EA4B38E5A7D9F2D95AB7C015E5531050AF66F82A30E6A83994F8F802D352E236A0250</string>
+			<key>FileName</key>
+			<string>iPhone1,2_4.0.2_8A400_Restore/018-8376-002.dmg</string>
+		</dict>
+		<key>UpdateRamdisk</key>
+		<dict>
+			<key>FileName</key>
+			<string>018-8383-002.dmg</string>
+			<key>IV</key>
+			<string>ff8f6e76c72d24ec44568fd88e112e0f</string>
+			<key>Key</key>
+			<string>3b4e09f595984bc89e4c524a504866df</string>
+		</dict>
+	</dict>
+	<key>FirmwareInfo</key>
+	<dict>
+		<key>Version</key>
+		<string>4.0.2</string>
+	</dict>
+</dict>
+</plist>

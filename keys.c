@@ -18,10 +18,11 @@
  **/
 
 #include "sn0w.h"
-
+/*
 char iphoneWikiURLForInfo(char *bName, char *bNumber, char *deviceId) {
 	char *buffer = calloc(3,32);
 	sprintf(buffer, "http://theiphonewiki.com/wiki/index.php?title=%s_%s_(%s)", bName, bNumber, deviceId); 
 // don't ask. it was a late night.. :( fixme
 	return (char)buffer;
 }
+*/
