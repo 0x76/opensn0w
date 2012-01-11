@@ -53,7 +53,7 @@ int UsingRamdisk = FALSE;
 			"%s homepage: <http://www.opensn0w.com>\n" \
 			"For complete documentation, see the UNIX manual. \n<man page needs to be written>\n", \
 			argv[0], \
-			"A4 devices", argv[0], argv[0]); \
+			"s5l8930x, s5l8920x, s5l8922x, s5l8720x", argv[0], argv[0]); \
 			exit(-1);
 
 char* image_names[] = {
@@ -307,7 +307,8 @@ int main(int argc, char **argv) {
 	}
     
     bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
-    bundle = (Dictionary *) bundle->values;
+    if(bundle != NULL)
+        bundle = (Dictionary *) bundle->values;
     
 	while (bundle != NULL) {
         i = 0;
@@ -381,7 +382,9 @@ int main(int argc, char **argv) {
 	}
 
     Dictionary* temporaryDict = (Dictionary*)getValueByKey(info, "FirmwareInfo");
-    StringValue *urlKey = getValueByKey(temporaryDict, "URL");
+    StringValue *urlKey;
+    if(temporaryDict != NULL)
+        urlKey = getValueByKey(temporaryDict, "URL");
     if(urlKey)
         device->url = urlKey->value;
     
