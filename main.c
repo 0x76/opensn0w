@@ -394,7 +394,7 @@ int main(int argc, char **argv) {
 	    || device->chip_id == 8920) {
 		printf
 		    ("This device is compatible with the limera1n exploit. Sending.\n");
-		//err = limera1n();
+		err = limera1n();
 		if (err) {
 			printf("Error during limera1ning.\n");
 			exit(-1);
