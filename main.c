@@ -404,7 +404,20 @@ int main(int argc, char **argv) {
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 			exit(0);
 		}
-	}
+	} else if(device->chip_id == 8720) {
+		printf
+        ("This device is compatible with the steaks4uce exploit. Sending.\n");
+		err = steaks4uce();
+		if (err) {
+			printf("Error during steaks4uceing.\n");
+			exit(-1);
+		}
+		if (pwndfu == true) {
+			printf
+            ("bootrom is owned. feel free to restore custom ipsws.\n");
+			exit(0);
+		}
+    }
 	else {
 		printf("Support for the S5L%dX isn't done yet.\n",
 		       device->chip_id);

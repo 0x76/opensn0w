@@ -73,6 +73,7 @@ extern patch kernel_redsn0w_unknown2;
 extern patch kernel_redsn0w_unknown3;
 
 int limera1n();
+int steaks4uce();
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
 int patch_file(char *filename);
