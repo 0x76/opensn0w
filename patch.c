@@ -25,7 +25,7 @@ extern int UsingRamdisk;
 
 Dictionary *get_key_dictionary_from_bundle(char *member)
 {
-	firmwarePatches = (Dictionary *) getValueByKey(info, "FirmwarePatches");
+	firmwarePatches = (Dictionary *) getValueByKey(info, "FirmwareKeys");
 	patchDict = (Dictionary *) firmwarePatches->values;
 	StringValue *fileValue =
 	    (StringValue *) getValueByKey(patchDict, "File");
@@ -243,6 +243,7 @@ int patch_file(char *filename)
 	char *buffer;
 	Dictionary *data;
     char* tokenizedname;
+    char* dup = strndup(filename, 255);
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -254,7 +255,7 @@ int patch_file(char *filename)
 
 	printf("getting keys\n");
     
-    tokenizedname = strtok(filename, ".,");
+    tokenizedname = strtok(dup, ".,");
     
 	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");

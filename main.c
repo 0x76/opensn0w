@@ -55,6 +55,7 @@ int UsingRamdisk = FALSE;
 			argv[0], \
 			"A4 devices", argv[0], argv[0]); \
 			exit(-1);
+
 char* image_names[] = {
     "iBSS",
     "DeviceTree",
@@ -331,6 +332,15 @@ int main(int argc, char **argv) {
                 if(vfkey)
                     Firmware.item[i].vfkey = vfkey->value;
                 
+                if(strstr(Firmware.item[i].name, ".dfu"))
+                    Firmware.item[i].flags = DFU;
+                else if(strstr(Firmware.item[i].name, ".dmg"))
+                    Firmware.item[i].flags = ROOT;
+                else if(strstr(Firmware.item[i].name, ".img3"))
+                    Firmware.item[i].flags = ALL_FLASH;
+                else
+                    Firmware.item[i].flags = ALL_FLASH;
+                
                 printf("[plist] (%s %s %s %s) [%s %d]\n", 
                        Firmware.item[i].key,
                        Firmware.item[i].iv,
@@ -350,9 +360,9 @@ int main(int argc, char **argv) {
 	printf("Initializing libirecovery\n");
 	irecv_init();
 
-//#ifdef DEBUG
+#ifndef __APPLE__
 	irecv_set_debug_level(3);
-//#endif
+#endif
 
 	/* Poll for DFU mode */
 	while (poll_device_for_dfu()) {
@@ -384,7 +394,7 @@ int main(int argc, char **argv) {
 	    || device->chip_id == 8920) {
 		printf
 		    ("This device is compatible with the limera1n exploit. Sending.\n");
-		err = limera1n();
+		//err = limera1n();
 		if (err) {
 			printf("Error during limera1ning.\n");
 			exit(-1);
