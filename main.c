@@ -55,49 +55,6 @@ int UsingRamdisk = FALSE;
 			argv[0], \
 			"A4 devices", argv[0], argv[0]); \
 			exit(-1);
-
-typedef enum _image_type {
-    ALL_FLASH = 0,
-    DFU,
-    ROOT
-} image_type_t;
-
-typedef enum _image_magic {
-    IMG3 = 0,
-    IMG2,
-    S5L8900,
-    DMG
-} image_magic_t;
-
-typedef struct _firmware_item {
-    char* key;
-    char* iv;
-    char* vfkey;
-    char* name;
-    image_type_t flags;
-    image_magic_t magic;
-} firmware_item, *firmware_item_t;
-
-typedef enum _firmware_images {
-    IBSS = 0,
-    DEVICETREE,
-    BATTERYCHARGING1,
-    GLYPHCHARGING,
-    BATTERYCHARGING0,
-    IBOOT,
-    BATTERYLOW0,
-    LLB,
-    IBEC,
-    KERNELCACHE,
-    FILESYSTEM,
-    APPLELOGO,
-    UPDATERAMDISK,
-    RESTORERAMDISK,
-    GLYPHPLUGIN,
-    RECOVERY,
-    BATTERYLOW1
-} firmware_images_t;
-
 char* image_names[] = {
     "iBSS",
     "DeviceTree",
@@ -117,10 +74,6 @@ char* image_names[] = {
     "Recovery",
     "BatteryLow1"
 };
-
-typedef struct _firmware {
-    firmware_item item[16];
-} firmware, *firmware_t;
 
 char* image_paths[] = {"Firmware/all_flash/all_flash.%s.production/%s", "Firmware/dfu/%s", "%s"};
 
