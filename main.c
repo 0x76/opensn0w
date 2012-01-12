@@ -42,6 +42,7 @@ int UsingRamdisk = FALSE;
 			"   -i ipsw            Use specified ipsw to retrieve files from\n" \
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
+			"   -R                 Just boot into pwned recovery mode.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -a [boot-args]     Set device boot-args for boot.\n" \
 			"\n" \
@@ -227,7 +228,7 @@ int downloadFile(char *path) {
 int main(int argc, char **argv) {
 	int c, i;
 	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
-	int pwndfu = false;
+	int pwndfu = false, pwnrecovery = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
   	Dictionary *bundle;
@@ -239,11 +240,14 @@ int main(int argc, char **argv) {
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdhp:b:w:k:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdhp:R:b:w:k:i:r:a:")) != -1) {
 		switch (c) {
 		case 'v':
 			verboseflag = true;
 			break;
+        case 'R':
+            pwnrecovery = true;
+            break;
 		case 'a':
 			boot_args_process(optarg);
 			break;
@@ -457,6 +461,11 @@ int main(int argc, char **argv) {
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);
 
+    if(pwnrecovery) {
+        printf("Device has a pwned iBEC uploaded. Do whatever you want \n");
+        exit(0);
+    }
+    
 	/* upload logo */
 	upload_image(Firmware.item[APPLELOGO], 2, 0);
 
