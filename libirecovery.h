@@ -120,7 +120,7 @@ extern "C" {
 
 	typedef struct {
 		int size;
-		char *data;
+		const char *data;
 		double progress;
 		irecv_event_type type;
 	} irecv_event_t;

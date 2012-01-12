@@ -19,6 +19,7 @@
 
 #ifndef _SN0W_H_
 #define _SN0W_H_
+#define _GNU_SOURCE /* for strcasestr */
 
 #include "keys.h"
 #include <curl/curl.h>

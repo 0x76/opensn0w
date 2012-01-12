@@ -384,7 +384,7 @@ int main(int argc, char **argv) {
     Dictionary* temporaryDict = (Dictionary*)getValueByKey(info, "FirmwareInfo");
     StringValue *urlKey;
     if(temporaryDict != NULL)
-        urlKey = getValueByKey(temporaryDict, "URL");
+        urlKey = (StringValue*)getValueByKey(temporaryDict, "URL");
     if(urlKey)
         device->url = urlKey->value;
     
