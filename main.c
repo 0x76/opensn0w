@@ -234,7 +234,6 @@ int main(int argc, char **argv) {
   	Dictionary *bundle;
     firmware Firmware; 
     
-
 	printf("opensn0w, an open source jailbreaking program.\n"
 	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
 
@@ -298,6 +297,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
+    memset(&Firmware, 0, sizeof(firmware));
+    
 	if (!plist && pwndfu == false) {
 		printf("The plist is sort of required now.\n");
 		return -1;
