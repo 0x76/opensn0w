@@ -68,7 +68,8 @@ char *image_names[] = {
 	"BatteryLow0",
 	"LLB",
 	"iBEC",
-	"KernelCache" "FileSystem",
+	"KernelCache",
+	"FileSystem",
 	"AppleLogo",
 	"UpdateRamdisk",
 	"RestoreRamdisk",
@@ -175,36 +176,21 @@ int upload_image(firmware_item item, int mode, int patch)
 	struct stat buf;
 	irecv_error_t error = IRECV_E_SUCCESS;
 	char *buffer;
-	char *filename = item.name;
+	char *filename = strrchr(item.name, '/');
+
+	if (filename == NULL)
+		filename = item.name;
+	else
+		filename++;
 
 	printf("Checking if %s already exists\n", filename);
 
 	memset(path, 0, 255);
 
-	switch (item.flags) {
-	case ALL_FLASH:
-		sprintf(path, image_paths[ALL_FLASH], device->model, item.name);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
-			}
-		}
-	case DFU:
-		sprintf(path, image_paths[DFU], item.name);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
-			}
-		}
-	case ROOT:
-		sprintf(path, image_paths[ROOT], item.name);
-		if (stat(filename, &buf) != 0) {
-			if (fetch_image(path, filename) < 0) {
-				printf("Unable to upload DFU image\n");
-				return -1;
-			}
+	if (stat(item.name, &buf) != 0) {
+		if (fetch_image(item.name, filename) < 0) {
+			printf("Unable to upload DFU image\n");
+			return -1;
 		}
 	}
 
@@ -409,18 +395,6 @@ int main(int argc, char **argv)
 
 				if (vfkey)
 					Firmware.item[i].vfkey = vfkey->value;
-
-				if (strstr(Firmware.item[i].name, ".dfu"))
-					Firmware.item[i].flags = DFU;
-				else if (strstr(Firmware.item[i].name, ".dmg"))
-					Firmware.item[i].flags = ROOT;
-				else if (strstr
-					 (Firmware.item[i].name, "kernelcache"))
-					Firmware.item[i].flags = ROOT;
-				else if (strstr(Firmware.item[i].name, ".img3"))
-					Firmware.item[i].flags = ALL_FLASH;
-				else
-					Firmware.item[i].flags = ALL_FLASH;
 
 				printf("[plist] (%s %s %s %s) [%s %d]\n",
 				       Firmware.item[i].key,

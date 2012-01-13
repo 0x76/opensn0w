@@ -7,7 +7,7 @@
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBSS.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBSS.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>086c8a91cbda60d094e5f96c8a62c9bd</string>
 			<key>Key</key>
@@ -25,14 +25,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>C338FB2858BD5DAD4CFB073D4FAB2FBED4A3F2D1541BC50D8443F3B18475CD1B62C25983</string>
+			<string>c338fb2858bd5dad4cfb073d4fab2fbed4a3f2d1541bc50d8443f3b18475cd1b62c25983</string>
 			<key>FileName</key>
 			<string>038-0935-003.dmg</string>
 		</dict>
 		<key>LLB</key>
 		<dict>
 			<key>FileName</key>
-			<string>LLB.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/LLB.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>372237d6c0f4e22d7639424f45b015f8</string>
 			<key>Key</key>
@@ -41,7 +41,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/iBoot.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>a165da014fd83765b9d4ddc2198e9586</string>
 			<key>Key</key>
@@ -50,7 +50,7 @@
 		<key>iBEC</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBEC.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBEC.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>62070c6c193a1ece1733ce05a391d253</string>
 			<key>Key</key>
@@ -59,6 +59,8 @@
 	</dict>
 	<key>FirmwareInfo</key>
 	<dict>
+		<key>URL</key>
+		<string>http://appldnld.apple.com/iPhone4/041-0549.20110325.ZxP8u/iPhone2,1_4.3.1_8G4_Restore.ipsw</string>
 		<key>Version</key>
 		<string>4.3.1</string>
 	</dict>

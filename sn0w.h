@@ -80,12 +80,6 @@ void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
 int patch_file(char *filename);
 
-typedef enum _image_type {
-	ALL_FLASH = 0,
-	DFU,
-	ROOT
-} image_type_t;
-
 typedef enum _image_magic {
 	IMG3 = 0,
 	IMG2,
@@ -98,7 +92,6 @@ typedef struct _firmware_item {
 	char *iv;
 	char *vfkey;
 	char *name;
-	image_type_t flags;
 	image_magic_t magic;
 } firmware_item, *firmware_item_t;
 
@@ -123,7 +116,7 @@ typedef enum _firmware_images {
 } firmware_images_t;
 
 typedef struct _firmware {
-	firmware_item item[16];
+	firmware_item item[17];
 } firmware, *firmware_t;
 
 #endif

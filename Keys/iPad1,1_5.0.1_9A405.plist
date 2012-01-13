@@ -7,7 +7,7 @@
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBSS.k48ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBSS.k48ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>35ab5ac9ede6f05f3d35b9d2f4fa4a91</string>
 			<key>Key</key>
@@ -16,7 +16,7 @@
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
-			<string>DeviceTree.k48ap.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/DeviceTree.k48ap.img3</string>
 			<key>IV</key>
 			<string>044b05f84e0f0e9354a39b2605a018dd</string>
 			<key>Key</key>
@@ -25,7 +25,7 @@
 		<key>BatteryCharging1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging1.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/batterycharging1.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>615b975cf3cc75c4176b1d679ff034c1</string>
 			<key>Key</key>
@@ -34,7 +34,7 @@
 		<key>GlyphCharging</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphcharging.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/glyphcharging.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>d1b9355353d0cbb3bb7710aa457938b0</string>
 			<key>Key</key>
@@ -43,7 +43,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.k48ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/iBoot.k48ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>9f667f946ab51121a88785213336f6a4</string>
 			<key>Key</key>
@@ -52,7 +52,7 @@
 		<key>BatteryCharging0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging0.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/batterycharging0.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>596f921934b41ecb9060dcea95cf3855</string>
 			<key>Key</key>
@@ -61,7 +61,7 @@
 		<key>BatteryLow0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow0.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/batterylow0.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>8239d37292c8a9d679b487e6a0e2e1ad</string>
 			<key>Key</key>
@@ -70,7 +70,7 @@
 		<key>LLB</key>
 		<dict>
 			<key>FileName</key>
-			<string>LLB.k48ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/LLB.k48ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>969dc5f556bc65b5fa16d0473e076ec6</string>
 			<key>Key</key>
@@ -79,7 +79,7 @@
 		<key>iBEC</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBEC.k48ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBEC.k48ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>91984b64f1e7bf45d0925e113e208591</string>
 			<key>Key</key>
@@ -97,14 +97,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>E4B60A747AB372BC047B8A7CA08B62F7524FA5888C76F0DB709FD1AA9BCEA79076952639</string>
+			<string>e4b60a747ab372bc047b8a7ca08b62f7524fa5888c76f0db709fd1aa9bcea79076952639</string>
 			<key>FileName</key>
 			<string>038-3699-001.dmg</string>
 		</dict>
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/applelogo.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>02b67045fbadfcc9ca4fdb3cbf2ea4fe</string>
 			<key>Key</key>
@@ -131,7 +131,7 @@
 		<key>GlyphPlugin</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphplugin.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/glyphplugin.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>9a5a180726ed2ed64545dfa71bf6f857</string>
 			<key>Key</key>
@@ -140,7 +140,7 @@
 		<key>BatteryLow1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow1.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/batterylow1.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>986c8ec4836fcbbc655b1d7615126611</string>
 			<key>Key</key>
@@ -149,7 +149,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode-768x1024.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.k48ap.production/recoverymode-768x1024.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>55d6e33a8da089ee918aabdf02d0ca08</string>
 			<key>Key</key>

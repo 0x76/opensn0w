@@ -7,7 +7,7 @@
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBSS.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBSS.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>966fdb6312a3cd35703e7a1e8bb4cce6</string>
 			<key>Key</key>
@@ -16,7 +16,7 @@
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
-			<string>DeviceTree.n88ap.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/DeviceTree.n88ap.img3</string>
 			<key>IV</key>
 			<string>ef9bf37e07697d1f81b39c56573bd567</string>
 			<key>Key</key>
@@ -25,7 +25,7 @@
 		<key>BatteryFull</key>
 		<dict>
 			<key>FileName</key>
-			<string>batteryfull.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batteryfull.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>0e918bba3f5aa183831399ef0a6af4af</string>
 			<key>Key</key>
@@ -34,7 +34,7 @@
 		<key>GlyphCharging</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphcharging.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/glyphcharging.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>d7036408cb220a313b17e4cc000f08fd</string>
 			<key>Key</key>
@@ -43,7 +43,7 @@
 		<key>BatteryCharging1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging1.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterycharging1.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>7b6840974c201c1cbcb79918f7723817</string>
 			<key>Key</key>
@@ -52,7 +52,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/iBoot.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>7106d9c8e81c4d6bed474f5f3caef4bb</string>
 			<key>Key</key>
@@ -61,7 +61,7 @@
 		<key>BatteryCharging0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging0.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterycharging0.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>7a9d1e039d59592cecd7cef6e3d6884b</string>
 			<key>Key</key>
@@ -70,7 +70,7 @@
 		<key>BatteryLow0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow0.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterylow0.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>cb8581d9e6e1ea8c20633643b665482f</string>
 			<key>Key</key>
@@ -79,7 +79,7 @@
 		<key>LLB</key>
 		<dict>
 			<key>FileName</key>
-			<string>LLB.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/LLB.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>3db3ccef9c2bbb1bc6f86568d28b5c73</string>
 			<key>Key</key>
@@ -88,7 +88,7 @@
 		<key>iBEC</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBEC.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBEC.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>434539b5e293220a6b43862689fcefb4</string>
 			<key>Key</key>
@@ -113,7 +113,7 @@
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/applelogo.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>4223d5a6bc4d358031df8958c427a369</string>
 			<key>Key</key>
@@ -140,7 +140,7 @@
 		<key>GlyphPlugin</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphplugin.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/glyphplugin.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>d706e87acda5632dc065131acf8329b4</string>
 			<key>Key</key>
@@ -149,7 +149,7 @@
 		<key>BatteryLow1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow1.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterylow1.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>528c39e76137347b502841b504efd86c</string>
 			<key>Key</key>
@@ -158,7 +158,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/recoverymode.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>e8c3811707b35b14431f1e8a72923a77</string>
 			<key>Key</key>

@@ -7,7 +7,7 @@
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBSS.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBSS.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>bc212e244151a86e61f5019c16036981</string>
 			<key>Key</key>
@@ -16,7 +16,7 @@
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
-			<string>DeviceTree.n88ap.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/DeviceTree.n88ap.img3</string>
 			<key>IV</key>
 			<string>40c4e2107e80f6455dcc8caf7122b0ba</string>
 			<key>Key</key>
@@ -25,7 +25,7 @@
 		<key>GlyphCharging</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphcharging.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/glyphcharging.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>3b53d2c61c40db40f49eda8c9503d640</string>
 			<key>Key</key>
@@ -34,7 +34,7 @@
 		<key>BatteryCharging1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging1.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterycharging1.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>0bd33dd3d7c82e08f591a27dd368051a</string>
 			<key>Key</key>
@@ -43,7 +43,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/iBoot.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>861b839b03a6739c1ba1bac86bdc5a19</string>
 			<key>Key</key>
@@ -52,7 +52,7 @@
 		<key>BatteryCharging0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging0.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterycharging0.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>0d35cca684a071c65e8b5149b4983f9b</string>
 			<key>Key</key>
@@ -61,7 +61,7 @@
 		<key>BatteryLow0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow0.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterylow0.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>a0cc59a102dbcd05a66709ddcdcb9eab</string>
 			<key>Key</key>
@@ -70,7 +70,7 @@
 		<key>LLB</key>
 		<dict>
 			<key>FileName</key>
-			<string>LLB.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/LLB.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>4924518c70931c9df7fa4d8aecf47f10</string>
 			<key>Key</key>
@@ -79,7 +79,7 @@
 		<key>iBEC</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBEC.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBEC.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>cb6687f03ca2f8e39c6476168a0f295f</string>
 			<key>Key</key>
@@ -104,7 +104,7 @@
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/applelogo.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>4df927154160ead1b83e19b742fe4812</string>
 			<key>Key</key>
@@ -131,7 +131,7 @@
 		<key>GlyphPlugin</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphplugin.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/glyphplugin.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>f57ba29f18d689a0fffe408f8886c6da</string>
 			<key>Key</key>
@@ -140,7 +140,7 @@
 		<key>BatteryLow1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow1.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/batterylow1.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>f4aef91d1569b683c689511f5821a5b5</string>
 			<key>Key</key>
@@ -149,7 +149,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode.s5l8920x.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/recoverymode.s5l8920x.img3</string>
 			<key>IV</key>
 			<string>daedab57c01366e7f2f11ddf76dbae7c</string>
 			<key>Key</key>

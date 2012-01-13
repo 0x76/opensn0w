@@ -25,7 +25,7 @@
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
-			<string>DeviceTree.n82ap.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/DeviceTree.n82ap.img3</string>
 			<key>IV</key>
 			<string>34e494314bbc370905c88564b76f3257</string>
 			<key>Key</key>
@@ -34,14 +34,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>82C9280927224637C77A96A26D22F42F2CA08FA9A798A8D06FBC8202FC83EC7F45DDA79E</string>
+			<string>82c9280927224637c77a96a26d22f42f2ca08fa9a798a8d06fbc8202fc83ec7f45dda79e</string>
 			<key>FileName</key>
 			<string>038-0015-002.dmg</string>
 		</dict>
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/applelogo.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>7ac3b3cc96fe0466b84b25829e6b44a0</string>
 			<key>Key</key>
@@ -50,7 +50,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n82ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/iBoot.n82ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>79ec4fb2d57ea1896febf5244a39aed1</string>
 			<key>Key</key>
@@ -68,7 +68,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/recoverymode.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>e26f281077fcbd85af323327258c1a3c</string>
 			<key>Key</key>

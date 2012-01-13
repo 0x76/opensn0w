@@ -25,7 +25,7 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>AA5EA4B38E5A7D9F2D95AB7C015E5531050AF66F82A30E6A83994F8F802D352E236A0250</string>
+			<string>aa5ea4b38e5a7d9f2d95ab7c015e5531050af66f82a30e6a83994f8f802d352e236a0250</string>
 			<key>FileName</key>
 			<string>018-8376-002.dmg</string>
 		</dict>
@@ -41,6 +41,8 @@
 	</dict>
 	<key>FirmwareInfo</key>
 	<dict>
+		<key>URL</key>
+		<string>http://appldnld.apple.com/iPhone4/061-8802.20100811.XcfpR/iPhone1,2_4.0.2_8A400_Restore.ipsw</string>
 		<key>Version</key>
 		<string>4.0.2</string>
 	</dict>

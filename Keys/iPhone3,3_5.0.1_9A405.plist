@@ -7,7 +7,7 @@
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBSS.n92ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBSS.n92ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>f12c8bac769bc818db694a4e4ce431a5</string>
 			<key>Key</key>
@@ -16,7 +16,7 @@
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
-			<string>DeviceTree.n92ap.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/DeviceTree.n92ap.img3</string>
 			<key>IV</key>
 			<string>86796bfa80f9bc3bfefb599088d27c2b</string>
 			<key>Key</key>
@@ -25,7 +25,7 @@
 		<key>BatteryCharging1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging1-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/batterycharging1-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>3d610a251a94f4b5798eaa81f732459a</string>
 			<key>Key</key>
@@ -34,7 +34,7 @@
 		<key>GlyphCharging</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphcharging-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/glyphcharging-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>4b45c88e894b27c1ecf3dd29450e8c5c</string>
 			<key>Key</key>
@@ -43,7 +43,7 @@
 		<key>BatteryCharging0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging0-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/batterycharging0-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>3ae15218433209d8b3773f9a7f6962e3</string>
 			<key>Key</key>
@@ -52,7 +52,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n92ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/iBoot.n92ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>9517056b41a94a8fc14f65e34fc7eeed</string>
 			<key>Key</key>
@@ -61,7 +61,7 @@
 		<key>BatteryLow0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow0-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/batterylow0-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>23870fd2544d12f89a256c557bf54673</string>
 			<key>Key</key>
@@ -70,7 +70,7 @@
 		<key>LLB</key>
 		<dict>
 			<key>FileName</key>
-			<string>LLB.n92ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/LLB.n92ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>0304d6d95d8f38629b29276e8457ac8c</string>
 			<key>Key</key>
@@ -79,7 +79,7 @@
 		<key>iBEC</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBEC.n92ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBEC.n92ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>12a4ef7d5541c6a7aacbee76aaba93d0</string>
 			<key>Key</key>
@@ -97,14 +97,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>36895BE7D36AA1415695EC3CD7D33CCF9B088BFC179D48F4D8FC5FD220A2C6F07C9B76D2</string>
+			<string>36895be7d36aa1415695ec3cd7d33ccf9b088bfc179d48f4d8fc5fd220a2c6f07c9b76d2</string>
 			<key>FileName</key>
 			<string>038-3704-001.dmg</string>
 		</dict>
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/applelogo-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>b7f04a12abd4d85251879d93fe522471</string>
 			<key>Key</key>
@@ -131,7 +131,7 @@
 		<key>GlyphPlugin</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphplugin-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/glyphplugin-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>41a3ef37190981b7737f07811fddca52</string>
 			<key>Key</key>
@@ -140,7 +140,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/recoverymode-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>6e01d60aaf4bc1e84e8b887079269d52</string>
 			<key>Key</key>
@@ -149,7 +149,7 @@
 		<key>BatteryLow1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow1-640x960.s5l8930x.img3</string>
+			<string>Firmware/all_flash/all_flash.n92ap.production/batterylow1-640x960.s5l8930x.img3</string>
 			<key>IV</key>
 			<string>0f4796e1f615e5092fd1a83dccacb681</string>
 			<key>Key</key>

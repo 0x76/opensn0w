@@ -7,7 +7,7 @@
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
-			<string>DeviceTree.n82ap.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/DeviceTree.n82ap.img3</string>
 			<key>IV</key>
 			<string>91b33e5282e0d9594f08171ebb85f97d</string>
 			<key>Key</key>
@@ -23,7 +23,7 @@
 		<key>BatteryFull</key>
 		<dict>
 			<key>FileName</key>
-			<string>batteryfull.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/batteryfull.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>06bf68bef1bf08c803760992f06d82df</string>
 			<key>Key</key>
@@ -32,7 +32,7 @@
 		<key>BatteryCharging1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging1.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/batterycharging1.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>5a0973cc7b5229220a3bb897bdfc463a</string>
 			<key>Key</key>
@@ -41,7 +41,7 @@
 		<key>GlyphCharging</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphcharging.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/glyphcharging.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>63a79f76df4d1abc8d07d3a01cc47b5a</string>
 			<key>Key</key>
@@ -50,7 +50,7 @@
 		<key>BatteryCharging0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterycharging0.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/batterycharging0.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>9dc5cb4730b7ff858336144f34fb130c</string>
 			<key>Key</key>
@@ -59,7 +59,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n82ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/iBoot.n82ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>a5ee452933ada902193420e3956b7559</string>
 			<key>Key</key>
@@ -86,7 +86,7 @@
 		<key>BatteryLow0</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow0.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/batterylow0.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>fe5b6ad072835ba24d4a513768882355</string>
 			<key>Key</key>
@@ -95,7 +95,7 @@
 		<key>GlyphPlugin</key>
 		<dict>
 			<key>FileName</key>
-			<string>glyphplugin.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/glyphplugin.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>d28b9cb54a828d5259dc588f19cf3302</string>
 			<key>Key</key>
@@ -104,7 +104,7 @@
 		<key>BatteryLow1</key>
 		<dict>
 			<key>FileName</key>
-			<string>batterylow1.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/batterylow1.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>e812b8e53545874e8727dcc39e01e2fa</string>
 			<key>Key</key>
@@ -113,7 +113,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/recoverymode.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>0f7415895cfe5aea623503ce9db49e07</string>
 			<key>Key</key>

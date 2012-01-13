@@ -16,14 +16,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>A8A886D56011D2D98B190D0A498F6FCAC719467047639CD601FD53A4A1D93C24E1B2DDC6</string>
+			<string>a8a886d56011d2d98b190d0a498f6fcac719467047639cd601fd53a4a1d93c24e1b2ddc6</string>
 			<key>FileName</key>
 			<string>018-6028-014.dmg</string>
 		</dict>
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/applelogo.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>677b4c711e3cacb72505feae8e1eae5d</string>
 			<key>Key</key>
@@ -32,7 +32,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/recoverymode.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>dbf44c3cc2944b87bdecdbdcd8e42b82</string>
 			<key>Key</key>

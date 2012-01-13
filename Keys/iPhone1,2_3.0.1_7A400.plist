@@ -16,14 +16,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>62DEB9E26F11EF6D0CE2AFC85BECDCF65B81486B3430A9930CCCACCD6879C405E06D8AC3</string>
+			<string>62deb9e26f11ef6d0ce2afc85becdcf65b81486b3430a9930cccaccd6879c405e06d8ac3</string>
 			<key>FileName</key>
 			<string>018-5798-001.dmg</string>
 		</dict>
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n82ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/iBoot.n82ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>674a95015a8d33cd2f1f259ebe01aca7</string>
 			<key>Key</key>

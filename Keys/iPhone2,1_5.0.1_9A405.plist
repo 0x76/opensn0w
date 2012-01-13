@@ -7,7 +7,7 @@
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBSS.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBSS.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>10b618d7d5731e326b018e95de6b8554</string>
 			<key>Key</key>
@@ -34,14 +34,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>AFDE073C5B7A637F0A40B37C7B59F22836074D1F1EC8E85F05573DA87DA77629624179B4</string>
+			<string>afde073c5b7a637f0a40b37c7b59f22836074d1f1ec8e85f05573da87da77629624179b4</string>
 			<key>FileName</key>
 			<string>038-3697-001.dmg</string>
 		</dict>
 		<key>LLB</key>
 		<dict>
 			<key>FileName</key>
-			<string>LLB.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/LLB.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>dc2d8af006b8f453db1856e12addd3db</string>
 			<key>Key</key>
@@ -50,7 +50,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n88ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n88ap.production/iBoot.n88ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>da20bbb90b0e3f615c6d32bb5f94c00d</string>
 			<key>Key</key>
@@ -59,7 +59,7 @@
 		<key>iBEC</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBEC.n88ap.RELEASE.dfu</string>
+			<string>Firmware/dfu/iBEC.n88ap.RELEASE.dfu</string>
 			<key>IV</key>
 			<string>27eddd5c22cff6a32d02ac99669f8395</string>
 			<key>Key</key>
