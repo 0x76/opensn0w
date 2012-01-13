@@ -87,8 +87,8 @@ void close8900(AbstractFile * file)
 				((Img2Header *) info->buffer)->dataLenPadded =
 				    ((Img2Header *) info->buffer)->
 				    dataLenPadded % 16 ==
-				    0 ? ((Img2Header *) info->buffer)->
-				    dataLenPadded
+				    0 ? ((Img2Header *) info->
+					 buffer)->dataLenPadded
 				    : ((((Img2Header *) info->buffer)->
 					dataLenPadded / 16) + 1) * 16;
 				info->header.sizeOfData =
@@ -106,8 +106,8 @@ void close8900(AbstractFile * file)
 			info->header.sizeOfData =
 			    (info->header.sizeOfData) % 16 ==
 			    0 ? info->header.
-			    sizeOfData : ((info->header.sizeOfData / 16)
-					  + 1) * 16;
+			    sizeOfData : ((info->header.sizeOfData / 16) +
+					  1) * 16;
 			if (info->header.sizeOfData != origSize) {
 				info->buffer =
 				    realloc(info->buffer,

@@ -461,7 +461,8 @@ irecv_error_t irecv_open(irecv_client_t * pclient)
 				}
 				libusb_free_device_list(usb_device_list, 1);
 
-				irecv_client_t client = (irecv_client_t)
+				irecv_client_t client =
+				    (irecv_client_t)
 				    malloc(sizeof(struct irecv_client));
 				if (client == NULL) {
 					libusb_close(usb_handle);
@@ -493,8 +494,9 @@ irecv_error_t irecv_open(irecv_client_t * pclient)
 								  usb_descriptor.
 								  iSerialNumber,
 								  (unsigned char
-								   *)client->
-								  serial, 255);
+								   *)
+								  client->serial,
+								  255);
 
 				*pclient = client;
 				return IRECV_E_SUCCESS;
@@ -507,8 +509,8 @@ irecv_error_t irecv_open(irecv_client_t * pclient)
 	irecv_error_t ret = mobiledevice_connect(pclient);
 	if (ret == IRECV_E_SUCCESS) {
 		irecv_get_string_descriptor_ascii(*pclient, 3,
-						  (unsigned char
-						   *)(*pclient)->serial, 255);
+						  (unsigned char *)(*pclient)->
+						  serial, 255);
 	}
 	return ret;
 #endif
@@ -842,8 +844,9 @@ irecv_send_buffer(irecv_client_t client, unsigned char *buffer,
 
 	/* initiate transfer */
 	if (recovery_mode) {
-		int ret = irecv_control_transfer(client, 0x41, 0, 0, 0, NULL, 0,
-						 1000);
+		int ret =
+		    irecv_control_transfer(client, 0x41, 0, 0, 0, NULL, 0,
+					   1000);
 		if (ret < 0) {
 			error = IRECV_E_UNKNOWN_ERROR;
 			return error;
@@ -860,10 +863,10 @@ irecv_send_buffer(irecv_client_t client, unsigned char *buffer,
 
 		/* Use bulk transfer for recovery mode and control transfer for DFU and WTF mode */
 		if (recovery_mode) {
-			int ret = irecv_bulk_transfer(client, 0x04,
-						      &buffer[i * packet_size],
-						      size,
-						      &bytes, 1000);
+			int ret =
+			    irecv_bulk_transfer(client, 0x04,
+						&buffer[i * packet_size], size,
+						&bytes, 1000);
 			if (ret < 0) {
 				printf("[libusb] error %d\n", ret);
 				error = IRECV_E_UNKNOWN_ERROR;
