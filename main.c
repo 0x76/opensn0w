@@ -52,9 +52,9 @@ int UsingRamdisk = FALSE;
 			"\n" \
 			"Report %s bugs to rms@velocitylimitless.org\n" \
 			"%s homepage: <http://www.opensn0w.com>\n" \
-			"For complete documentation, see the UNIX manual. \n<man page needs to be written>\n", \
-			argv[0], \
-			"s5l8930x, s5l8920x, s5l8922x, s5l8720x", argv[0], argv[0]); \
+			"For complete documentation, see the UNIX manual.\n", \
+			"opensn0w", \
+			"s5l8930x, s5l8920x, s5l8922x, s5l8720x", "opensn0w", "opensn0w"); \
 			exit(-1);
 
 char *image_names[] = {
