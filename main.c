@@ -240,6 +240,7 @@ int main(int argc, char **argv) {
 			break;
 		case 'p':
 			plist = optarg;
+			break;
 		case 'i':
 			if (!file_exists(optarg)) {
 				printf("Cannot open IPSW file '%s'\n", ipsw);
