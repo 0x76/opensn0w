@@ -370,7 +370,8 @@ int main(int argc, char **argv)
 	} else if((plistFile =
 			  createAbstractFileFromFile(fopen(plist, "rb"))) == NULL &&
 			  pwndfu == false) {
-		printf("plist must be specified in this mode!\n");
+		printf("plist must be specified in this mode!\n\n");
+		usage();
 		exit(-1);
 	}
 
@@ -466,6 +467,9 @@ int main(int argc, char **argv)
 		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
 	if (urlKey)
 		device->url = urlKey->value;
+	
+	if(url)
+		device->url = url;
 
 	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
 	       device->chip_id);
