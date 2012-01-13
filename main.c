@@ -324,6 +324,8 @@ int main(int argc, char **argv) {
                     Firmware.item[i].flags = DFU;
                 else if(strstr(Firmware.item[i].name, ".dmg"))
                     Firmware.item[i].flags = ROOT;
+                else if(strstr(Firmware.item[i].name, "kernelcache"))
+                    Firmware.item[i].flags = ROOT;
                 else if(strstr(Firmware.item[i].name, ".img3"))
                     Firmware.item[i].flags = ALL_FLASH;
                 else
