@@ -242,8 +242,8 @@ int patch_file(char *filename)
 	size_t inDataSize;
 	char *buffer;
 	Dictionary *data;
-    char* tokenizedname;
-    char* dup = strndup(filename, 255);
+	char *tokenizedname;
+	char *dup = strndup(filename, 255);
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -254,9 +254,9 @@ int patch_file(char *filename)
 	}
 
 	printf("getting keys\n");
-    
-    tokenizedname = strtok(dup, ".,");
-    
+
+	tokenizedname = strtok(dup, ".,");
+
 	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
 	StringValue *ivValue = (StringValue *) getValueByKey(data, "IV");

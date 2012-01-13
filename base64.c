@@ -198,8 +198,7 @@ char *convertBase64(unsigned char *data, size_t dataLength, int tabLength,
 		CHECK_LINE_END_STRING();
 		buffer[pos++] =
 		    dictionary[(((data[i + 1] << 2) & 0x3C) |
-				((data[i + 2] >> 6) & 0x03))
-			       & 0x03F];
+				((data[i + 2] >> 6) & 0x03)) & 0x03F];
 		CHECK_LINE_END_STRING();
 		buffer[pos++] = dictionary[data[i + 2] & 0x3F];
 		CHECK_LINE_END_STRING();

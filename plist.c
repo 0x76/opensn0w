@@ -208,8 +208,8 @@ void createArray(ArrayValue * myself, char *xml)
 			    (DictValue *) realloc(curValue,
 						  sizeof(StringValue));
 			((StringValue *) curValue)->value =
-			    (char *)malloc(sizeof(char)
-					   * (strlen(valueTag->xml) + 1));
+			    (char *)malloc(sizeof(char) *
+					   (strlen(valueTag->xml) + 1));
 			strcpy(((StringValue *) curValue)->value,
 			       valueTag->xml);
 
@@ -218,8 +218,8 @@ void createArray(ArrayValue * myself, char *xml)
 			curValue =
 			    (DictValue *) realloc(curValue, sizeof(DataValue));
 			((DataValue *) curValue)->value =
-			    (char *)malloc(sizeof(char)
-					   * (strlen(valueTag->xml) + 1));
+			    (char *)malloc(sizeof(char) *
+					   (strlen(valueTag->xml) + 1));
 			strcpy(((DataValue *) curValue)->value, valueTag->xml);
 
 		} else if (strcmp(valueTag->name, "integer") == 0) {
@@ -356,8 +356,8 @@ void createDictionary(Dictionary * myself, char *xml)
 			    (DictValue *) realloc(curValue,
 						  sizeof(StringValue));
 			((StringValue *) curValue)->value =
-			    (char *)malloc(sizeof(char)
-					   * (strlen(valueTag->xml) + 1));
+			    (char *)malloc(sizeof(char) *
+					   (strlen(valueTag->xml) + 1));
 			strcpy(((StringValue *) curValue)->value,
 			       valueTag->xml);
 
@@ -366,8 +366,8 @@ void createDictionary(Dictionary * myself, char *xml)
 			curValue =
 			    (DictValue *) realloc(curValue, sizeof(DataValue));
 			((DataValue *) curValue)->value =
-			    (char *)malloc(sizeof(char)
-					   * (strlen(valueTag->xml) + 1));
+			    (char *)malloc(sizeof(char) *
+					   (strlen(valueTag->xml) + 1));
 			strcpy(((DataValue *) curValue)->value, valueTag->xml);
 
 		} else if (strcmp(valueTag->name, "integer") == 0) {
