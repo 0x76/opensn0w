@@ -39,9 +39,11 @@ opensn0w: $(OBJS)
 	fi
 
 clean:
+	@printf "\033[K\033[0;32mCleaning\033[1;32m\033[0;32m...\033[0m\n"
 	rm -rf *.o opensn0w
 
 install:
+	@printf "\033[K\033[0;32mInstalling\033[1;32m\033[0;32m...\033[0m\n"
 	install -d $(PLIST_DIR) $(BINDIR) $(MANDIR)
 	install -m644 Keys/*.plist $(PLIST_DIR)
 	install -m755 opensn0w $(BINDIR)
