@@ -253,7 +253,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhp:R:b:w:k:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhp:Rb:w:k:i:r:a:")) != -1) {
 		switch (c) {
 		case 'A':
 			autoboot = true;
