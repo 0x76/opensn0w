@@ -79,6 +79,7 @@ int pwnage2();
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
 int patch_file(char *filename);
+Dictionary *get_key_dictionary_from_bundle(char *member);
 
 typedef enum _image_magic {
 	IMG3 = 0,
@@ -94,6 +95,8 @@ typedef struct _firmware_item {
 	char *name;
 	image_magic_t magic;
 } firmware_item, *firmware_item_t;
+
+// The enum _firmware_images and the image_names array in main.c MUST match //
 
 typedef enum _firmware_images {
 	IBSS = 0,
@@ -116,7 +119,8 @@ typedef enum _firmware_images {
 } firmware_images_t;
 
 typedef struct _firmware {
-	firmware_item item[17];
+	firmware_item *item;
+	uint8_t items;
 } firmware, *firmware_t;
 
 #endif

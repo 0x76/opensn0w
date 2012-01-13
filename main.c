@@ -58,7 +58,7 @@ int UsingRamdisk = FALSE;
 			"s5l8930x, s5l8920x, s5l8922x, s5l8720x", "opensn0w", "opensn0w"); \
 			exit(-1);
 
-char *image_names[] = {
+const char *image_names[] = {
 	"iBSS",
 	"DeviceTree",
 	"BatteryCharging1",
@@ -77,12 +77,6 @@ char *image_names[] = {
 	"Recovery",
 	"BatteryLow1"
 };
-
-char *image_paths[] =
-    { "Firmware/all_flash/all_flash.%s.production/%s", "Firmware/dfu/%s",
-"%s" };
-
-Dictionary *get_key_dictionary_from_bundle(char *member);
 
 void boot_args_process(char *args)
 {
@@ -220,6 +214,7 @@ int upload_image(firmware_item item, int mode, int patch)
 		printf("%s\n", irecv_strerror(error));
 		return -1;
 	}
+	free(buffer);
 	return 0;
 }
 
@@ -307,8 +302,6 @@ int main(int argc, char **argv)
 	}
 
 
-	memset(&Firmware, 0, sizeof(firmware));
-	
 	if(autoboot) {
 		printf("Initializing libirecovery\n");
 		irecv_init();
@@ -361,27 +354,34 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
+	// Initialize Firmware structure //
+	bzero(&Firmware, sizeof(firmware));
+	Firmware.items = sizeof(image_names)/sizeof(char*);
+	Firmware.item = malloc(Firmware.items * sizeof(firmware_item));
+	if (Firmware.item == NULL) {
+		printf("Unable to allocate memory for decryption keys!\n");
+		exit(-1);
+	}
+	bzero(Firmware.item, Firmware.items * sizeof(firmware_item));
+	
 	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
-	if (bundle != NULL)
-		bundle = (Dictionary *) bundle->values;
-
-	while (bundle != NULL) {
-		i = 0;
-		while (i != 17) {
-			if (!strcmp(bundle->dValue.key, image_names[i])) {
+	if (bundle != NULL) {
+		for (i=0; i<Firmware.items; i++) {
+			Dictionary *entry = (Dictionary*)getValueByKey(bundle, image_names[i]);
+			if (entry != NULL) {
 				StringValue *key = NULL, *iv = NULL, *name =
 				    NULL, *vfkey = NULL;
 
 				key =
-				    (StringValue *) getValueByKey(bundle,
+				    (StringValue *) getValueByKey(entry,
 								  "Key");
-				iv = (StringValue *) getValueByKey(bundle,
+				iv = (StringValue *) getValueByKey(entry,
 								   "IV");
 				name =
-				    (StringValue *) getValueByKey(bundle,
+				    (StringValue *) getValueByKey(entry,
 								  "FileName");
 				vfkey =
-				    (StringValue *) getValueByKey(bundle,
+				    (StringValue *) getValueByKey(entry,
 								  "VFDecryptKey");
 
 				if (key)
@@ -403,11 +403,8 @@ int main(int argc, char **argv)
 				       Firmware.item[i].vfkey,
 				       image_names[i], i);
 
-				break;
 			}
-			i++;
 		}
-		bundle = (Dictionary *) bundle->dValue.next;
 	}
 
 	/* to be done */
