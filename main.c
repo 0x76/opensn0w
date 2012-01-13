@@ -109,13 +109,13 @@ int poll_device_for_dfu() {
 
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		printf("\rConnect the device in DFU mode. [%d]", try);
+		printf("Connect the device in DFU mode. [%d]\n", try);
 		try++;
 		return 1;
 	}
 
 	if (client->mode != kDfuMode) {
-		printf("\rConnect the device in DFU mode. [%d]", try);
+		printf("Connect the device in DFU mode. [%d]\n", try);
 		irecv_close(client);
 		try++;
 		return 1;
@@ -203,24 +203,6 @@ int upload_image(firmware_item item, int mode, int patch) {
 	if (error != IRECV_E_SUCCESS) {
 		printf("%s\n", irecv_strerror(error));
 		return -1;
-	}
-	return 0;
-}
-
-int downloadFile(char *path) {
-	CURL *curl;
-	CURLcode ret;
-	FILE *fp;
-	char save[FILENAME_MAX] = "/tmp/ipsw.zip";
-	curl = curl_easy_init();
-	if (curl) {
-		fp = fopen(save, "wb");
-		curl_easy_setopt(curl, CURLOPT_URL, path);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeData);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-		ret = curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-		fclose(fp);
 	}
 	return 0;
 }
