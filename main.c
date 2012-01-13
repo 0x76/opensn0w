@@ -44,6 +44,7 @@ int UsingRamdisk = FALSE;
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
+			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
 			"   -a [boot-args]     Set device boot-args for boot.\n" \
 			"\n" \
 			"Exit status:\n" \
@@ -125,6 +126,28 @@ int poll_device_for_dfu()
 		return 1;
 	}
 
+	return 0;
+}
+
+int poll_device_for_recovery2()
+{
+	irecv_error_t err;
+	static int try;
+	
+	err = irecv_open(&client);
+	if (err != IRECV_E_SUCCESS) {
+		printf("Connect the device in recovery mode. [%d]\n", try);
+		try++;
+		return 1;
+	}
+	
+	if (client->mode != kRecoveryMode2) {
+		printf("Connect the device in recovery mode. [%d]\n", try);
+		irecv_close(client);
+		try++;
+		return 1;
+	}
+	
 	return 0;
 }
 
@@ -219,7 +242,7 @@ int main(int argc, char **argv)
 	int c, i;
 	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url =
 	    NULL, *plist = NULL, *ramdisk = NULL;
-	int pwndfu = false, pwnrecovery = false;
+	int pwndfu = false, pwnrecovery = false, autoboot = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
 	Dictionary *bundle;
@@ -230,8 +253,11 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdhp:R:b:w:k:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhp:R:b:w:k:i:r:a:")) != -1) {
 		switch (c) {
+		case 'A':
+			autoboot = true;
+			break;
 		case 'v':
 			verboseflag = true;
 			break;
@@ -248,11 +274,15 @@ int main(int argc, char **argv)
 			usage();
 			break;
 		case 'p':
+			if (!file_exists(optarg)) {
+				printf("Cannot open plist file '%s'\n", optarg);
+				return -1;
+			}
 			plist = optarg;
 			break;
 		case 'i':
 			if (!file_exists(optarg)) {
-				printf("Cannot open IPSW file '%s'\n", ipsw);
+				printf("Cannot open IPSW file '%s'\n", optarg);
 				return -1;
 			}
 			ipsw = optarg;
@@ -286,15 +316,48 @@ int main(int argc, char **argv)
 			break;
 		default:
 			usage();
+			break;
 		}
 	}
 
-	memset(&Firmware, 0, sizeof(firmware));
 
-	if (!plist && pwndfu == false) {
-		usage();
-		printf("The plist is sort of required now.\n");
-		return -1;
+	memset(&Firmware, 0, sizeof(firmware));
+	
+	if(autoboot) {
+		printf("Initializing libirecovery\n");
+		irecv_init();
+		
+#ifndef __APPLE__
+		irecv_set_debug_level(3);
+#endif
+		
+		/* Poll for DFU mode */
+		while (poll_device_for_recovery2()) {
+			sleep(1);
+		}
+		puts("");
+		
+		/* Got the handle */
+		printf("So we have a handle! :-)\n");
+		
+		/* Check the device */
+		err = irecv_get_device(client, &device);
+		if (device == NULL || device->index == DEVICE_UNKNOWN) {
+			printf("Bad device. errno %d\n", err);
+			return -1;
+		}
+		
+		printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
+			   device->chip_id);
+		printf("iBoot information: %s\n", client->serial);
+
+		printf("fixing recovery loop\n");
+		irecv_send_command(client, "setenv auto-boot true");
+		irecv_send_command(client, "saveenv");
+		client = irecv_reconnect(client, 10);
+		
+		printf("done!\n");
+		exit(0);
 	}
 
 	if ((plistFile =
@@ -304,6 +367,11 @@ int main(int argc, char **argv)
 				plistFile->getLength(plistFile));
 		plistFile->close(plistFile);
 		info = createRoot(plist);
+	} else if((plistFile =
+			  createAbstractFileFromFile(fopen(plist, "rb"))) == NULL &&
+			  pwndfu == false) {
+		printf("plist must be specified in this mode!\n");
+		exit(-1);
 	}
 
 	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
