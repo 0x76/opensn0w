@@ -112,6 +112,6 @@ void hex_dump(void *data, int size)
 
 	if (strlen(hexstr) > 0) {
 		/* print rest of buffer if not empty */
-		printf("[%4.4s]   %-50.50s  %s\n", addrstr, hexstr, charstr);
+		printf("%s   %-50.50s  %s\n", addrstr, hexstr, charstr);
 	}
 }
