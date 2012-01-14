@@ -182,7 +182,7 @@ int upload_image(firmware_item item, int mode, int patch)
 
 	memset(path, 0, 255);
 
-	if (stat(item.name, &buf) != 0) {
+	if (stat(filename, &buf) != 0) {
 		if (fetch_image(item.name, filename) < 0) {
 			printf("Unable to upload DFU image\n");
 			return -1;

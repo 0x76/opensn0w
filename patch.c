@@ -323,9 +323,9 @@ int patch_file(char *filename)
 	/* pwn it 8) */
 	printf("pwning %s\n", filename);
 
-	if (!strcasestr(filename, "iBEC") || !strcasestr(filename, "iBSS"))
+	if (strcasestr(filename, "iBEC") || strcasestr(filename, "iBSS"))
 		patch_bootloaders(inData, inDataSize);
-	else if (!strcasestr(filename, "kernelcache"))
+	else if (strcasestr(filename, "kernelcache"))
 		patch_kernel(inData, inDataSize);
 
 	/* write patched contents */
