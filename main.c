@@ -337,7 +337,7 @@ int main(int argc, char **argv)
 		printf("fixing recovery loop\n");
 		irecv_send_command(client, "setenv auto-boot true");
 		irecv_send_command(client, "saveenv");
-		client = irecv_reconnect(client, 10);
+		client = irecv_reconnect(client, 2);
 		
 		irecv_send_command(client, "reboot");
 		
@@ -511,13 +511,13 @@ actually_do_stuff:
 		UsingRamdisk = TRUE;
 
 	upload_image(Firmware.item[IBSS], 0, 1);
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 2);
 
 	upload_image(Firmware.item[IBEC], 0, 1);
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 5);
 
 	irecv_reset(client);
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 2);
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);
 
@@ -532,13 +532,13 @@ actually_do_stuff:
 
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 2);
 
 	/* upload devicetree */
 	upload_image(Firmware.item[DEVICETREE], 1, 0);
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 2);
 	irecv_send_command(client, "devicetree");
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 2);
 
 	/* upload ramdisk */
 	if (ramdisk) {
@@ -554,7 +554,7 @@ actually_do_stuff:
 
 	/* upload kernel */
 	upload_image(Firmware.item[KERNELCACHE], 3, 1);
-	client = irecv_reconnect(client, 10);
+	client = irecv_reconnect(client, 2);
 
 	/* BootX */
 	printf("booting\n");

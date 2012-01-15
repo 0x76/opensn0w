@@ -105,8 +105,8 @@ int limera1n()
 	unsigned char bootrom_dump_sc[72];
 
 #ifdef BIG_ENDIAN
-	__builtin_bswap32(limera1n_dump_bootrom_addresses[0]);
-	__builtin_bswap32(limera1n_dump_bootrom_addresses[1]);
+	limera1n_dump_bootrom_addresses[0] = __builtin_bswap32(limera1n_dump_bootrom_addresses[0]);
+	limera1n_dump_bootrom_addresses[1] = __builtin_bswap32(limera1n_dump_bootrom_addresses[1]);
 #endif 
 
 	memcpy(bootrom_dump_sc, limera1n_dump_bootrom, sizeof(limera1n_dump_bootrom));

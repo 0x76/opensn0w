@@ -151,8 +151,8 @@ int steaks4uce()
 	int send_size = 0x100 + sizeof(payload);
 #ifdef BIG_ENDIAN
 	*((unsigned int *)&payload[0x14]) = send_size;
-	__builtin_bswap32(*((unsigned int *)&payload[0x14]))
-	    memset(data, 0, 0x800);
+	__builtin_bswap32(*((unsigned int *)&payload[0x14]));
+	mmemset(data, 0, 0x800);
 	memcpy(&data[0x100], payload, sizeof(payload));
 #else
 	*((unsigned int *)&payload[0x14]) = send_size;
