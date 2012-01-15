@@ -27,15 +27,11 @@ Dictionary *get_key_dictionary_from_bundle(char *member)
 {
 	firmwarePatches = (Dictionary *) getValueByKey(info, "FirmwareKeys");
 	patchDict = (Dictionary *) firmwarePatches->values;
-	StringValue *fileValue =
-	    (StringValue *) getValueByKey(patchDict, "File");
 
 	if (!strcasecmp(patchDict->dValue.key, member))
 		return patchDict;
 
 	while (patchDict != NULL) {
-		fileValue = (StringValue *) getValueByKey(patchDict, "File");
-
 		if (!strcasecmp(patchDict->dValue.key, member))
 			return patchDict;
 

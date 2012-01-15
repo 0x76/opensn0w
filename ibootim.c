@@ -145,13 +145,10 @@ AbstractFile *createAbstractFileFromIBootIM(AbstractFile * file)
 		//return NULL;
 	}
 
-	int depth = 0;
 	if (info->header.format == IBOOTIM_ARGB) {
 		info->length = 4 * info->header.width * info->header.height;
-		depth = 4;
 	} else if (info->header.format == IBOOTIM_GREY) {
 		info->length = 2 * info->header.width * info->header.height;
-		depth = 2;
 	} else {
 		XLOG(1,
 		     "createAbstractFileFromIBootIM: unsupported color type: %x\n",

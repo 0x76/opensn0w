@@ -39,7 +39,6 @@ int UsingRamdisk = FALSE;
 			"   -p plist           Use firmware plist\n" \
 			"   -h                 Help.\n" \
 			"   -k kernelcache     Boot using specified kernel.\n" \
-			"   -i ipsw            Use specified ipsw to retrieve files from\n" \
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
@@ -329,7 +328,7 @@ int upload_image(firmware_item item, int mode, int patch)
 int main(int argc, char **argv)
 {
 	int c, i;
-	char *ipsw = NULL, *kernelcache = NULL, *bootlogo = NULL, *url =
+	char *kernelcache = NULL, *bootlogo = NULL, *url =
 	    NULL, *plist = NULL, *ramdisk = NULL;
 	int pwndfu = false, pwnrecovery = false, autoboot = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
@@ -342,7 +341,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhBp:Rb:w:k:S:C:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhBp:Rb:w:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'B':
 			dump_bootrom = true;
@@ -371,13 +370,6 @@ int main(int argc, char **argv)
 				return -1;
 			}
 			plist = optarg;
-			break;
-		case 'i':
-			if (!file_exists(optarg)) {
-				printf("Cannot open IPSW file '%s'\n", optarg);
-				return -1;
-			}
-			ipsw = optarg;
 			break;
 		case 'k':
 			if (!file_exists(optarg)) {
@@ -646,6 +638,10 @@ actually_do_stuff:
 	}
 
 	/* upload logo */
+	if(bootlogo) {
+		Firmware.item[APPLELOGO].name = bootlogo;
+	}
+
 	upload_image(Firmware.item[APPLELOGO], 2, 0);
 
 	irecv_send_command(client, "setpicture 0");
@@ -671,6 +667,9 @@ actually_do_stuff:
 	}
 
 	/* upload kernel */
+	if(kernelcache) {
+		Firmware.item[KERNELCACHE].name = kernelcache;
+	}
 	upload_image(Firmware.item[KERNELCACHE], 3, 1);
 	client = irecv_reconnect(client, 2);
 

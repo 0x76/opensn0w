@@ -101,7 +101,6 @@ int limera1n()
 	unsigned int max_size = 0x24000;
 	unsigned int stack_address = 0x84033F98;
 	unsigned int shellcode_address = 0x84023001;
-	unsigned int shellcode_length = 0;
 	unsigned char bootrom_dump_sc[72];
 
 #ifdef BIG_ENDIAN
@@ -127,12 +126,10 @@ int limera1n()
 	}
 
 	memset(shellcode, 0x0, 0x800);
-	shellcode_length = sizeof(limera1n_payload);
 	memcpy(shellcode, limera1n_payload, sizeof(limera1n_payload));
 
 	if(dump_bootrom == true) {
 		memset(shellcode, 0x0, 0x800);
-		shellcode_length = sizeof(limera1n_payload);
 		memcpy(shellcode, bootrom_dump_sc, 72);
 	}
 	
