@@ -45,6 +45,8 @@ int UsingRamdisk = FALSE;
 			"   -R                 Just boot into pwned recovery mode.\n" \
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -d                 Just pwn dfu mode.\n" \
+			"   -S [file]          Send file to device.\n" \
+			"   -C [command]       Send command to device.\n" \
 			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
 			"   -a [boot-args]     Set device boot-args for boot.\n" \
 			"\n" \
@@ -123,6 +125,111 @@ int poll_device_for_dfu()
 	}
 
 	return 0;
+}
+
+int send_command(char* name) {
+	irecv_error_t err;
+	
+	printf("Initializing libirecovery...\n");
+	irecv_init();
+	
+#ifndef __APPLE__
+	irecv_set_debug_level(3);
+#endif
+	
+	while(1) {
+		err = irecv_open(&client);
+		if (err != IRECV_E_SUCCESS) {
+			printf("Connect the device. err %d\n", err);
+			sleep(1);
+		} else if(err == IRECV_E_SUCCESS) {
+			break;
+		}
+	};
+	
+	if(!client) {
+		printf("Null client!\n");
+		exit(-1);
+	}
+	
+	/* Check the device */
+	err = irecv_get_device(client, &device);
+	if (device == NULL || device->index == DEVICE_UNKNOWN) {
+		printf("Bad device. errno %d\n", err);
+		return -1;
+	}
+	
+	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
+		   device->chip_id);
+	printf("iBoot information: %s\n", client->serial);
+	
+	printf("Sending command \"%s\" to device...\n", name);
+	
+	irecv_send_command(client, name);
+	
+	if (err != IRECV_E_SUCCESS) {
+		printf("%s\n", irecv_strerror(err));
+		exit(-1);
+	}
+	
+	client = irecv_reconnect(client, 2);
+	
+	exit(err);
+	return err;
+}
+
+int send_file(char* name) {
+	irecv_error_t err;
+
+	printf("Initializing libirecovery...\n");
+	irecv_init();
+	
+#ifndef __APPLE__
+	irecv_set_debug_level(3);
+#endif
+	
+	while(1) {
+		err = irecv_open(&client);
+		if (err != IRECV_E_SUCCESS) {
+			printf("Connect the device. err %d\n", err);
+			sleep(1);
+		} else if(err == IRECV_E_SUCCESS) {
+			break;
+		}
+	};
+	
+	if(!client) {
+		printf("Null client!\n");
+		exit(-1);
+	}
+	
+	/* Check the device */
+	err = irecv_get_device(client, &device);
+	if (device == NULL || device->index == DEVICE_UNKNOWN) {
+		printf("Bad device. errno %d\n", err);
+		return -1;
+	}
+	
+	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
+		   device->chip_id);
+	printf("iBoot information: %s\n", client->serial);
+	
+	printf("Uploading %s to device...\n", name);
+	
+	if (client->mode != kDfuMode)
+		err = irecv_send_file(client, name, 0);
+	else
+		err = irecv_send_file(client, name, 1);
+
+	if (err != IRECV_E_SUCCESS) {
+		printf("%s\n", irecv_strerror(err));
+		exit(-1);
+	}
+
+	client = irecv_reconnect(client, 2);
+	
+	exit(err);
+	return err;
 }
 
 int poll_device_for_recovery2()
@@ -235,7 +342,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhBp:Rb:w:k:i:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhBp:Rb:w:k:S:C:i:r:a:")) != -1) {
 		switch (c) {
 		case 'B':
 			dump_bootrom = true;
@@ -290,6 +397,17 @@ int main(int argc, char **argv)
 				return -1;
 			}
 			bootlogo = optarg;
+			break;
+		case 'S':
+			if (!file_exists(optarg)) {
+				printf("Cannot open file '%s'\n",
+					   optarg);
+				return -1;
+			}
+			send_file(optarg);
+			break;
+		case 'C':
+			send_command(optarg);
 			break;
 		case 'r':
 			if (!file_exists(optarg)) {
