@@ -514,7 +514,7 @@ actually_do_stuff:
 	client = irecv_reconnect(client, 2);
 
 	upload_image(Firmware.item[IBEC], 0, 1);
-	client = irecv_reconnect(client, 5);
+	client = irecv_reconnect(client, 10);
 
 	irecv_reset(client);
 	client = irecv_reconnect(client, 2);
