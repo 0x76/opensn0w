@@ -1402,6 +1402,10 @@ irecv_error_t irecv_get_device(irecv_client_t client, irecv_device_t * device)
 			device_id = DEVICE_IPAD1G;
 			break;
 
+		case BDID_IPHONE42:
+			device_id = DEVICE_IPHONE42;
+			break;
+				
 		case BDID_IPHONE4:
 			device_id = DEVICE_IPHONE4;
 			break;
