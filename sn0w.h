@@ -84,6 +84,7 @@ int pwnage2();
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
 int patch_file(char *filename);
+int irecovery_shell_initialize();
 Dictionary *get_key_dictionary_from_bundle(char *member);
 
 typedef enum _image_magic {

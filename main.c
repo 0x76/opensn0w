@@ -43,6 +43,7 @@ int UsingRamdisk = FALSE;
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
+			"   -s                 Start iRecovery recovery mode shell.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -S [file]          Send file to device.\n" \
 			"   -C [command]       Send command to device.\n" \
@@ -341,7 +342,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhBp:Rb:w:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhBsp:Rb:w:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'B':
 			dump_bootrom = true;
@@ -400,6 +401,9 @@ int main(int argc, char **argv)
 			break;
 		case 'C':
 			send_command(optarg);
+			break;
+		case 's':
+			irecovery_shell_initialize();
 			break;
 		case 'r':
 			if (!file_exists(optarg)) {
