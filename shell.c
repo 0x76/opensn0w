@@ -71,11 +71,11 @@ int irecovery_shell_initialize() {
 	printf("iBoot information: %s\n", client->serial);
 	
 	printf("Starting shell...\n");
-	
-	irecv_reset(client);
-	client = irecv_reconnect(client, 2);
-	irecv_set_interface(client, 0, 0);
-	irecv_set_interface(client, 1, 1);
+
+        irecv_reset(client);
+        client = irecv_reconnect(client, 2);
+        irecv_set_interface(client, 0, 0);
+        irecv_set_interface(client, 1, 1);
 	
 	init_shell(client);
 	

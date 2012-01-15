@@ -151,28 +151,8 @@ int send_command(char* name) {
 		printf("Null client!\n");
 		exit(-1);
 	}
-	
-	/* Check the device */
-	err = irecv_get_device(client, &device);
-	if (device == NULL || device->index == DEVICE_UNKNOWN) {
-		printf("Bad device. errno %d\n", err);
-		return -1;
-	}
-	
-	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
-		   device->chip_id);
-	printf("iBoot information: %s\n", client->serial);
-	
-	printf("Sending command \"%s\" to device...\n", name);
-	
+
 	irecv_send_command(client, name);
-	
-	if (err != IRECV_E_SUCCESS) {
-		printf("%s\n", irecv_strerror(err));
-		exit(-1);
-	}
-	
-	client = irecv_reconnect(client, 2);
 	
 	exit(err);
 	return err;
@@ -203,19 +183,6 @@ int send_file(char* name) {
 		exit(-1);
 	}
 	
-	/* Check the device */
-	err = irecv_get_device(client, &device);
-	if (device == NULL || device->index == DEVICE_UNKNOWN) {
-		printf("Bad device. errno %d\n", err);
-		return -1;
-	}
-	
-	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
-		   device->chip_id);
-	printf("iBoot information: %s\n", client->serial);
-	
-	printf("Uploading %s to device...\n", name);
-	
 	if (client->mode != kDfuMode)
 		err = irecv_send_file(client, name, 0);
 	else
@@ -226,8 +193,6 @@ int send_file(char* name) {
 		exit(-1);
 	}
 
-	client = irecv_reconnect(client, 2);
-	
 	exit(err);
 	return err;
 }
@@ -558,10 +523,10 @@ actually_do_stuff:
 
 	Dictionary *temporaryDict =
 	    (Dictionary *) getValueByKey(info, "FirmwareInfo");
-	StringValue *urlKey;
+	StringValue *urlKey = NULL;
 	if (temporaryDict != NULL)
 		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
-	if (urlKey)
+	if (urlKey != NULL)
 		device->url = urlKey->value;
 	
 	if(url)
@@ -652,23 +617,35 @@ actually_do_stuff:
 	irecv_send_command(client, "bgcolor 0 0 0");
 	client = irecv_reconnect(client, 2);
 
-	/* upload devicetree */
-	upload_image(Firmware.item[DEVICETREE], 1, 0);
-	client = irecv_reconnect(client, 2);
-	irecv_send_command(client, "devicetree");
-	client = irecv_reconnect(client, 2);
-
 	/* upload ramdisk */
 	if (ramdisk) {
+		Firmware.item[RESTORERAMDISK].name = ramdisk;
 		upload_image(Firmware.item[RESTORERAMDISK], 4, 0);
-
+		irecv_reset(client);
 		sleep(5);
+		irecv_close(client);
+		irecv_exit();
+
+		printf("Reinitializing libirecovery.\n");
+		printf("HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
+		sleep(5);
+		irecv_init();
+
+		while (poll_device_for_recovery2()) {
+			sleep(1);
+		}
 
 		printf("sending ramdisk command\n");
 		irecv_send_command(client, "ramdisk");
 
 		irecv_reset_counters(client);
 	}
+
+	/* upload devicetree */
+	upload_image(Firmware.item[DEVICETREE], 1, 0);
+	client = irecv_reconnect(client, 2);
+	irecv_send_command(client, "devicetree");
+	client = irecv_reconnect(client, 2);
 
 	/* upload kernel */
 	if(kernelcache) {

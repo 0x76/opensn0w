@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -I. -g -Ixpwntool -fPIC
+CFLAGS=-Wall -I. -g -Ixpwntool -fPIC -O3
 OS_TARGET=opensn0w
 LDFLAGS=
 MANDIR=/usr/local/man/man1/
