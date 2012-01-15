@@ -38,6 +38,11 @@
 #include <xpwn/plist.h>
 #include <ctype.h>
 
+/*
+ * comment this if you're on a big endian cpu
+ * ex: powerpc64
+ */
+
 #undef BIG_ENDIAN
 
 extern irecv_device_t device;
