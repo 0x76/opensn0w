@@ -32,6 +32,8 @@
 #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
 #include <IOKit/IOCFPlugIn.h>
 
+#include "xpwn/plist.h"
+
 #include "IOUSBDeviceControllerLib.h"
 
 #include "hfs_mount.h"
@@ -186,7 +188,10 @@ int main(int argc, char *argv[], char *env[])
 	struct stat status;
 	int ret = 0, i;
 	char *platform;
-
+	AbstractFile *plistFile;
+	Dictionary* info;
+	StringValue *ProductBuild;
+	
 	for (i = 0; i < 100; i++) {
 		printf("\n");
 	}
@@ -288,15 +293,25 @@ int main(int argc, char *argv[], char *env[])
 		printf("unsupported.\n");
 		return -1;
 	}
-
-	/* set permissions on ssh keys */
-	chmod("/var/root/.ssh/authorized_keys", 0600);
-	chown("/var/root/.ssh/authorized_keys", 0, 0);
-	chown("/var/root/.ssh", 0, 0);
-	chown("/var/root/", 0, 0);
-
+	
 	/* i need to make a usbmuxd daemon HERE */
 
+	char* plist = "/mnt1/System/Library/CoreServices/SystemVersion.plist";
+	if ((plistFile =
+	     createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
+		plist = (char *)malloc(plistFile->getLength(plistFile));
+		plistFile->read(plistFile, plist,
+						plistFile->getLength(plistFile));
+		plistFile->close(plistFile);
+		info = createRoot(plist);
+	} 
+	
+	ProductBuild = (StringValue *) getValueByKey(info, "ProductBuildVersion");
+	if (ProductBuild != NULL) {
+		printf("Target build is %s\n", ProductBuild->value);
+	}
+
+	
 	printf(" #######  ##    ##\n");
 	printf("##     ## ##   ## \n");
 	printf("##     ## ##  ##  \n");

@@ -1,9 +1,9 @@
 CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2
 SDKROOT=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/
-CFLAGS=-arch armv6 -isysroot $(SDKROOT)  -g -I.
+CFLAGS=-arch armv6 -isysroot $(SDKROOT)  -g -I. -I../../xpwntool
 LDFLAGS=-Wl,-e,_main -framework IOKit -framework CoreFoundation
 OS_TARGET=restored
-OBJS=main.o crtsup.o
+OBJS=main.o crtsup.o plist.o abstractfile.o
 all: restored
 
 .SILENT:
