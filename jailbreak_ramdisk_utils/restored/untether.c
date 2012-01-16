@@ -63,6 +63,8 @@ int untether(char* platform, char* build) {
 		return -1;
 	}
 	
+	printf("GET A LOAD OF THIS.\n");
+	
 	mkdir("/mnt2/jailbreak", 755);
 	symlink("/mnt2/jailbreak", "/untether_binaries");
 	system("tar xvf /untether.tar.gz -C /untether_binaries");
