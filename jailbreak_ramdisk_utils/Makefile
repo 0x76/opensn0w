@@ -1,12 +1,12 @@
 .SILENT:
 
-all:	launchd/launchd
+all:	restored/restored
 
-launchd/launchd:
-	make -C launchd
+restored/restored:
+	make -C restored
 
 clean:
-	make -C launchd clean
+	make -C restored clean
 
 
 DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"; cd $$i || exit 1
