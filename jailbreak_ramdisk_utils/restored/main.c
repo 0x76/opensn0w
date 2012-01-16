@@ -337,8 +337,5 @@ int main(int argc, char *argv[], char *env[])
 		return 0;
 	}
 
-	/* BUT FOR NOW JUST SPIN.. or not? */
-	while (1) ;
-
 	return 0;
 }

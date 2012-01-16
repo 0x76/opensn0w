@@ -67,6 +67,7 @@ int untether(char* platform, char* build) {
 		mkdir("/mnt1/usr/share/corona", 755);
 		install("/untether_binaries/common/9A405/vnimage.clean", "/mnt1/usr/share/corona/vnimage.clean", 0, 0, 755);
 		install("/untether_binaries/common/9A405/jb.plist", "/mnt1/usr/share/corona/jb.plist", 0, 0, 755);
+		install("/untether_binaries/common/9A405/launchd.conf", "/mnt1/etc/launchd.conf", 0, 0, 755);
 		
 		sprintf(buffer, "/untether_binaries/%s/9A405/payload", platform);
 		install(buffer, "/mnt1/usr/share/corona/payload", 0, 0, 755);
