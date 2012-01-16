@@ -1,6 +1,6 @@
 CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2
 SDKROOT=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/
-CFLAGS=-arch armv6 -isysroot $(SDKROOT) -static -nostartfiles -nodefaultlibs -nostdlib
+CFLAGS=-arch armv6 -isysroot $(SDKROOT) -static -nostartfiles -nodefaultlibs -nostdlib -g
 LDFLAGS=-Wl,-e,_main
 OS_TARGET=launchd
 OBJS=main.o crtsup.o syscalls.o
