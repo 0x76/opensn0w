@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-
-#include "utils.h"
-#include "syscalls.h"
 #include "hfs_mount.h"
 
 char* cache_env[] = {
@@ -32,7 +30,8 @@ char* cache_env[] = {
 
 typedef enum _partition_types {
 	LWVM = 0,
-	LEGACY = 1
+	LEGACY = 1,
+	OLD = 2
 } partition_types;
 
 typedef struct _jailbreak_context {
@@ -42,12 +41,14 @@ typedef struct _jailbreak_context {
 
 const char* _root_partition_names[] = {
 	"/dev/disk0s1s1",
+	"/dev/disk0s1",
 	"/dev/disk0s1"
 };
 
 const char* _user_partition_names[] = {
 	"/dev/disk0s1s2",
 	"/dev/disk0s2s1"
+	"/dev/disk0s2"
 };
 
 char* _fsck_root_partition_lwvm[] = {"/sbin/fsck_hfs", "-fy", "/dev/disk0s1s1", NULL};
@@ -58,78 +59,64 @@ char* _fsck_user_partition[] = {"/sbin/fsck_hfs", "-fy", "/dev/disk0s2s1", NULL}
 int main(int argc, char* argv[], char* env[]) {
 	jailbreak_context jb_ctx;
 	struct stat status;
-	int ret = 0;
-	
-	/* zero context */
-	memset((void*)&jb_ctx, 0, sizeof(jailbreak_context));
-	
-	/* open console */
-	console = open("/dev/console", O_WRONLY);
-	dup2(console, 1);
-	dup2(console, 2);
-	
-	puts("Waiting for disk to mount...\n");
-	while(stat("/dev/disk0s1", &status) != 0) { /* lwvm base partition */
-		puts("Please wait...\n");
-		sleep(1);
+	int ret = 0, i;
+
+	for(i = 0; i < 100; i++) {
+		printf("\n");
 	}
 	
-	puts("disk0s1 is alive. Houston, we hear you loud and clear.\n");
+	printf("Waiting for disk to mount...\n");
+
+	while(stat("/dev/disk0s1", &status) != 0) { /* lwvm base partition */
+		printf("Please wait...\n");
+		sleep(1);
+	}
+	sleep(2);
+	
+	printf("disk0s1 is alive. Houston, we hear you loud and clear.\n");
 
 	/* at this point, check the disk */
-	if (hfs_mount(_root_partition_names[LEGACY], "/mnt", MNT_ROOTFS | MNT_RDONLY) != 0) {
-		if (hfs_mount(_root_partition_names[LWVM], "/mnt", MNT_ROOTFS | MNT_RDONLY) != 0) {
-			puts("Unable to mount filesystem!\n");
-			return -1;
-			
-		} else {
-			jb_ctx.system_version = 5;
-			jb_ctx.partition_type = LWVM;
+    printf("Waiting for partitions...\n");
+    for(i = 0; i < 10; i++) {
+        if(!stat("/dev/disk0s2s1", &status)) {
+            system("/sbin/fsck_hfs -fy /dev/disk0s2s1");
+			system("/sbin/mount_hfs /dev/disk0s2s1 /mnt1");
+            break;
 		}
+        if(!stat("/dev/disk0s1s2", &status)) {
+            system("/sbin/fsck_hfs -fy /dev/disk0s1s2");
+			system("/sbin/mount_hfs /dev/disk0s1s2 /mnt2");
+            break;
+		}
+        if(!stat("/dev/disk0s1", &status)) {
+            system("/sbin/fsck_hfs -fy /dev/disk0s1");
+			system("/sbin/mount_hfs /dev/disk0s1 /mnt1");
+            break;
+		}
+        if(!stat("/dev/disk0s1s1", &status)) {
+            system("/sbin/fsck_hfs -fy /dev/disk0s1s1");
+			system("/sbin/mount_hfs /dev/disk0s1s1 /mnt1");
+            break;
+		}
+        sleep(5);
 	}
 	
 	/* mount /dev, we're going to chroot into it. */
-	puts("Filesystem mounted to /mnt.");
-	
-	puts("Going to mount /dev as devfs...\n");
-	if(mount("devfs", "/mnt/dev", 0, NULL) != 0) {
-		puts("Unable to mount /dev as devfs!\n");
-		unmount("/mnt", 0);
-		return -1;
-	}
-	
-	/* check rootfs integrity */
-	if(jb_ctx.partition_type == LWVM) {
-		ret = fsexec(_fsck_root_partition_lwvm, env);
-	} else {
-		ret = fsexec(_fsck_root_partition, env);		
-	}
-	
-	if(ret != 0) {
-		puts("AW DAMN. Fscking the rootfs failed.\n");
-		unmount("/mnt/dev", 0);
-		unmount("/mnt", 0);
-		return -1;
-	}
-	
-	/* remount the fs */
-	puts("Remounting FS...\n");
-	
-	if(jb_ctx.partition_type == LWVM) {
-		ret = hfs_mount(_root_partition_names[LWVM], "/mnt", MNT_ROOTFS | MNT_UPDATE);
-	} else {
-		ret = hfs_mount(_root_partition_names[LEGACY], "/mnt", MNT_ROOTFS | MNT_UPDATE);
-	}
-	
-	if(ret != 0) {
-		puts("Failed to remount rootfs.\n");
-		unmount("/mnt/dev", 0);
-		unmount("/mnt", 0);
-		return -1;
-	}
+	printf("Filesystem mounted to /mnt1.\n");
+
+	printf("Making RAM disk rw...\n");
+    system("mount /");
 	
 	/* mount user partition */
 	
+	printf(" #######  ##    ##\n");
+    printf("##     ## ##   ## \n");
+    printf("##     ## ##  ##  \n");
+    printf("##     ## #####   \n");
+    printf("##     ## ##  ##  \n");
+    printf("##     ## ##   ## \n"); 
+    printf(" #######  ##    ##\n");
+
 	/* BUT FOR NOW JUST SPIN */
 	while(1);
 	
