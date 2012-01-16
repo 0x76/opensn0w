@@ -1,14 +1,24 @@
-CC=arm-apple-darwin10-gcc-4.2.1
+CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2
 SDKROOT=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/
-CFLAGS=-Wall -I. -g -isysroot $(SDKROOT)
+CFLAGS=-arch armv6 -isysroot $(SDKROOT) -static -nostartfiles -nodefaultlibs -nostdlib
+LDFLAGS=-Wl,-e,_main
 OS_TARGET=launchd
-OBJS=main.o
+OBJS=main.o crtsup.o syscalls.o
 all: launchd
 
 .SILENT:
 .SUFFIXES: .c .o
 
 UNAME := $(shell uname -s)
+
+%.o: %.S
+	${COMPILE_STATUS}
+	if ${CC} ${CFLAGS} ${CFLAGS} -c -o $@ $<; then \
+		${COMPILE_OK}; \
+	else \
+		${COMPILE_FAILED}; \
+	fi
+
 
 %.o: %.c
 	${COMPILE_STATUS}
