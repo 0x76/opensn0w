@@ -40,6 +40,7 @@
 
 char *execve_env[] = { NULL };
 char *execve_params[] = { "/sbin/sshd", NULL };
+int untether(char* platform, char* build);
 
 /* start comex code */
 #define kIOSomethingPluginID CFUUIDGetConstantUUIDWithBytes(NULL, \
@@ -54,8 +55,7 @@ void init_usb()
 	IOUSBDeviceDescriptionRef desc =
 	    IOUSBDeviceDescriptionCreateFromDefaults(kCFAllocatorDefault);
 	IOUSBDeviceDescriptionSetSerialString(desc,
-					      CFSTR("ramdisk tool " __DATE__ " "
-						    __TIME__));
+					      CFSTR("opensn0w jailbreak ramdisk" __DATE__ " " __TIME__));
 
 	CFArrayRef usb_interfaces = IOUSBDeviceDescriptionCopyInterfaces(desc);
 	int i;
@@ -187,7 +187,7 @@ int main(int argc, char *argv[], char *env[])
 {
 	struct stat status;
 	int ret = 0, i;
-	char *platform;
+	char *platform, *build;
 	AbstractFile *plistFile;
 	Dictionary* info;
 	StringValue *ProductBuild;
@@ -309,8 +309,16 @@ int main(int argc, char *argv[], char *env[])
 	ProductBuild = (StringValue *) getValueByKey(info, "ProductBuildVersion");
 	if (ProductBuild != NULL) {
 		printf("Target build is %s\n", ProductBuild->value);
+		build = ProductBuild->value;
 	}
 
+	printf("Jailbreaking filesystem...\n");
+	system("sed -i old -e s/rw.*/rw/ -e s/ro/rw/ /mnt1/etc/fstab");
+	
+	printf("Installing exploit binaries...\n");
+	if(untether(platform, build) != 0) {
+		printf("Untether failed to install.\n");
+	}
 	
 	printf(" #######  ##    ##\n");
 	printf("##     ## ##   ## \n");

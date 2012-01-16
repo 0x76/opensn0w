@@ -18,6 +18,7 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
+#include <stdio.h>
 #include "utils.h"
 #include "syscalls.h"
 #include "hfs_mount.h"
@@ -27,6 +28,8 @@ int console = 0;
 int install(const char* src, const char* dst, int uid, int gid, int mode) {
 	int ret = 0;
 
+	printf("%s => %s\n", src, dst);
+	
 	ret = cp(src, dst);
 	if (ret < 0) {
 		return ret;
