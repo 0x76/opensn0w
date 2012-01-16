@@ -63,6 +63,10 @@ int untether(char* platform, char* build) {
 		return -1;
 	}
 	
+	mkdir("/mnt2/jailbreak", 755);
+	symlink("/mnt2/jailbreak", "/untether_binaries");
+	system("tar xvf /untether.tar.gz -C /untether_binaries");
+	
 	if(!strcmp(build, "9A405")) {
 		mkdir("/mnt1/usr/share/corona", 755);
 		install("/untether_binaries/common/9A405/vnimage.clean", "/mnt1/usr/share/corona/vnimage.clean", 0, 0, 755);

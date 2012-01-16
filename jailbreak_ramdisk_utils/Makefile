@@ -1,6 +1,6 @@
 .SILENT:
 
-all:	restored/restored
+all:	restored/restored untether_tar/untether.tar.gz
 
 restored/restored:
 	make -C restored
