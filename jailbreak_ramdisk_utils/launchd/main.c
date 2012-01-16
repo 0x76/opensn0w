@@ -22,46 +22,8 @@
 #include <sys/wait.h>
 #include "hfs_mount.h"
 
-char *cache_env[] = {
-	"DYLD_SHARED_CACHE_DONT_VALIDATE=1",
-	"DYLD_SHARED_CACHE_DIR=/System/Library/Caches/com.apple.dyld",
-	"DYLD_SHARED_REGION=private"
-};
-
-typedef enum _partition_types {
-	LWVM = 0,
-	LEGACY = 1,
-	OLD = 2
-} partition_types;
-
-typedef struct _jailbreak_context {
-	int system_version;
-	partition_types partition_type;
-} jailbreak_context, *jailbreak_context_t;
-
-const char *_root_partition_names[] = {
-	"/dev/disk0s1s1",
-	"/dev/disk0s1",
-	"/dev/disk0s1"
-};
-
-const char *_user_partition_names[] = {
-	"/dev/disk0s1s2",
-	"/dev/disk0s2s1" "/dev/disk0s2"
-};
-
-char *_fsck_root_partition_lwvm[] =
-    { "/sbin/fsck_hfs", "-fy", "/dev/disk0s1s1", NULL };
-char *_fsck_root_partition[] =
-    { "/sbin/fsck_hfs", "-fy", "/dev/disk0s1", NULL };
-char *_fsck_user_partition_lwvm[] =
-    { "/sbin/fsck_hfs", "-fy", "/dev/disk0s1s2", NULL };
-char *_fsck_user_partition[] =
-    { "/sbin/fsck_hfs", "-fy", "/dev/disk0s2s1", NULL };
-
 int main(int argc, char *argv[], char *env[])
 {
-	jailbreak_context jb_ctx;
 	struct stat status;
 	int ret = 0, i;
 
