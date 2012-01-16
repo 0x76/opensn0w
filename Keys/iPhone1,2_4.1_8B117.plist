@@ -25,14 +25,14 @@
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
-			<string>4C3C83D3899EA9BEF415B1C9C656AAEF966B2362494D2C9093A9283D388257562A228C86</string>
+			<string>4c3c83d3899ea9bef415b1c9c656aaef966b2362494d2c9093a9283d388257562a228c86</string>
 			<key>FileName</key>
-			<string>iPhone1,2_4.1_8B117_Restore/018-7060-114.dmg</string>
+			<string>018-7060-114.dmg</string>
 		</dict>
 		<key>AppleLogo</key>
 		<dict>
 			<key>FileName</key>
-			<string>applelogo.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/applelogo.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>9cdcfbdf36175c103d4f3d4993bc8423</string>
 			<key>Key</key>
@@ -41,7 +41,7 @@
 		<key>iBoot</key>
 		<dict>
 			<key>FileName</key>
-			<string>iBoot.n82ap.RELEASE.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/iBoot.n82ap.RELEASE.img3</string>
 			<key>IV</key>
 			<string>4c8dd5528dcf283bec1ecd8d741aa540</string>
 			<key>Key</key>
@@ -59,7 +59,7 @@
 		<key>Recovery</key>
 		<dict>
 			<key>FileName</key>
-			<string>recoverymode.s5l8900x.img3</string>
+			<string>Firmware/all_flash/all_flash.n82ap.production/recoverymode.s5l8900x.img3</string>
 			<key>IV</key>
 			<string>8926b78e0a2b9e4ec9dd34b0f99148fb</string>
 			<key>Key</key>

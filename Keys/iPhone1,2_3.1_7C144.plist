@@ -20,6 +20,15 @@
 			<key>FileName</key>
 			<string>018-5343-086.dmg</string>
 		</dict>
+		<key>AppleLogo</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n82ap.production/applelogo.s5l8900x.img3</string>
+			<key>IV</key>
+			<string>1b8a5224f45aa94cfc02a8ceba55d6d8</string>
+			<key>Key</key>
+			<string>d2dad0c5dc935afddd628a2c2c243c4f</string>
+		</dict>
 		<key>BatteryFull</key>
 		<dict>
 			<key>FileName</key>
@@ -118,6 +127,15 @@
 			<string>0f7415895cfe5aea623503ce9db49e07</string>
 			<key>Key</key>
 			<string>2648aeb9ab66fe6f2c0fbfd571d1ebc0</string>
+		</dict>
+		<key>NeedService</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n82ap.production/needservice.s5l8900x.img3</string>
+			<key>IV</key>
+			<string>da6863bd5a4236e1f487e5a53136fb72</string>
+			<key>Key</key>
+			<string>da443d5458ace1d3be8f1f5aa16733eb</string>
 		</dict>
 	</dict>
 	<key>FirmwareInfo</key>

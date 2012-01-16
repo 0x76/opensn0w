@@ -4,15 +4,6 @@
 <dict>
 	<key>FirmwareKeys</key>
 	<dict>
-		<key></key>
-		<dict>
-			<key>FileName</key>
-			<string>Firmware/all_flash/all_flash.k48ap.production/needservice.s5l8930x.img3</string>
-			<key>IV</key>
-			<string>6e134d4b09d6334970ac901be8beb0e2</string>
-			<key>Key</key>
-			<string>3dbf02aa01f65e772f8254efe03afdb674550b6f8482a5e57d34a37825132ac5</string>
-		</dict>
 		<key>iBSS</key>
 		<dict>
 			<key>FileName</key>
@@ -154,6 +145,15 @@
 			<string>51ad1b46301e2bcd9ddfe6b4a775a29a</string>
 			<key>Key</key>
 			<string>bd23381af4381f8bbb4ec816361b1f072e5be37542ca53d6afdb8b0e9c5d726c</string>
+		</dict>
+		<key>NeedService</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.k48ap.production/needservice.s5l8930x.img3</string>
+			<key>IV</key>
+			<string>6e134d4b09d6334970ac901be8beb0e2</string>
+			<key>Key</key>
+			<string>3dbf02aa01f65e772f8254efe03afdb674550b6f8482a5e57d34a37825132ac5</string>
 		</dict>
 		<key>BatteryLow1</key>
 		<dict>
