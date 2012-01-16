@@ -78,7 +78,9 @@ const char *image_names[] = {
 	"RestoreRamdisk",
 	"GlyphPlugin",
 	"Recovery",
-	"BatteryLow1"
+	"BatteryLow1",
+	"BatteryFull",
+	"NeedService"
 };
 
 void boot_args_process(char *args)

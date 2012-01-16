@@ -121,7 +121,9 @@ typedef enum _firmware_images {
 	RESTORERAMDISK,
 	GLYPHPLUGIN,
 	RECOVERY,
-	BATTERYLOW1
+	BATTERYLOW1,
+	BATTERYFULL,
+	NEEDSERVICE
 } firmware_images_t;
 
 typedef struct _firmware {
