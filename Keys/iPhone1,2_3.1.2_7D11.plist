@@ -13,6 +13,15 @@
 			<key>Key</key>
 			<string>6a4db11073eb748bad1fabafb066fe13</string>
 		</dict>
+		<key>DeviceTree</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n82ap.production/DeviceTree.n82ap.img3</string>
+			<key>IV</key>
+			<string>2aeb14ac71c98c793f496da817fba758</string>
+			<key>Key</key>
+			<string>82e003f89bb37bebbe63fabcfed9c4b7</string>
+		</dict>
 		<key>FileSystem</key>
 		<dict>
 			<key>VFDecryptKey</key>
@@ -28,6 +37,15 @@
 			<string>677b4c711e3cacb72505feae8e1eae5d</string>
 			<key>Key</key>
 			<string>1fb738d6c091113d7dfdd89864a718d9</string>
+		</dict>
+		<key>iBoot</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n82ap.production/iBoot.n82ap.RELEASE.img3</string>
+			<key>IV</key>
+			<string>13e320617bc655211e2b68042d4508f8</string>
+			<key>Key</key>
+			<string>a4039d79cd6d41ce2b755ed566902103</string>
 		</dict>
 		<key>Recovery</key>
 		<dict>

@@ -13,15 +13,6 @@
 			<key>Key</key>
 			<string>9121de4a038675d92e1a28683b2138b7a3bdb80994273d090398051c7f5af53c</string>
 		</dict>
-		<key></key>
-		<dict>
-			<key>FileName</key>
-			<string>Firmware/all_flash/all_flash.n88ap.production/needservice.s5l8920x.img3</string>
-			<key>IV</key>
-			<string>7b04ecfde2cdea7caafcf97d024d8d6e</string>
-			<key>Key</key>
-			<string>4b07883e202160c667164184d702cce4ce0fa18ffe79db3898f06c6b89036d57</string>
-		</dict>
 		<key>DeviceTree</key>
 		<dict>
 			<key>FileName</key>
@@ -154,6 +145,15 @@
 			<string>e8dcb1e942a05cd6a2a89ee058beddc1</string>
 			<key>Key</key>
 			<string>9acb9de129f21c17e8aabd4c27070afd3cee2d53286397713d4039ee1674fa00</string>
+		</dict>
+		<key>NeedService</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n88ap.production/needservice.s5l8920x.img3</string>
+			<key>IV</key>
+			<string>7b04ecfde2cdea7caafcf97d024d8d6e</string>
+			<key>Key</key>
+			<string>4b07883e202160c667164184d702cce4ce0fa18ffe79db3898f06c6b89036d57</string>
 		</dict>
 		<key>Recovery</key>
 		<dict>

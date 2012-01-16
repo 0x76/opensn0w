@@ -29,6 +29,24 @@
 			<key>FileName</key>
 			<string>018-8376-002.dmg</string>
 		</dict>
+		<key>AppleLogo</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n82ap.production/applelogo.s5l8900x.img3</string>
+			<key>IV</key>
+			<string>6cd67432902ddf1129feb49c48a427ed</string>
+			<key>Key</key>
+			<string>13545fd4d707ed1e88436d7164f354e3</string>
+		</dict>
+		<key>iBoot</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.n82ap.production/iBoot.n82ap.RELEASE.img3</string>
+			<key>IV</key>
+			<string>32bbdf3d85a713952503c2bbeb4d69a5</string>
+			<key>Key</key>
+			<string>3470f3841b87b161517588c21534b03b</string>
+		</dict>
 		<key>UpdateRamdisk</key>
 		<dict>
 			<key>FileName</key>
