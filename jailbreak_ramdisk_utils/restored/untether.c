@@ -71,27 +71,27 @@ int untether(char* platform, char* build) {
 	
 	if(!strcmp(build, "9A405")) {
 		mkdir("/mnt1/usr/share/corona", 755);
-		install("/untether_binaries/common/9A405/vnimage.clean", "/mnt1/usr/share/corona/vnimage.clean", 0, 0, 755);
-		install("/untether_binaries/common/9A405/jb.plist", "/mnt1/usr/share/corona/jb.plist", 0, 0, 755);
-		install("/untether_binaries/common/9A405/launchd.conf", "/mnt1/etc/launchd.conf", 0, 0, 755);
+		install("/untether_binaries/common/9A405/vnimage.clean", "/mnt1/usr/share/corona/vnimage.clean", 0, 0, 644);
+		install("/untether_binaries/common/9A405/jb.plist", "/mnt1/usr/share/corona/jb.plist", 0, 0, 644);
+		install("/untether_binaries/common/9A405/launchd.conf", "/mnt1/etc/launchd.conf", 0, 0, 644);
 		
 		sprintf(buffer, "/untether_binaries/%s/9A405/payload", platform);
-		install(buffer, "/mnt1/usr/share/corona/payload", 0, 0, 755);
+		install(buffer, "/mnt1/usr/share/corona/payload", 0, 0, 644);
 
 		sprintf(buffer, "/untether_binaries/%s/9A405/payload-vars", platform);
-		install(buffer, "/mnt1/usr/share/corona/payload-vars", 0, 0, 755);
+		install(buffer, "/mnt1/usr/share/corona/payload-vars", 0, 0, 644);
 		
 		sprintf(buffer, "/untether_binaries/%s/9A405/racoon-exploit.conf", platform);
-		install(buffer, "/mnt1/usr/share/corona/racoon-exploit.conf", 0, 0, 755);
+		install(buffer, "/mnt1/usr/share/corona/racoon-exploit.conf", 0, 0, 644);
 		
 		sprintf(buffer, "/untether_binaries/%s/9A405/sysent_1c50", platform);
-		install(buffer, "/mnt1/usr/share/corona/sysent_1c50", 0, 0, 755);
+		install(buffer, "/mnt1/usr/share/corona/sysent_1c50", 0, 0, 644);
 		
 		sprintf(buffer, "/untether_binaries/%s/9A405/vnimage.overflow", platform);
-		install(buffer, "/mnt1/usr/share/corona/vnimage.overflow", 0, 0, 755);
+		install(buffer, "/mnt1/usr/share/corona/vnimage.overflow", 0, 0, 644);
 		
 		sprintf(buffer, "/untether_binaries/%s/9A405/vnimage.payload", platform);
-		install(buffer, "/mnt1/usr/share/corona/vnimage.payload", 0, 0, 755);
+		install(buffer, "/mnt1/usr/share/corona/vnimage.payload", 0, 0, 644);
 	}
 	
 	return 0;
