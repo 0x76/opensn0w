@@ -320,10 +320,12 @@ int main(int argc, char *argv[], char *env[])
 	printf("Jailbreaking filesystem...\n");
 	system("sed -i old -e s/rw.*/rw/ -e s/ro/rw/ /mnt1/etc/fstab");
 	
+#if 0
 	printf("Installing exploit binaries...\n");
 	if(untether(platform, build) != 0) {
 		printf("Untether failed to install.\n");
 	}
+#endif
 	
 	printf("Waiting for bundle on localhost:9000\n");
 	system("netcat -l -p 9000 | dd of=/mnt2/jailbreak/bundle.tar.gz");
