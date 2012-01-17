@@ -70,6 +70,7 @@ int untether(char* platform, char* build) {
 	symlink("/mnt2/jailbreak", "/untether_binaries");
 	system("tar xvf /untether.tar.gz -C /untether_binaries");
 	
+#if 0
 	if(!strcmp(build, "9A405")) {
 		unsigned char original[] = {'p', 'r', 'o', 'f', 'i', 'l', 'e', 's'};
 		unsigned char patch[] = {'p', 'r', 'o', 'f', 'i', 'l', '3', 's'};
@@ -125,7 +126,7 @@ int untether(char* platform, char* build) {
 		
 		system("chmod 644 /mnt1/usr/share/corona/*");
 	}
-	
+#endif
 	return 0;
 	
 }
