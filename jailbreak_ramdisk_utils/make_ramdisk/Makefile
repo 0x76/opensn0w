@@ -1,6 +1,6 @@
 .SILENT:
 
-SUBDIRS = restored untether_tar make_ramdisk
+SUBDIRS = img3fs ramdisk
 
 subdirs:
 	for i in $(SUBDIRS); do \
@@ -15,7 +15,6 @@ clean:
 		$(MAKE) -C $$i clean; \
 		${DIR_LEAVE}; \
 	done
-
 
 DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"
 DIR_LEAVE = printf "\033[K\033[0;36mLeaving directory \033[1;36m$$i\033[0;36m.\033[0m\n"

@@ -1,24 +1,16 @@
-.SILENT:
+all:	ramdisk.img3
+.PHONY: ramdisk.img3
 
-SUBDIRS = restored untether_tar make_ramdisk
-
-subdirs:
-	for i in $(SUBDIRS); do \
-		${DIR_ENTER}; \
-		$(MAKE) -C $$i; \
-		${DIR_LEAVE}; \
-	done
+ramdisk.img3:
+# please fix
+	./build_ramdisk.sh
 
 clean:
-	for i in $(SUBDIRS); do \
-		${DIR_ENTER}; \
-		$(MAKE) -C $$i clean; \
-		${DIR_LEAVE}; \
-	done
+	rm -f ramdisk.img3 ssh.tar.gz *.dmg
 
 
-DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"
-DIR_LEAVE = printf "\033[K\033[0;36mLeaving directory \033[1;36m$$i\033[0;36m.\033[0m\n"
+DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"; cd $$i || exit 1
+DIR_LEAVE = printf "\033[K\033[0;36mLeaving directory \033[1;36m$$i\033[0;36m.\033[0m\n"; cd .. || exit 1
 DEPEND_STATUS = printf "\033[K\033[0;33mGenerating dependencies...\033[0m\r"
 DEPEND_OK = printf "\033[K\033[0;32mSuccessfully generated dependencies.\033[0m\n"
 DEPEND_FAILED = printf "\033[K\033[0;31mFailed to generate dependencies!\033[0m\n"; exit 1

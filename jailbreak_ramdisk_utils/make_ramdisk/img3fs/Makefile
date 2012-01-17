@@ -1,24 +1,38 @@
+CC=gcc
+CFLAGS=-Wall -I/usr/local/include/osxfuse 
+OS_TARGET=img3fs
+LDFLAGS=-lfuse_ino64 -lcrypto 
+LDFLAGS2=-losxfuse_i64 -lcrypto 
+OBJS=img3fs.o
+
 .SILENT:
+.SUFFIXES: .c .o
 
-SUBDIRS = restored untether_tar make_ramdisk
+all:	img3fs
 
-subdirs:
-	for i in $(SUBDIRS); do \
-		${DIR_ENTER}; \
-		$(MAKE) -C $$i; \
-		${DIR_LEAVE}; \
-	done
+img3fs: $(OBJS)
+	${LINK}
+	if $(CC) $(CFLAGS) $(OBJS) -o $(OS_TARGET) $(LDFLAGS) $(LIBS); then \
+		${LINK_OK}; \
+	else \
+		${LINK_FAILED}; \
+	fi
+
+%.o: %.c
+	${COMPILE_STATUS}
+	if ${CC} ${CFLAGS} -c -o $@ $<; then \
+		${COMPILE_OK}; \
+	else \
+		${COMPILE_FAILED}; \
+	fi
 
 clean:
-	for i in $(SUBDIRS); do \
-		${DIR_ENTER}; \
-		$(MAKE) -C $$i clean; \
-		${DIR_LEAVE}; \
-	done
+	@printf "\033[K\033[0;32mCleaning\033[1;32m\033[0;32m...\033[0m\n"
+	rm -rf *.o $(OS_TARGET)
 
 
-DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"
-DIR_LEAVE = printf "\033[K\033[0;36mLeaving directory \033[1;36m$$i\033[0;36m.\033[0m\n"
+DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"; cd $$i || exit 1
+DIR_LEAVE = printf "\033[K\033[0;36mLeaving directory \033[1;36m$$i\033[0;36m.\033[0m\n"; cd .. || exit 1
 DEPEND_STATUS = printf "\033[K\033[0;33mGenerating dependencies...\033[0m\r"
 DEPEND_OK = printf "\033[K\033[0;32mSuccessfully generated dependencies.\033[0m\n"
 DEPEND_FAILED = printf "\033[K\033[0;31mFailed to generate dependencies!\033[0m\n"; exit 1
