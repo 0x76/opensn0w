@@ -24,7 +24,7 @@
 #include <sys/sockio.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <stdint.H>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <net/if.h>
 #include <assert.h>

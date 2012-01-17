@@ -117,7 +117,7 @@ int cp(const char *src, const char *dest) {
 
 int hfs_mount(const char* device, const char* mountdir, int options) {
 	struct hfs_mount_args args;
-	args.fspec = device;
+	args.fspec = (char*)device;
 	return mount("hfs", mountdir, options, &args);
 }
 
@@ -168,5 +168,6 @@ void* memset(char *b, int c, int len) {
 	for(i = 0; i < len; i++) {
 		b[i] = c;
 	}
+	return b;
 }
 

@@ -23,6 +23,7 @@
 #include <sys/socket.h>
 #include <sys/sockio.h>
 #include <sys/ioctl.h>
+#include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <net/if.h>
@@ -186,7 +187,7 @@ char *get_system_platform(void)
 int main(int argc, char *argv[], char *env[])
 {
 	struct stat status;
-	int ret = 0, i;
+	int i;
 	char *platform, *build;
 	AbstractFile *plistFile;
 	Dictionary* info;

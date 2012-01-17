@@ -350,12 +350,10 @@ void freeImg3Root(Img3Element * element)
 
 void readImg3Root(AbstractFile * file, Img3Element * element)
 {
-	Img3Element *children;
-	Img3Element *current;
+	Img3Element *children = NULL;
+	Img3Element *current = NULL;
 	uint32_t remaining;
 	AppleImg3RootHeader *header;
-
-	children = NULL;
 
 	header =
 	    (AppleImg3RootHeader *) realloc(element->header,

@@ -1,17 +1,11 @@
-.SILENT:
-
-all:	restored untether.tar.gz
-.PHONY: restored untether.tar.gz
-
-restored:
-	make -C restored
+all:	untether.tar.gz
+.PHONY: restored
 
 untether.tar.gz:
-	make -C untether_tar
+	./create.sh
 
 clean:
-	make -C restored clean
-	make -C untether_tar clean
+	rm -f untether.tar.gz
 
 
 DIR_ENTER = printf "\033[K\033[0;36mEntering directory \033[1;36m$$i\033[0;36m.\033[0m\n"; cd $$i || exit 1
