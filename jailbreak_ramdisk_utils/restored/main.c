@@ -232,23 +232,6 @@ int main(int argc, char *argv[], char *env[])
 	printf("disk0s1 is alive. Houston, we hear you loud and clear.\n");
 
 	/* at this point, check the disk */
-	printf("Waiting for data partition...\n");
-	for (i = 0; i < 10; i++) {
-		if (!stat("/dev/disk0s2s1", &status)) {
-			system("/sbin/fsck_hfs -fy /dev/disk0s2s1");
-			system("/sbin/mount_hfs /dev/disk0s2s1 /mnt1");
-			break;
-		}
-		if (!stat("/dev/disk0s1s2", &status)) {
-			system("/sbin/fsck_hfs -fy /dev/disk0s1s2");
-			system("/sbin/mount_hfs /dev/disk0s1s2 /mnt2");
-			break;
-		}
-		sleep(5);
-	}
-
-	sleep(2);
-
 	printf("Waiting for rootfs partition...\n");
 	for (i = 0; i < 10; i++) {
 		if (!stat("/dev/disk0s1s1", &status)) {
@@ -263,6 +246,24 @@ int main(int argc, char *argv[], char *env[])
 		}
 		sleep(5);
 	}
+	
+	
+	printf("Waiting for data partition...\n");
+	for (i = 0; i < 10; i++) {
+		if (!stat("/dev/disk0s2s1", &status)) {
+			system("/sbin/fsck_hfs -fy /dev/disk0s2s1");
+			system("/sbin/mount_hfs /dev/disk0s2s1 /mnt1/private/var");
+			break;
+		}
+		if (!stat("/dev/disk0s1s2", &status)) {
+			system("/sbin/fsck_hfs -fy /dev/disk0s1s2");
+			system("/sbin/mount_hfs /dev/disk0s1s2 /mnt1/private/var");
+			break;
+		}
+		sleep(5);
+	}
+
+	sleep(2);
 
 	/* mount /dev, we're going to chroot into it. */
 	printf("Filesystem mounted to /mnt1.\n");
@@ -270,6 +271,10 @@ int main(int argc, char *argv[], char *env[])
 	printf("Making RAM disk rw...\n");
 	system("mount -uw /");
 
+	printf("Creating symbolic links...\n");
+	system("rm -rf /mnt2");
+	system("ln -sn /mnt1/private/var /mnt2");
+	
 	/* get name */
 	platform = get_system_platform();
 
@@ -315,10 +320,16 @@ int main(int argc, char *argv[], char *env[])
 	printf("Jailbreaking filesystem...\n");
 	system("sed -i old -e s/rw.*/rw/ -e s/ro/rw/ /mnt1/etc/fstab");
 	
+#if 0
 	printf("Installing exploit binaries...\n");
 	if(untether(platform, build) != 0) {
 		printf("Untether failed to install.\n");
 	}
+#endif
+	
+	printf("Waiting for bundle on localhost:9000\n");
+	system("netcat -l -p 9000 | dd of=/mnt2/jailbreak/bundle.tar.gz");
+	system("tar xvf /mnt2/jailbreak/bundle.tar.gz -C /mnt1");
 	
 	printf(" #######  ##    ##\n");
 	printf("##     ## ##   ## \n");
