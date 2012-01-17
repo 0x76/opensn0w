@@ -1,10 +1,10 @@
 CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2
 SDKROOT=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/
-CFLAGS=-arch armv6 -isysroot $(SDKROOT) -static -nostartfiles -nodefaultlibs -nostdlib -g
-LDFLAGS=-Wl,-e,_main
-OS_TARGET=launchd
-OBJS=main.o crtsup.o syscalls.o
-all: launchd
+CFLAGS=-arch armv6 -isysroot $(SDKROOT)  -g -I. -I../../xpwntool
+LDFLAGS=-Wl,-e,_main -framework IOKit -framework CoreFoundation
+OS_TARGET=restored
+OBJS=main.o crtsup.o plist.o abstractfile.o untether.o
+all: restored
 
 .SILENT:
 .SUFFIXES: .c .o
@@ -28,7 +28,7 @@ UNAME := $(shell uname -s)
 		${COMPILE_FAILED}; \
 	fi
 
-launchd: $(OBJS)
+restored: $(OBJS)
 	${LINK}
 	if $(CC) $(CFLAGS) $(OBJS) -o $(OS_TARGET) $(LDFLAGS) $(LIBS); then \
 		${LINK_OK}; \
