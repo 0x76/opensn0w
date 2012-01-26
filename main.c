@@ -19,7 +19,7 @@
 
 #include "sn0w.h"
 
-bool verboseflag = false, dump_bootrom = false;
+bool verboseflag = false, dump_bootrom = false, raw_load = false;
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
@@ -42,6 +42,7 @@ int UsingRamdisk = FALSE;
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
+			"   -z                 Use raw image load payload and exit...\n" \
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -s                 Start iRecovery recovery mode shell.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
@@ -309,7 +310,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhBsp:Rb:w:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhBzsp:Rb:w:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'B':
 			dump_bootrom = true;
@@ -322,6 +323,9 @@ int main(int argc, char **argv)
 			break;
 		case 'R':
 			pwnrecovery = true;
+			break;
+		case 'z':
+			raw_load = true;
 			break;
 		case 'a':
 			boot_args_process(optarg);
@@ -426,7 +430,7 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
-	if(dump_bootrom) {
+	if(dump_bootrom || raw_load) {
 		/* i know, hacky */
 		goto actually_do_stuff;
 	}
