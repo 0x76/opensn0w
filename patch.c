@@ -41,8 +41,6 @@ Dictionary *get_key_dictionary_from_bundle(char *member)
 	return NULL;
 }
 
-extern patch devicetree_root_name;
-
 int patch_devtree(char *buffer, size_t length)
 {
 	int i;

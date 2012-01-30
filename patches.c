@@ -214,3 +214,18 @@ patch kernel_redsn0w_unknown3 =
     { kernel_redsn0w_unknown3_original, kernel_redsn0w_unknown3_patch,
 	sizeof(kernel_redsn0w_unknown3_original)
 };
+
+unsigned char devicetree_root_name_original[] =
+    { "secure-root-prefix"
+};
+
+unsigned char devicetree_root_name_patch[] =
+    { "secure-root-lolfix"
+};
+
+patch devicetree_root_name =
+    { devicetree_root_name_original, devicetree_root_name_patch,
+	sizeof(devicetree_root_name_original)
+};
+
+

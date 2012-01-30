@@ -78,6 +78,8 @@ extern patch kernel_redsn0w_unknown1;
 extern patch kernel_redsn0w_unknown2;
 extern patch kernel_redsn0w_unknown3;
 
+extern patch devicetree_root_name;
+
 int limera1n();
 int steaks4uce();
 int pwnage2();
