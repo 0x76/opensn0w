@@ -648,7 +648,7 @@ actually_do_stuff:
 	}
 
 	/* upload devicetree */
-	upload_image(Firmware.item[DEVICETREE], 1, 0);
+	upload_image(Firmware.item[DEVICETREE], 1, 1);
 	client = irecv_reconnect(client, 2);
 	irecv_send_command(client, "devicetree");
 	client = irecv_reconnect(client, 2);

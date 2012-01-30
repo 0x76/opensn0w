@@ -41,6 +41,25 @@ Dictionary *get_key_dictionary_from_bundle(char *member)
 	return NULL;
 }
 
+extern patch devicetree_root_name;
+
+int patch_devtree(char *buffer, size_t length)
+{
+	int i;
+	for (i = 0; i < length; i++) {
+		char *candidate = &buffer[i];
+		if (!memcmp
+		    (candidate, devicetree_root_name.original,
+		     devicetree_root_name.length)) {
+			printf("Patching devicetree_root_name... at 0x%08x\n", i);
+			memcpy(candidate, devicetree_root_name.patched,
+			       devicetree_root_name.length);
+			continue;
+		}
+	}
+	return 0;
+}
+
 int patch_bootloaders(char *buffer, size_t length)
 {
 	int i;
@@ -179,7 +198,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_xattr.original, kernel_xattr.length)) {
 			printf("Patching kernel xattr check... at 0x%08x\n", i);
-			memcpy(candidate, kernel_xattr.patched,
+			memcpy((char*)candidate, (char*)kernel_xattr.patched,
 			       kernel_xattr.length);
 			continue;
 		}
@@ -231,13 +250,14 @@ int patch_kernel(char *buffer, size_t length)
 int patch_file(char *filename)
 {
 	AbstractFile *template = NULL, *inFile, *certificate =
-	    NULL, *outFile, *newFile;
+	    NULL, *outFile, *newFile, *outFile2, *newFile2;
 	unsigned int *key = NULL;
 	unsigned int *iv = NULL;
 	char *inData;
 	size_t inDataSize;
 	char *buffer;
 	Dictionary *data;
+	char *buf;
     char* tokenizedname;
     char* dup = strndup(filename, 255);
 
@@ -296,7 +316,16 @@ int patch_file(char *filename)
 	}
 	memset(buffer, 0, strlen(filename) + 5);
 
+	/* zero buffer */
+	buf = malloc(strlen(filename) + 5);
+	if (!buf) {
+		printf("Cannot allocate memory\n");
+		return -1;
+	}
+	memset(buffer, 0, strlen(filename) + 5);
+
 	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
+	snprintf(buf, strlen(filename) + 5, "%s.dec", filename);
 
 	/* open output */
 	printf("opening %s (output) as an abstract file\n", filename);
@@ -307,11 +336,24 @@ int patch_file(char *filename)
 		return -1;
 	}
 
+	outFile2 = createAbstractFileFromFile(fopen(buf, "wb"));
+	if (!outFile2) {
+		printf("Cannot open outfile\n");
+		return -1;
+	}
+
+
 	printf("pwned file is %s, will upload later\n", buffer);
 
 	newFile =
 	    duplicateAbstractFile2(template, outFile, key, iv, certificate);
 	if (!newFile) {
+		printf("Cannot open newfile\n");
+		return -1;
+	}
+
+	newFile2 = outFile2;
+	if (!newFile2) {
 		printf("Cannot open newfile\n");
 		return -1;
 	}
@@ -323,11 +365,16 @@ int patch_file(char *filename)
 		patch_bootloaders(inData, inDataSize);
 	else if (strcasestr(filename, "kernelcache"))
 		patch_kernel(inData, inDataSize);
+	else if (strcasestr(filename, "DeviceTree"))
+		patch_devtree(inData, inDataSize);
 
 	/* write patched contents */
 	printf("writing pwned file\n");
+	
 	newFile->write(newFile, inData, inDataSize);
 	newFile->close(newFile);
+	newFile2->write(newFile2, inData, inDataSize);
+	newFile2->close(newFile2);
 
 	free(buffer);
 
