@@ -19,6 +19,8 @@
 
 #include "sn0w.h"
 
+#define __SN0W_VERSION__ "0.0.0.1-pre"
+
 bool verboseflag = false, dump_bootrom = false, raw_load = false;
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
@@ -307,6 +309,7 @@ int main(int argc, char **argv)
 	firmware Firmware;
 
 	printf("opensn0w, an open source jailbreaking program.\n"
+	       "version: " __SN0W_VERSION__ "\n\n"
 	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
 
 	opterr = 0;
