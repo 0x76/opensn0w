@@ -6,6 +6,8 @@ and boot loader patches along with exploit injection. Currently, we
 remove the signature checks in iBEC and iBSS (both of which are boot
 loaders) and signature and sandboxing checks in the kernel.
 
+opensn0w has other interesting functions too! Feel free to prod around!
+
 Why opensn0w?
 =============
 
@@ -24,8 +26,8 @@ such as the Samsung S5L8930XSI (Apple A4) and then the appropriate
 exploit is injected and then we upload our patched iBSS which loads
 a patched iBEC which will load our owned kernel. On the
 s5l8930/8922/8920 we use the limera1n exploit made by geohot
-to own DFU signature checks. Support for the s5l8720 and the
-s5l8900 has not yet been implemented.
+to own DFU signature checks. Support for the s5l8900 and the
+has not yet been implemented.
 
 Why not just use redsn0w? It has a graphical user interface!
 ============================================================
@@ -50,11 +52,16 @@ We're working on the actual project as quick as we can. We
 have lives too. :).
 
 Just make sure to install development packages for:
-  - readline
-  - zlib
-  - libssl (openssl)
-  - libcurl
-  - libusb-1.0
-  - libpng
+  * readline
+  * zlib
+  * libssl (openssl)
+  * libcurl
+  * libusb-1.0
+  * libpng
 
 And punch in make, and you're done!
+
+Version Log
+===========
+
+  * 2011/Feb/03 - Version 0.0.0.1-pre!
