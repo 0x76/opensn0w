@@ -35,7 +35,7 @@ int UsingRamdisk = FALSE;
 			"\n" \
 			"Options:\n" \
 			"   -v                 Verbose mode. Useful for debugging.\n" \
-			"   -w url             Get necessary files from a remote IPSW.\n" \
+			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
 			"   -p plist           Use firmware plist\n" \
 			"   -h                 Help.\n" \
 			"   -k kernelcache     Boot using specified kernel.\n" \
@@ -299,6 +299,7 @@ int main(int argc, char **argv)
 	int c, i;
 	char *kernelcache = NULL, *bootlogo = NULL, *url =
 	    NULL, *plist = NULL, *ramdisk = NULL;
+	char* processedname;
 	int pwndfu = false, pwnrecovery = false, autoboot = false;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
@@ -310,7 +311,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhBzsp:Rb:w:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vdAhBzsp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'B':
 			dump_bootrom = true;
@@ -351,7 +352,7 @@ int main(int argc, char **argv)
 			}
 			kernelcache = optarg;
 			break;
-		case 'w':
+		case 'i':
 			url = optarg;
 			break;
 		case 'b':
@@ -389,7 +390,6 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-
 
 	if(autoboot) {
 		printf("Initializing libirecovery\n");
@@ -534,9 +534,17 @@ actually_do_stuff:
 		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
 	if (urlKey != NULL)
 		device->url = urlKey->value;
-	
-	if(url)
-		device->url = url;
+
+	if(url) {
+		processedname = malloc(strlen(url) + sizeof("file://"));
+		if(!processedname) {
+			printf("Could not allocate memory\n");
+			exit(-1);
+		}
+		memset(processedname, 0, strlen(url) + sizeof("file://"));
+		snprintf(processedname, strlen(url) + sizeof("file://"), "file://%s", url);
+		device->url = processedname;
+	}
 
 	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
 	       device->chip_id);
