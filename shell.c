@@ -60,14 +60,6 @@ int irecovery_shell_initialize() {
 	}
 	
 	/* Check the device */
-	err = irecv_get_device(client, &device);
-	if (device == NULL || device->index == DEVICE_UNKNOWN) {
-		printf("Bad device. errno %d\n", err);
-		return -1;
-	}
-	
-	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
-		   device->chip_id);
 	printf("iBoot information: %s\n", client->serial);
 	
 	printf("Starting shell...\n");

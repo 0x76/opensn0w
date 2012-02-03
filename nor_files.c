@@ -49,8 +49,6 @@ AbstractFile *openAbstractFile(AbstractFile * file)
 		return openAbstractFile(createAbstractFileFromImg3(file));
 	} else if (signatureBE == COMP_SIGNATURE) {
 		return openAbstractFile(createAbstractFileFromComp(file));
-	} else if (signatureBE == IBOOTIM_SIG_UINT) {
-		return openAbstractFile(createAbstractFileFromIBootIM(file));
 	} else {
 		return file;
 	}
@@ -89,11 +87,6 @@ AbstractFile *duplicateAbstractFile(AbstractFile * file, AbstractFile * backing)
 		orig = createAbstractFileFromComp(file);
 		return duplicateAbstractFile(orig,
 					     duplicateCompFile(orig, backing));
-	} else if (signatureBE == IBOOTIM_SIG_UINT) {
-		orig = createAbstractFileFromIBootIM(file);
-		return duplicateAbstractFile(orig,
-					     duplicateIBootIMFile(orig,
-								  backing));
 	} else {
 		file->close(file);
 		return backing;
@@ -131,10 +124,6 @@ AbstractFile *openAbstractFile3(AbstractFile * file, const unsigned int *key,
 		iv = NULL;
 	} else if (signatureBE == COMP_SIGNATURE) {
 		cur = createAbstractFileFromComp(file);
-		key = NULL;
-		iv = NULL;
-	} else if (signatureBE == IBOOTIM_SIG_UINT) {
-		cur = createAbstractFileFromIBootIM(file);
 		key = NULL;
 		iv = NULL;
 	} else {
@@ -202,11 +191,6 @@ AbstractFile *duplicateAbstractFile2(AbstractFile * file,
 		orig = createAbstractFileFromComp(file);
 		return duplicateAbstractFile(orig,
 					     duplicateCompFile(orig, backing));
-	} else if (signatureBE == IBOOTIM_SIG_UINT) {
-		orig = createAbstractFileFromIBootIM(file);
-		return duplicateAbstractFile(orig,
-					     duplicateIBootIMFile(orig,
-								  backing));
 	} else {
 		file->close(file);
 		return backing;
