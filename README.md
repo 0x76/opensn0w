@@ -26,8 +26,8 @@ such as the Samsung S5L8930XSI (Apple A4) and then the appropriate
 exploit is injected and then we upload our patched iBSS which loads
 a patched iBEC which will load our owned kernel. On the
 s5l8930/8922/8920 we use the limera1n exploit made by geohot
-to own DFU signature checks. Support for the s5l8900 and the
-has not yet been implemented.
+to own DFU signature checks. Support for the s5l8900 has not 
+yet been implemented.
 
 Why not just use redsn0w? It has a graphical user interface!
 ============================================================
@@ -51,7 +51,7 @@ It's too complicated to use at the moment!
 We're working on the actual project as quick as we can. We 
 have lives too. :).
 
-Just make sure to install development packages for:
+* Just make sure to install development packages for:
   * readline
   * zlib
   * libssl (openssl)
