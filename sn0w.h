@@ -44,7 +44,7 @@
  * ex: powerpc64
  */
 
-#undef BIG_ENDIAN
+//#undef BIG_ENDIAN
 
 extern irecv_device_t device;
 extern irecv_client_t client;

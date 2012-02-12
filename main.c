@@ -117,13 +117,13 @@ int poll_device_for_dfu()
 
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		printf("Connect the device in DFU mode. [%d]\n", try);
+		STATUS("Connect the device in DFU mode. [%d]\n", try);
 		try++;
 		return 1;
 	}
 
 	if (client->mode != kDfuMode) {
-		printf("Connect the device in DFU mode. [%d]\n", try);
+		STATUS("Connect the device in DFU mode. [%d]\n", try);
 		irecv_close(client);
 		try++;
 		return 1;
@@ -145,7 +145,7 @@ int send_command(char* name) {
 	while(1) {
 		err = irecv_open(&client);
 		if (err != IRECV_E_SUCCESS) {
-			printf("Connect the device. err %d\n", err);
+			STATUS("Connect the device. err %d\n", err);
 			sleep(1);
 		} else if(err == IRECV_E_SUCCESS) {
 			break;
@@ -175,7 +175,7 @@ int send_file(char* name) {
 	while(1) {
 		err = irecv_open(&client);
 		if (err != IRECV_E_SUCCESS) {
-			printf("Connect the device. err %d\n", err);
+			STATUS("Connect the device. err %d\n", err);
 			sleep(1);
 		} else if(err == IRECV_E_SUCCESS) {
 			break;
@@ -206,13 +206,13 @@ int poll_device_for_recovery2()
 	
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		printf("Connect the device in recovery mode. [%d]\n", try);
+		STATUS("Connect the device in recovery mode. [%d]\n", try);
 		try++;
 		return 1;
 	}
 	
 	if (client->mode != kRecoveryMode2) {
-		printf("Connect the device in recovery mode. [%d]\n", try);
+		STATUS("Connect the device in recovery mode. [%d]\n", try);
 		irecv_close(client);
 		try++;
 		return 1;
@@ -224,6 +224,7 @@ int poll_device_for_recovery2()
 int fetch_image(const char *path, const char *output)
 {
 	DPRINT("Fetching %s...\n", path);
+	STATUS("[*] Fetching %s...\n", path);
 	if (download_file_from_zip(device->url, path, output, NULL) != 0) {
 		ERR("Unable to fetch %s\n", path);
 		return -1;
@@ -308,6 +309,17 @@ int main(int argc, char **argv)
 	printf("opensn0w, an open source jailbreaking program.\n"
 	       "version: " __SN0W_VERSION__ "\n\n"
 	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+
+#ifdef _NDEBUG_
+	printf("Configuration: This is the RELEASE binary. ");
+#else
+	printf("Configuration: This is the DEBUG binary. ");
+#endif
+#ifdef BIG_ENDIAN
+	printf("Compiled for big endian.\n\n");
+#else
+	printf("Compiled for little endian.\n\n");
+#endif
 
 	opterr = 0;
 
@@ -409,19 +421,20 @@ int main(int argc, char **argv)
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
 			FATAL("Bad device. errno %d\n", err);
 		}
-		
-		printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
-			   device->chip_id);
-		printf("iBoot information: %s\n", client->serial);
+		STATUS("[*] Device found.\n");
 
-		printf("fixing recovery loop\n");
+		DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
+			   device->chip_id);
+		DPRINT("iBoot information: %s\n", client->serial);
+
+		STATUS("[*] Fixing recovery loop...\n");
 		irecv_send_command(client, "setenv auto-boot true");
 		irecv_send_command(client, "saveenv");
 		client = irecv_reconnect(client, 2);
 		
 		irecv_send_command(client, "reboot");
 		
-		printf("done!\n");
+		STATUS("[*] Operation completed.\n");
 		exit(0);
 	}
 
@@ -536,10 +549,12 @@ actually_do_stuff:
 		device->url = processedname;
 	}
 
+	STATUS("[*] Device found.\n");
 	DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
 	       device->chip_id);
 	DPRINT("iBoot information: %s\n", client->serial);
 
+	STATUS("[*] Exploiting bootrom...\n");
 	/* What jailbreak exploit is this thing capable of? */
 	if (device->chip_id == 8930 || device->chip_id == 8922
 	    || device->chip_id == 8920) {
@@ -590,24 +605,26 @@ actually_do_stuff:
 	if (ramdisk)
 		UsingRamdisk = TRUE;
 
+	STATUS("[*] Uploading stage zero (iBSS)...\n");
 	upload_image(Firmware.item[IBSS], 0, 1);
 	client = irecv_reconnect(client, 2);
 
+	STATUS("[*] Uploading stage one (iBEC)...\n");
 	upload_image(Firmware.item[IBEC], 0, 1);
 	client = irecv_reconnect(client, 10);
 
+	STATUS("[*] Waiting for reset...\n");
 	irecv_reset(client);
 	client = irecv_reconnect(client, 2);
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);
 
 	if (pwnrecovery) {
-		printf
-		    ("Device has a pwned iBEC uploaded. Do whatever you want \n");
-		exit(0);
+		FATAL("Device has a pwned iBEC uploaded. Do whatever you want \n");
 	}
 
 	/* upload logo */
+	STATUS("[*] Uploading boot logo...\n");
 	if(bootlogo) {
 		Firmware.item[APPLELOGO].name = bootlogo;
 	}
@@ -620,6 +637,7 @@ actually_do_stuff:
 
 	/* upload ramdisk */
 	if (ramdisk) {
+		STATUS("[*] Uploading ramdisk...\n");
 		Firmware.item[RESTORERAMDISK].name = ramdisk;
 		upload_image(Firmware.item[RESTORERAMDISK], 4, 0);
 		irecv_reset(client);
@@ -644,12 +662,14 @@ actually_do_stuff:
 	}
 
 	/* upload devicetree */
+	STATUS("[*] Uploading device tree...\n");
 	upload_image(Firmware.item[DEVICETREE], 1, 1);
 	client = irecv_reconnect(client, 2);
 	irecv_send_command(client, "devicetree");
 	client = irecv_reconnect(client, 2);
 
 	/* upload kernel */
+	STATUS("[*] Uploading kernel...\n");
 	if(kernelcache) {
 		Firmware.item[KERNELCACHE].name = kernelcache;
 	}
@@ -657,6 +677,7 @@ actually_do_stuff:
 	client = irecv_reconnect(client, 2);
 
 	/* BootX */
+	STATUS("[*] Booting.\n");
 	DPRINT("Booting kernel.\n");
 	irecv_send_command(client, "bootx");
 

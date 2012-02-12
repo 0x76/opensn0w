@@ -1,4 +1,9 @@
 CC=gcc
+
+#
+# Add -D_NDEBUG_ to make release binary
+#
+
 CFLAGS=-Wall -I. -g -Ixpwntool -fPIC -O3
 OS_TARGET=opensn0w
 LDFLAGS=
