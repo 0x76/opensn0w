@@ -403,7 +403,6 @@ int main(int argc, char **argv)
 		while (poll_device_for_recovery2()) {
 			sleep(1);
 		}
-		puts("");
 		
 		/* Check the device */
 		err = irecv_get_device(client, &device);
@@ -511,7 +510,6 @@ actually_do_stuff:
 	while (poll_device_for_dfu()) {
 		sleep(1);
 	}
-	puts("");
 
 	/* Check the device */
 	err = irecv_get_device(client, &device);
@@ -586,7 +584,7 @@ actually_do_stuff:
 	}
 
 	/* We are owned now! */
-	printf("Bootrom is pwned now! :D\n");
+	DPRINT("Bootrom is pwned now! :D\n");
 
 	/* upload iBSS */
 	if (ramdisk)
