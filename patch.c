@@ -49,7 +49,7 @@ int patch_devtree(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, devicetree_root_name.original,
 		     devicetree_root_name.length)) {
-			printf("Patching devicetree_root_name... at 0x%08x\n", i);
+			DPRINT("Patching devicetree_root_name... at 0x%08x\n", i);
 			memcpy(candidate, devicetree_root_name.patched,
 			       devicetree_root_name.length);
 			continue;
@@ -69,62 +69,62 @@ int patch_bootloaders(char *buffer, size_t length)
 	for (i = 0; i < length; i++) {
 		char *candidate = &buffer[i];
 		if (!memcmp(candidate, iBSS_SDOM.original, iBSS_SDOM.length)) {
-			printf("Patching bootloader SDOM check... at 0x%08x\n",
+			DPRINT("Patching bootloader SDOM check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_SDOM.patched, iBSS_SDOM.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_PROD.original, iBSS_PROD.length)) {
-			printf("Patching bootloader PROD check... at 0x%08x\n",
+			DPRINT("Patching bootloader PROD check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_PROD.patched, iBSS_PROD.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_CHIP.original, iBSS_CHIP.length)) {
-			printf("Patching bootloader CHIP check... at 0x%08x\n",
+			DPRINT("Patching bootloader CHIP check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_CHIP.patched, iBSS_CHIP.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_TYPE.original, iBSS_TYPE.length)) {
-			printf("Patching bootloader TYPE check... at 0x%08x\n",
+			DPRINT("Patching bootloader TYPE check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_TYPE.patched, iBSS_TYPE.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_SEPO.original, iBSS_SEPO.length)) {
-			printf("Patching bootloader SEPO check... at 0x%08x\n",
+			DPRINT("Patching bootloader SEPO check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_SEPO.patched, iBSS_SEPO.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_CEPO.original, iBSS_CEPO.length)) {
-			printf("Patching bootloader CEPO check... at 0x%08x\n",
+			DPRINT("Patching bootloader CEPO check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_CEPO.patched, iBSS_CEPO.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_BORD.original, iBSS_BORD.length)) {
-			printf("Patching bootloader BORD check... at 0x%08x\n",
+			DPRINT("Patching bootloader BORD check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_BORD.patched, iBSS_BORD.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_ECID.original, iBSS_ECID.length)) {
-			printf("Patching bootloader ECID check... at 0x%08x\n",
+			DPRINT("Patching bootloader ECID check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_ECID.patched, iBSS_ECID.length);
 			continue;
 		}
 		if (!memcmp(candidate, iBSS_SHSH.original, iBSS_SHSH.length)) {
-			printf("Patching bootloader SHSH check... at 0x%08x\n",
+			DPRINT("Patching bootloader SHSH check... at 0x%08x\n",
 			       i);
 			memcpy(candidate, iBSS_SHSH.patched, iBSS_SHSH.length);
 			continue;
 		}
 		if (!memcmp
 		    (candidate, iBEC_bootargs.original, iBEC_bootargs.length)) {
-			printf("Patching bootargs... at 0x%08x\n", i);
+			DPRINT("Patching bootargs... at 0x%08x\n", i);
 			memcpy(candidate, iBEC_bootargs.patched,
 			       iBEC_bootargs.length);
 			continue;
@@ -132,7 +132,7 @@ int patch_bootloaders(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, iBEC_bootargs_jmp.original,
 		     iBEC_bootargs_jmp.length)) {
-			printf("Patching bootargs check... at 0x%08x\n", i);
+			DPRINT("Patching bootargs check... at 0x%08x\n", i);
 			memcpy(candidate, iBEC_bootargs_jmp.patched,
 			       iBEC_bootargs_jmp.length);
 			continue;
@@ -148,14 +148,14 @@ int patch_kernel(char *buffer, size_t length)
 		char *candidate = &buffer[i];
 		if (!memcmp
 		    (candidate, kernel_CSED.original, kernel_CSED.length)) {
-			printf("Patching kernel CSED check... at 0x%08x\n", i);
+			DPRINT("Patching kernel CSED check... at 0x%08x\n", i);
 			memcpy(candidate, kernel_CSED.patched,
 			       kernel_CSED.length);
 			continue;
 		}
 		if (!memcmp
 		    (candidate, kernel_AMFI.original, kernel_AMFI.length)) {
-			printf("Patching kernel AMFI check... at 0x%08x\n", i);
+			DPRINT("Patching kernel AMFI check... at 0x%08x\n", i);
 			memcpy(candidate, kernel_AMFI.patched,
 			       kernel_AMFI.length);
 			continue;
@@ -163,7 +163,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel__PE_i_can_has_debugger.original,
 		     kernel__PE_i_can_has_debugger.length)) {
-			printf
+			DPRINT
 			    ("Patching kernel _i_can_has_debugger check... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel__PE_i_can_has_debugger.patched,
@@ -173,7 +173,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_IOAESAccelerator.original,
 		     kernel_IOAESAccelerator.length)) {
-			printf
+			DPRINT
 			    ("Patching kernel IOAESAccelerator check... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel_IOAESAccelerator.patched,
@@ -183,7 +183,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_sigcheck.original,
 		     kernel_sigcheck.length)) {
-			printf
+			DPRINT
 			    ("Patching kernel signature enforcement check... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel_sigcheck.patched,
@@ -195,7 +195,7 @@ int patch_kernel(char *buffer, size_t length)
 		/* buggy on big endian, bad kernel on ps3. */
 		if (!memcmp
 		    (candidate, kernel_xattr.original, kernel_xattr.length)) {
-			printf("Patching kernel xattr check... at 0x%08x\n", i);
+			DPRINT("Patching kernel xattr check... at 0x%08x\n", i);
 			memcpy((char*)candidate, (char*)kernel_xattr.patched,
 			       kernel_xattr.length);
 			continue;
@@ -204,7 +204,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_redsn0w_unknown0.original,
 		     kernel_redsn0w_unknown0.length)) {
-			printf
+			DPRINT
 			    ("Patching unknown kernel check (redsn0w 0)... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel_redsn0w_unknown0.patched,
@@ -214,7 +214,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_redsn0w_unknown1.original,
 		     kernel_redsn0w_unknown1.length)) {
-			printf
+			DPRINT
 			    ("Patching unknown kernel check (redsn0w 1)... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel_redsn0w_unknown1.patched,
@@ -224,7 +224,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_redsn0w_unknown2.original,
 		     kernel_redsn0w_unknown2.length)) {
-			printf
+			DPRINT
 			    ("Patching unknown kernel check (redsn0w 2)... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel_redsn0w_unknown2.patched,
@@ -234,7 +234,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_redsn0w_unknown3.original,
 		     kernel_redsn0w_unknown3.length)) {
-			printf
+			DPRINT
 			    ("Patching unknown kernel check (redsn0w 3)... at 0x%08x\n",
 			     i);
 			memcpy(candidate, kernel_redsn0w_unknown3.patched,
@@ -256,20 +256,20 @@ int patch_file(char *filename)
 	char *buffer;
 	Dictionary *data;
 	char *buf;
-    char* tokenizedname;
-    char* dup = strndup(filename, 255);
+	char* tokenizedname;
+	char* dup = strndup(filename, 255);
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
 	/* open base template */
 	if (!template) {
-		printf("Cannot open template.\n");
+		ERR("Cannot open template.\n");
 		return -1;
 	}
 
-	printf("getting keys\n");
+	DPRINT("getting keys\n");
     
-    tokenizedname = strtok(dup, ".,");
+	tokenizedname = strtok(dup, ".,");
     
 	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
@@ -277,13 +277,13 @@ int patch_file(char *filename)
 
 	if (keyValue) {
 		size_t bytes;
-		printf("Key for %s: %s\n", filename, keyValue->value);
+		DPRINT("Key for %s: %s\n", filename, keyValue->value);
 		hexToInts(keyValue->value, &key, &bytes);
 	}
 
 	if (ivValue) {
 		size_t bytes;
-		printf("IV for %s: %s\n", filename, ivValue->value);
+		DPRINT("IV for %s: %s\n", filename, ivValue->value);
 		hexToInts(ivValue->value, &iv, &bytes);
 	}
 
@@ -292,24 +292,24 @@ int patch_file(char *filename)
 	    openAbstractFile2(createAbstractFileFromFile(fopen(filename, "rb")),
 			      key, iv);
 	if (!inFile) {
-		printf("Cannot open %s.\n", filename);
+		DPRINT("Cannot open %s.\n", filename);
 		return -1;
 	}
 
 	/* read it */
-	printf("reading data from initial abstract\n");
+	DPRINT("reading data from initial abstract\n");
 	inDataSize = (size_t) inFile->getLength(inFile);
 	inData = (char *)malloc(inDataSize);
 	inFile->read(inFile, inData, inDataSize);
 	inFile->close(inFile);
 
 	/* debug 8) */
-	hex_dump(inData, 0x240);
+	//hex_dump(inData, 0x240);
 
 	/* zero buffer */
 	buffer = malloc(strlen(filename) + 5);
 	if (!buffer) {
-		printf("Cannot allocate memory\n");
+		ERR("Cannot allocate memory\n");
 		return -1;
 	}
 	memset(buffer, 0, strlen(filename) + 5);
@@ -317,7 +317,7 @@ int patch_file(char *filename)
 	/* zero buffer */
 	buf = malloc(strlen(filename) + 5);
 	if (!buf) {
-		printf("Cannot allocate memory\n");
+		ERR("Cannot allocate memory\n");
 		return -1;
 	}
 	memset(buffer, 0, strlen(filename) + 5);
@@ -326,38 +326,38 @@ int patch_file(char *filename)
 	snprintf(buf, strlen(filename) + 5, "%s.dec", filename);
 
 	/* open output */
-	printf("opening %s (output) as an abstract file\n", filename);
+	DPRINT("opening %s (output) as an abstract file\n", filename);
 
 	outFile = createAbstractFileFromFile(fopen(buffer, "wb"));
 	if (!outFile) {
-		printf("Cannot open outfile\n");
+		DPRINT("Cannot open outfile\n");
 		return -1;
 	}
 
 	outFile2 = createAbstractFileFromFile(fopen(buf, "wb"));
 	if (!outFile2) {
-		printf("Cannot open outfile\n");
+		DPRINT("Cannot open outfile\n");
 		return -1;
 	}
 
 
-	printf("pwned file is %s, will upload later\n", buffer);
+	DPRINT("pwned file is %s, will upload later\n", buffer);
 
 	newFile =
 	    duplicateAbstractFile2(template, outFile, key, iv, certificate);
 	if (!newFile) {
-		printf("Cannot open newfile\n");
+		DPRINT("Cannot open newfile\n");
 		return -1;
 	}
 
 	newFile2 = outFile2;
 	if (!newFile2) {
-		printf("Cannot open newfile\n");
+		DPRINT("Cannot open newfile\n");
 		return -1;
 	}
 
 	/* pwn it 8) */
-	printf("pwning %s\n", filename);
+	DPRINT("pwning %s\n", filename);
 
 	if (strcasestr(filename, "iBEC") || strcasestr(filename, "iBSS"))
 		patch_bootloaders(inData, inDataSize);
@@ -367,7 +367,7 @@ int patch_file(char *filename)
 		patch_devtree(inData, inDataSize);
 
 	/* write patched contents */
-	printf("writing pwned file\n");
+	DPRINT("writing pwned file\n");
 	
 	newFile->write(newFile, inData, inDataSize);
 	newFile->close(newFile);

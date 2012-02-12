@@ -26,6 +26,7 @@
 #include <xpwn/lzssfile.h>
 #include <xpwn/lzss.h>
 #include <xpwn/libxpwn.h>
+#include "debug.h"
 
 void flipCompHeader(CompHeader * header)
 {
@@ -154,7 +155,7 @@ AbstractFile *createAbstractFileFromComp(AbstractFile * file)
 						     header.length_compressed);
 	real_uncompressed = info->header.length_uncompressed;
 	if (real_uncompressed != info->header.length_uncompressed) {
-		XLOG(5, "mismatch: %d %d %d %x %x\n",
+		ERR("mismatch: %d %d %d %x %x\n",
 		     info->header.length_compressed, real_uncompressed,
 		     info->header.length_uncompressed,
 		     compressed[info->header.length_compressed - 2],
@@ -164,7 +165,7 @@ AbstractFile *createAbstractFileFromComp(AbstractFile * file)
 		return NULL;
 	}
 
-	XLOG(5, "match: %d %d %d %x %x\n", info->header.length_compressed,
+	DPRINT("match: %d %d %d %x %x\n", info->header.length_compressed,
 	     real_uncompressed, info->header.length_uncompressed,
 	     compressed[info->header.length_compressed - 2],
 	     compressed[info->header.length_compressed - 1]);

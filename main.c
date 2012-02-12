@@ -22,12 +22,12 @@
 #define __SN0W_VERSION__ "0.0.0.1-pre"
 
 bool verboseflag = false, dump_bootrom = false, raw_load = false;
+int Img3DecryptLast = TRUE;
+int UsingRamdisk = FALSE;
+
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
-int Img3DecryptLast = TRUE;
-
-int UsingRamdisk = FALSE;
 
 #define usage(x) \
 	printf("Usage: %s [OPTIONS]\n" \
@@ -64,7 +64,7 @@ int UsingRamdisk = FALSE;
 			"s5l8930x, s5l8920x, s5l8922x, s5l8720x", "opensn0w", "opensn0w"); \
 			exit(-1);
 
-const char *image_names[] = {
+static const char *image_names[] = {
 	"iBSS",
 	"DeviceTree",
 	"BatteryCharging1",
@@ -99,7 +99,7 @@ void boot_args_process(char *args)
 	/* pad */
 	snprintf(buffer, 39, "%-39s", args);
 
-	printf("Booting with boot-args \"%s\"\n", buffer);
+	DPRINT("Booting with boot-args \"%s\"\n", buffer);
 
 	memcpy(iBEC_bootargs.patched, buffer, 39);
 }
@@ -135,7 +135,7 @@ int poll_device_for_dfu()
 int send_command(char* name) {
 	irecv_error_t err;
 	
-	printf("Initializing libirecovery...\n");
+	DPRINT("Initializing libirecovery...\n");
 	irecv_init();
 	
 #ifndef __APPLE__
@@ -153,8 +153,7 @@ int send_command(char* name) {
 	};
 	
 	if(!client) {
-		printf("Null client!\n");
-		exit(-1);
+		FATAL("Null client!\n");
 	}
 
 	irecv_send_command(client, name);
@@ -166,7 +165,7 @@ int send_command(char* name) {
 int send_file(char* name) {
 	irecv_error_t err;
 
-	printf("Initializing libirecovery...\n");
+	DPRINT("Initializing libirecovery...\n");
 	irecv_init();
 	
 #ifndef __APPLE__
@@ -184,8 +183,7 @@ int send_file(char* name) {
 	};
 	
 	if(!client) {
-		printf("Null client!\n");
-		exit(-1);
+		FATAL("Null client!\n");
 	}
 	
 	if (client->mode != kDfuMode)
@@ -194,8 +192,7 @@ int send_file(char* name) {
 		err = irecv_send_file(client, name, 1);
 
 	if (err != IRECV_E_SUCCESS) {
-		printf("%s\n", irecv_strerror(err));
-		exit(-1);
+		FATAL("%s\n", irecv_strerror(err));
 	}
 
 	exit(err);
@@ -226,9 +223,9 @@ int poll_device_for_recovery2()
 
 int fetch_image(const char *path, const char *output)
 {
-	printf("Fetching %s...\n", path);
+	DPRINT("Fetching %s...\n", path);
 	if (download_file_from_zip(device->url, path, output, NULL) != 0) {
-		printf("Unable to fetch %s\n", path);
+		ERR("Unable to fetch %s\n", path);
 		return -1;
 	}
 
@@ -255,13 +252,13 @@ int upload_image(firmware_item item, int mode, int patch)
 	else
 		filename++;
 
-	printf("Checking if %s already exists\n", filename);
+	DPRINT("Checking if %s already exists\n", filename);
 
 	memset(path, 0, 255);
 
 	if (stat(filename, &buf) != 0) {
 		if (fetch_image(item.name, filename) < 0) {
-			printf("Unable to upload DFU image\n");
+			ERR("Unable to upload DFU image\n");
 			return -1;
 		}
 	}
@@ -271,7 +268,7 @@ int upload_image(firmware_item item, int mode, int patch)
 
 	buffer = malloc(strlen(filename) + 5);
 	if (!buffer) {
-		printf("Cannot allocate memory\n");
+		ERR("Cannot allocate memory\n");
 		return -1;
 	}
 	memset(buffer, 0, strlen(filename) + 5);
@@ -281,7 +278,7 @@ int upload_image(firmware_item item, int mode, int patch)
 	else
 		snprintf(buffer, strlen(filename) + 5, "%s", filename);
 
-	printf("Uploading %s to device\n", buffer);
+	DPRINT("Uploading %s to device\n", buffer);
 
 	if (client->mode != kDfuMode)
 		error = irecv_send_file(client, buffer, 0);
@@ -289,7 +286,7 @@ int upload_image(firmware_item item, int mode, int patch)
 		error = irecv_send_file(client, buffer, 1);
 
 	if (error != IRECV_E_SUCCESS) {
-		printf("%s\n", irecv_strerror(error));
+		ERR("%s\n", irecv_strerror(error));
 		return -1;
 	}
 	free(buffer);
@@ -395,7 +392,7 @@ int main(int argc, char **argv)
 	}
 
 	if(autoboot) {
-		printf("Initializing libirecovery\n");
+		DPRINT("Initializing libirecovery\n");
 		irecv_init();
 		
 #ifndef __APPLE__
@@ -408,14 +405,10 @@ int main(int argc, char **argv)
 		}
 		puts("");
 		
-		/* Got the handle */
-		printf("So we have a handle! :-)\n");
-		
 		/* Check the device */
 		err = irecv_get_device(client, &device);
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
-			printf("Bad device. errno %d\n", err);
-			return -1;
+			FATAL("Bad device. errno %d\n", err);
 		}
 		
 		printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
@@ -447,19 +440,19 @@ int main(int argc, char **argv)
 		info = createRoot(plist);
 	} else if((pwndfu == false) &&
 			  (plistFile = createAbstractFileFromFile(fopen(plist, "rb"))) == NULL) {
-		printf("plist must be specified in this mode!\n\n");
 		usage();
-		exit(-1);
+		FATAL("plist must be specified in this mode!\n\n");
 	}
 
 	// Initialize Firmware structure //
 	bzero(&Firmware, sizeof(firmware));
 	Firmware.items = sizeof(image_names)/sizeof(char*);
 	Firmware.item = malloc(Firmware.items * sizeof(firmware_item));
+
 	if (Firmware.item == NULL) {
-		printf("Unable to allocate memory for decryption keys!\n");
-		exit(-1);
+		FATAL("Unable to allocate memory for decryption keys!\n");
 	}
+
 	bzero(Firmware.item, Firmware.items * sizeof(firmware_item));
 	
 	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
@@ -494,7 +487,7 @@ int main(int argc, char **argv)
 				if (vfkey)
 					Firmware.item[i].vfkey = vfkey->value;
 
-				printf("[plist] (%s %s %s %s) [%s %d]\n",
+				DPRINT("[plist] (%s %s %s %s) [%s %d]\n",
 				       Firmware.item[i].key,
 				       Firmware.item[i].iv,
 				       Firmware.item[i].name,
@@ -507,7 +500,7 @@ int main(int argc, char **argv)
 
 actually_do_stuff:
 	/* to be done */
-	printf("Initializing libirecovery\n");
+	DPRINT("Initializing libirecovery\n");
 	irecv_init();
 
 #ifndef __APPLE__
@@ -520,14 +513,10 @@ actually_do_stuff:
 	}
 	puts("");
 
-	/* Got the handle */
-	printf("So we have a handle! :-)\n");
-
 	/* Check the device */
 	err = irecv_get_device(client, &device);
 	if (device == NULL || device->index == DEVICE_UNKNOWN) {
-		printf("Bad device. errno %d\n", err);
-		return -1;
+		FATAL("Bad device. errno %d\n", err);
 	}
 
 	Dictionary *temporaryDict =
@@ -549,19 +538,18 @@ actually_do_stuff:
 		device->url = processedname;
 	}
 
-	printf("Device found: name: %s, processor s5l%dxsi\n", device->product,
+	DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
 	       device->chip_id);
-	printf("iBoot information: %s\n", client->serial);
+	DPRINT("iBoot information: %s\n", client->serial);
 
 	/* What jailbreak exploit is this thing capable of? */
 	if (device->chip_id == 8930 || device->chip_id == 8922
 	    || device->chip_id == 8920) {
-		printf
+		DPRINT
 		    ("This device is compatible with the limera1n exploit. Sending.\n");
 		err = limera1n();
 		if (err) {
-			printf("Error during limera1ning.\n");
-			exit(-1);
+			FATAL("Error during limera1ning.\n");
 		}
 		if (pwndfu == true) {
 			printf
@@ -569,12 +557,11 @@ actually_do_stuff:
 			exit(0);
 		}
 	} else if (device->chip_id == 8720) {
-		printf
+		DPRINT
 		    ("This device is compatible with the steaks4uce exploit. Sending.\n");
 		err = steaks4uce();
 		if (err) {
-			printf("Error during steaks4uceing.\n");
-			exit(-1);
+			FATAL("Error during steaks4uceing.\n");
 		}
 		if (pwndfu == true) {
 			printf
@@ -582,12 +569,11 @@ actually_do_stuff:
 			exit(0);
 		}
 	} else if (device->chip_id == 8900) {
-		printf
+		DPRINT
 		    ("This device is compatible with the pwnage2 exploit. Sending.\n");
 		err = pwnage2();
 		if (err) {
-			printf("Error during pwnage2ing.\n");
-			exit(-1);
+			ERR("Error during pwnage2ing.\n");
 		}
 		if (pwndfu == true) {
 			printf
@@ -595,7 +581,7 @@ actually_do_stuff:
 			exit(0);
 		}
 	} else {
-		printf("Support for the S5L%dX isn't done yet.\n",
+		FATAL("Support for the S5L%dX isn't done yet.\n",
 		       device->chip_id);
 	}
 
@@ -643,8 +629,9 @@ actually_do_stuff:
 		irecv_close(client);
 		irecv_exit();
 
-		printf("Reinitializing libirecovery.\n");
-		printf("HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
+		DPRINT("Reinitializing libirecovery.\n");
+		
+		INFO("HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
 		sleep(5);
 		irecv_init();
 
@@ -652,7 +639,7 @@ actually_do_stuff:
 			sleep(1);
 		}
 
-		printf("sending ramdisk command\n");
+		DPRINT("sending ramdisk command\n");
 		irecv_send_command(client, "ramdisk");
 
 		irecv_reset_counters(client);
@@ -672,12 +659,8 @@ actually_do_stuff:
 	client = irecv_reconnect(client, 2);
 
 	/* BootX */
-	printf("booting\n");
+	DPRINT("Booting kernel.\n");
 	irecv_send_command(client, "bootx");
-
-	/* device is ready to run */
-
-	printf("to be completed\n");
 
 	return 0;
 }

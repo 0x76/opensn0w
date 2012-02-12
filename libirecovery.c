@@ -23,6 +23,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "sn0w.h"
+
 #ifndef WIN32
 #include <libusb-1.0/libusb.h>
 #else
@@ -34,7 +36,7 @@
 #include "libirecovery.h"
 
 #define BUFFER_SIZE 0x1000
-#define debug(...) if(libirecovery_debug) fprintf(stderr, __VA_ARGS__)
+#define debug(...) if(libirecovery_debug) DPRINT(__VA_ARGS__)
 
 static int libirecovery_debug = 0;
 #ifndef WIN32

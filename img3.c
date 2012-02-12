@@ -3,6 +3,7 @@
 #include "common.h"
 #include <xpwn/img3.h>
 #include <xpwn/libxpwn.h>
+#include "debug.h"
 
 static const uint8_t x24kpwn_overflow_data[] = {
 	0x12, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0xac, 0x05, 0x81, 0x12,
@@ -711,7 +712,7 @@ AbstractFile *createAbstractFileFromImg3(AbstractFile * file)
 			strcat(outputBuffer, curBuffer);
 		}
 		strcat(outputBuffer, "\n");
-		XLOG(4, "keySeed:%s", outputBuffer);
+		DPRINT("keySeed: %s", outputBuffer);
 #endif
 		free(keySeed);
 	}

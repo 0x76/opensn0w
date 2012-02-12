@@ -37,13 +37,14 @@
 #include "xpwn/nor_files.h"
 #include <xpwn/plist.h>
 #include <ctype.h>
+#include "debug.h"
 
 /*
  * comment this if you're on a big endian cpu
  * ex: powerpc64
  */
 
-#undef BIG_ENDIAN
+//#undef BIG_ENDIAN
 
 extern irecv_device_t device;
 extern irecv_client_t client;
