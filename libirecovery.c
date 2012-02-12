@@ -748,18 +748,18 @@ irecv_error_t irecv_send_buffer(irecv_client_t client, unsigned char* buffer, un
 				progress = 100;
 			}
 
-			debug("\r[");
+			printf("\r[");
 			for (i = 0; i < 50; i++) {
 				if (i < progress / 2) {
-					debug("=");
+					printf("=");
 				} else {
-					debug(" ");
+					printf(" ");
 				}
 			}
 
-			debug("] %3.1f%%", progress);
+			printf("] %3.1f%%", progress);
 			if (progress == 100) {
-				debug("\n");
+				printf("\n");
 			}
 		}
 	}
