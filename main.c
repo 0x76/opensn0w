@@ -118,16 +118,25 @@ int poll_device_for_dfu()
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
 		STATUS("Connect the device in DFU mode. [%d]\n", try);
+        DPRINT("Error: %d (%s)\n", err, irecv_strerror(err));
 		try++;
 		return 1;
 	}
 
-	if (client->mode != kDfuMode) {
-		STATUS("Connect the device in DFU mode. [%d]\n", try);
-		irecv_close(client);
-		try++;
-		return 1;
-	}
+    DPRINT("Mode: %x\n", client->mode);
+    
+    switch(client->mode) {
+        case kDfuMode2:
+            return 0;
+        case kDfuMode:
+            return 0;
+        default:
+            STATUS("Connect the device in DFU mode. [%d]\n", try);
+            DPRINT("Error: %d (%s)\n", err, "Bad Device Identifier");
+            irecv_close(client);
+            try++;
+            return 1;
+    }
 
 	return 0;
 }
@@ -407,7 +416,7 @@ int main(int argc, char **argv)
 		DPRINT("Initializing libirecovery\n");
 		irecv_init();
 		
-#ifndef __APPLE__
+#ifndef _NDEBUG_
 		irecv_set_debug_level(3);
 #endif
 		
@@ -525,10 +534,24 @@ actually_do_stuff:
 	}
 
 	/* Check the device */
-	err = irecv_get_device(client, &device);
-	if (device == NULL || device->index == DEVICE_UNKNOWN) {
-		FATAL("Bad device. errno %d\n", err);
-	}
+    if(strcmp(client->serial, "89000000000001")) {
+        err = irecv_get_device(client, &device);
+        if (device == NULL || device->index == DEVICE_UNKNOWN) {
+            FATAL("Bad device. errno %d\n", err);
+        }
+        STATUS("[*] Device found.\n");
+        DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
+               device->chip_id);
+        DPRINT("iBoot information: %s\n", client->serial);
+    } else {
+        DPRINT("Using 8900 device descriptor.\n");
+        STATUS("[*] S5L8900XRB device found.\n");
+        
+        device = malloc(sizeof(irecv_device));
+        memset(device, 0, sizeof(irecv_device));
+        device->chip_id = 8900;
+        device->product = "S5L_Generic";
+    }
 
 	Dictionary *temporaryDict =
 	    (Dictionary *) getValueByKey(info, "FirmwareInfo");
@@ -549,10 +572,6 @@ actually_do_stuff:
 		device->url = processedname;
 	}
 
-	STATUS("[*] Device found.\n");
-	DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
-	       device->chip_id);
-	DPRINT("iBoot information: %s\n", client->serial);
 
 	STATUS("[*] Exploiting bootrom...\n");
 	/* What jailbreak exploit is this thing capable of? */

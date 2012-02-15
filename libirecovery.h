@@ -78,7 +78,8 @@ enum {
 	kRecoveryMode2 = 0x1281,
 	kRecoveryMode3 = 0x1282,
 	kRecoveryMode4 = 0x1283,
-	kDfuMode = 0x1227
+	kDfuMode = 0x1227,
+    kDfuMode2 = 0x1222
 };
 
 typedef enum {
@@ -116,6 +117,7 @@ typedef struct {
 struct irecv_client;
 typedef struct irecv_client* irecv_client_t;
 typedef struct irecv_device* irecv_device_t;
+typedef struct irecv_device irecv_device;
 typedef int(*irecv_event_cb_t)(irecv_client_t client, const irecv_event_t* event);
 
 struct irecv_client {

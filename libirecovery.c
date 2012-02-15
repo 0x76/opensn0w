@@ -36,7 +36,6 @@
 #include "libirecovery.h"
 
 #define BUFFER_SIZE 0x1000
-#define debug(...) if(libirecovery_debug) DPRINT(__VA_ARGS__)
 
 static int libirecovery_debug = 0;
 #ifndef WIN32
@@ -339,9 +338,11 @@ irecv_error_t irecv_open(irecv_client_t* pclient) {
 				usb_descriptor.idProduct == kRecoveryMode2 ||
 				usb_descriptor.idProduct == kRecoveryMode3 ||
 				usb_descriptor.idProduct == kRecoveryMode4 ||
-				usb_descriptor.idProduct == kDfuMode) {
+				usb_descriptor.idProduct == kDfuMode ||
+                usb_descriptor.idProduct == kDfuMode2
+                ) {
 
-				debug("opening device %04x:%04x...\n", usb_descriptor.idVendor, usb_descriptor.idProduct);
+				DPRINT("opening device %04x:%04x...\n", usb_descriptor.idVendor, usb_descriptor.idProduct);
 
 				libusb_open(usb_device, &usb_handle);
 				if (usb_handle == NULL) {
@@ -370,7 +371,7 @@ irecv_error_t irecv_open(irecv_client_t* pclient) {
 					return error;
 				}
 				
-				if (client->mode != kDfuMode) {
+				if (client->mode != kDfuMode && client->mode != kDfuMode2) {
 					error = irecv_set_interface(client, 0, 0);
 					error = irecv_set_interface(client, 1, 1);
 				} else {
@@ -404,7 +405,7 @@ irecv_error_t irecv_set_configuration(irecv_client_t client, int configuration) 
 	if (check_context(client) != IRECV_E_SUCCESS) return IRECV_E_NO_DEVICE;
 	
 #ifndef WIN32
-	debug("Setting to configuration %d\n", configuration);
+	DPRINT("Setting to configuration %d\n", configuration);
 
 	int current = 0;
 	libusb_get_configuration(client->handle, &current);
@@ -427,7 +428,7 @@ irecv_error_t irecv_set_interface(irecv_client_t client, int interface, int alt_
 	// pod2g 2011-01-07: we may want to claim multiple interfaces
 	//libusb_release_interface(client->handle, client->interface);
 
-	debug("Setting to interface %d:%d\n", interface, alt_interface);
+	DPRINT("Setting to interface %d:%d\n", interface, alt_interface);
 	if (libusb_claim_interface(client->handle, interface) < 0) {
 		return IRECV_E_USB_INTERFACE;
 	}
@@ -462,7 +463,7 @@ irecv_error_t irecv_open_attempts(irecv_client_t* pclient, int attempts) {
 
 	for (i = 0; i < attempts; i++) {
 		if (irecv_open(pclient) != IRECV_E_SUCCESS) {
-			debug("Connection failed. Waiting 1 sec before retry.\n");
+			DPRINT("Connection failed. Waiting 1 sec before retry.\n");
 			sleep(1);
 		} else {
 			return IRECV_E_SUCCESS;
@@ -570,11 +571,6 @@ irecv_error_t irecv_close(irecv_client_t client) {
 
 void irecv_set_debug_level(int level) {
 	libirecovery_debug = level;
-#ifndef WIN32
-	if(libirecovery_context) {
-		libusb_set_debug(libirecovery_context, libirecovery_debug);
-	}
-#endif
 }
 
 static irecv_error_t irecv_send_command_raw(irecv_client_t client, char* command) {
@@ -611,7 +607,7 @@ irecv_error_t irecv_send_command(irecv_client_t client, char* command) {
 
 	error = irecv_send_command_raw(client, command);
 	if (error != IRECV_E_SUCCESS) {
-		debug("Failed to send command %s\n", command);
+		DPRINT("Failed to send command %s\n", command);
 		if (error != IRECV_E_PIPE)
 			return error;
 	}
@@ -999,7 +995,7 @@ int irecv_write_file(const char* filename, const void* data, size_t size) {
 	size_t bytes = 0;
 	FILE* file = NULL;
 
-	debug("Writing data to %s\n", filename);
+	DPRINT("Writing data to %s\n", filename);
 	file = fopen(filename, "wb");
 	if (file == NULL) {
 		//error("read_file: Unable to open file %s\n", filename);
@@ -1022,7 +1018,7 @@ int irecv_read_file(const char* filename, char** data, uint32_t* size) {
 	size_t length = 0;
 	FILE* file = NULL;
 	char* buffer = NULL;
-	debug("Reading data from %s\n", filename);
+	DPRINT("Reading data from %s\n", filename);
 
 	*size = 0;
 	*data = NULL;
@@ -1099,7 +1095,7 @@ irecv_error_t irecv_recv_buffer(irecv_client_t client, char* buffer, unsigned lo
 			event.size = count;
 			client->progress_callback(client, &event);
 		} else {
-			debug("Sent: %d bytes - %lu of %lu\n", bytes, count, length);
+			DPRINT("Sent: %d bytes - %lu of %lu\n", bytes, count, length);
 		}
 	}
 
@@ -1222,7 +1218,7 @@ irecv_client_t irecv_reconnect(irecv_client_t client, int initial_pause) {
 	}
 
 	if (initial_pause > 0) {
-		debug("Waiting %d seconds for the device to pop up...\n", initial_pause);
+		DPRINT("Waiting %d seconds for the device to pop up...\n", initial_pause);
 		sleep(initial_pause);
 	}
 	

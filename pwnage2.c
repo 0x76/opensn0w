@@ -54,11 +54,8 @@ int pwnage2() {
     url[] = "http://appldnld.apple.com.edgesuite.net/content.info.apple.com/iPhone/061-7481.20100202.4orot/iPhone1,1_3.1.3_7E18_Restore.ipsw";
     uint8_t *buf;
     const char header[] = {0xff, 0xff, 0xff, 0xff, 0xac, 0x05, 0x00, 0x01, 0x55, 0x46, 0x44, 0x10};
-    uint8_t shaout[0x14], iv[0x10];
-    AES_KEY key;
     uint8_t tmpbuf[255];
     FILE *fp;
-    uint32_t temp;
     int wtf_length, buffer_size, i, c;
     unsigned int crc = 0xFFFFFFFF;
     
@@ -74,7 +71,7 @@ int pwnage2() {
     wtf_length = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     
-    buffer_size = 0x800 + wtf_length + ___cert_len + 0x10;
+    buffer_size = wtf_length + 0x10;
     
     buf = malloc(buffer_size);
     if(!buf) {
@@ -87,53 +84,23 @@ int pwnage2() {
     DPRINT("Preparing WTF buffer\n");
     
     memset(buf, 0, 0x800);
-    fread(&buf[0x800], 1, wtf_length, fp);
-    memcpy(&buf[0x800 + wtf_length], ___cert, ___cert_len);
-    
-    memcpy(&buf, image_magic, 0x4);
-    memcpy(&buf + 0x4, image_version, 0x4);
-    buf[0x7]    = 0x04;
-    buf[0x3e]   = 0x04;
-    memcpy(&buf[0xc], &wtf_length, 0x4);
-    memcpy(&buf[0x10], &wtf_length, 0x4);
-    
-    temp = wtf_length + 0x80;
-#ifdef BIG_ENDIAN
-    temp = __builtin_bswap32(temp);
-#endif
-    memcpy(&buf[0x14], &temp, 0x4);
-    
-    temp = 0xC5E;
-#ifdef BIG_ENDIAN
-    temp = __builtin_bswap32(temp);
-#endif
-    memcpy(&buf[0x18], &temp, 0x4);
-    
-    DPRINT("Header generated.\n");
-    
-    /* prepare algos and all that */
-    SHA1(buf, 0x40, shaout);
-    AES_set_encrypt_key(key837, 0x80, &key);
-    memset(iv, 0, 0x10);
-    
-    AES_cbc_encrypt(shaout, shaout, 0x10, &key, iv, AES_ENCRYPT);
-    memcpy(&buf[0x40], shaout, 0x10);
-    
+    fread(buf, 1, wtf_length, fp);
+
     /* update dfu crc */
-    memcpy(&buf[0x800 + wtf_length + ___cert_len], header, 0xC);
+    memcpy((void*)(buf + wtf_length), header, 0xC);
     crc = update_crc(crc, buf, 0x800 + wtf_length + ___cert_len + 0xC);
     for(i = 0; i < 4; i++) {
-        buf[0x800 + wtf_length + ___cert_len + 0xC + i] = crc & 0xFF;
+        buf[wtf_length + 0xC + i] = crc & 0xFF;
         crc = crc >> 8;
     }
-    
+    hex_dump(&buf[wtf_length - 0x200], 0x210);
     DPRINT("WTF image prepared!\n");
     
     /* send it */
     i = 0;
     c = 0;
     
-	while(i < ((0x800 + wtf_length + ___cert_len + 0x10) + 0x800))
+	while(i < ((wtf_length + 0x10) + 0x800))
 	{
 		int sl = ((0x800 + wtf_length + ___cert_len + 0x10) - i);
         
