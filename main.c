@@ -584,7 +584,7 @@ actually_do_stuff:
 	} else if (device->chip_id == 8900) {
 		DPRINT
 		    ("This device is compatible with the pwnage2 exploit. Sending.\n");
-		err = pwnage2();
+		//err = pwnage2();
 		if (err) {
 			ERR("Error during pwnage2ing.\n");
 		}
