@@ -110,7 +110,19 @@ bool file_exists(const char *fileName)
 	return !stat(fileName, &buf);
 }
 
-int poll_device_for_dfu()
+char *mode_to_string(int mode)
+{
+	switch (mode) {
+	case DFU:
+		return "DFU";
+	case RECOVERYMODE:
+		return "Recovery/iBoot";
+	default:
+		return "UNKNOWN";
+	}
+}
+
+int poll_device(int mode)
 {
 	irecv_error_t err;
 	static int try;
@@ -118,87 +130,94 @@ int poll_device_for_dfu()
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
 		STATUS("Connect the device in DFU mode. [%d]\n", try);
-        DPRINT("Error: %d (%s)\n", err, irecv_strerror(err));
+		DPRINT("Error: %d (%s)\n", err, irecv_strerror(err));
 		try++;
 		return 1;
 	}
 
-    DPRINT("Mode: %x\n", client->mode);
-    
-    switch(client->mode) {
-        case kDfuMode2:
-            return 0;
-        case kDfuMode:
-            return 0;
-        default:
-            STATUS("Connect the device in DFU mode. [%d]\n", try);
-            DPRINT("Error: %d (%s)\n", err, "Bad Device Identifier");
-            irecv_close(client);
-            try++;
-            return 1;
-    }
+	switch (client->mode) {
+	case kDfuMode2:
+	case kDfuMode:
+		if (mode == DFU) {
+			return 0;
+		}
+	case kRecoveryMode2:
+		if (mode == RECOVERY) {
+			return 0;
+		}
+	default:
+		STATUS("Connect the device in %s mode. [%d]\n",
+		       mode_to_string(mode), try);
+		DPRINT("Error: %d (%s)\n", err, "Bad Device Identifier");
+		irecv_close(client);
+		try++;
+		return 1;
+	}
 
 	return 0;
 }
 
-int send_command(char* name) {
+int send_command(char *name)
+{
 	irecv_error_t err;
-	
+
 	DPRINT("Initializing libirecovery...\n");
 	irecv_init();
-	
+
 #ifndef __APPLE__
 	irecv_set_debug_level(3);
 #endif
-	
-	while(1) {
+
+	while (1) {
 		err = irecv_open(&client);
 		if (err != IRECV_E_SUCCESS) {
 			STATUS("Connect the device. err %d\n", err);
 			sleep(1);
-		} else if(err == IRECV_E_SUCCESS) {
+		} else if (err == IRECV_E_SUCCESS) {
 			break;
 		}
 	};
-	
-	if(!client) {
+
+	if (!client) {
 		FATAL("Null client!\n");
 	}
 
 	irecv_send_command(client, name);
-	
+
 	exit(err);
 	return err;
 }
 
-int send_file(char* name) {
+int send_file(char *name)
+{
 	irecv_error_t err;
 
 	DPRINT("Initializing libirecovery...\n");
 	irecv_init();
-	
+
 #ifndef __APPLE__
 	irecv_set_debug_level(3);
 #endif
-	
-	while(1) {
+
+	while (1) {
 		err = irecv_open(&client);
 		if (err != IRECV_E_SUCCESS) {
 			STATUS("Connect the device. err %d\n", err);
 			sleep(1);
-		} else if(err == IRECV_E_SUCCESS) {
+		} else if (err == IRECV_E_SUCCESS) {
 			break;
 		}
 	};
-	
-	if(!client) {
+
+	if (!client) {
 		FATAL("Null client!\n");
 	}
-	
-	if (client->mode != kDfuMode)
+
+	if (client->mode != kDfuMode) {
 		err = irecv_send_file(client, name, 0);
-	else
+	} else {
 		err = irecv_send_file(client, name, 1);
+	}
 
 	if (err != IRECV_E_SUCCESS) {
 		FATAL("%s\n", irecv_strerror(err));
@@ -206,28 +225,6 @@ int send_file(char* name) {
 
 	exit(err);
 	return err;
-}
-
-int poll_device_for_recovery2()
-{
-	irecv_error_t err;
-	static int try;
-	
-	err = irecv_open(&client);
-	if (err != IRECV_E_SUCCESS) {
-		STATUS("Connect the device in recovery mode. [%d]\n", try);
-		try++;
-		return 1;
-	}
-	
-	if (client->mode != kRecoveryMode2) {
-		STATUS("Connect the device in recovery mode. [%d]\n", try);
-		irecv_close(client);
-		try++;
-		return 1;
-	}
-	
-	return 0;
 }
 
 int fetch_image(const char *path, const char *output)
@@ -283,10 +280,11 @@ int upload_image(firmware_item item, int mode, int patch)
 	}
 	memset(buffer, 0, strlen(filename) + 5);
 
-	if (patch)
+	if (patch) {
 		snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
-	else
+	} else {
 		snprintf(buffer, strlen(filename) + 5, "%s", filename);
+	}
 
 	DPRINT("Uploading %s to device\n", buffer);
 
@@ -303,22 +301,8 @@ int upload_image(firmware_item item, int mode, int patch)
 	return 0;
 }
 
-int main(int argc, char **argv)
+void print_configuration()
 {
-	int c, i;
-	char *kernelcache = NULL, *bootlogo = NULL, *url =
-	    NULL, *plist = NULL, *ramdisk = NULL;
-	char* processedname;
-	int pwndfu = false, pwnrecovery = false, autoboot = false;
-	irecv_error_t err = IRECV_E_SUCCESS;
-	AbstractFile *plistFile;
-	Dictionary *bundle;
-	firmware Firmware;
-
-	printf("opensn0w, an open source jailbreaking program.\n"
-	       "version: " __SN0W_VERSION__ "\n\n"
-	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
-
 #ifdef _NDEBUG_
 	printf("Configuration: This is the RELEASE binary. ");
 #else
@@ -329,6 +313,25 @@ int main(int argc, char **argv)
 #else
 	printf("Compiled for little endian.\n\n");
 #endif
+}
+
+int main(int argc, char **argv)
+{
+	int c, i;
+	char *kernelcache = NULL, *bootlogo = NULL, *url =
+	    NULL, *plist = NULL, *ramdisk = NULL;
+	char *processedname;
+	int pwndfu = false, pwnrecovery = false, autoboot = false;
+	irecv_error_t err = IRECV_E_SUCCESS;
+	AbstractFile *plistFile;
+	Dictionary *bundle;
+	firmware Firmware;
+
+	printf("opensn0w, an open source jailbreaking program.\n"
+	       "version: " __SN0W_VERSION__ "\n\n"
+	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+
+	print_configuration();
 
 	opterr = 0;
 
@@ -386,8 +389,7 @@ int main(int argc, char **argv)
 			break;
 		case 'S':
 			if (!file_exists(optarg)) {
-				printf("Cannot open file '%s'\n",
-					   optarg);
+				printf("Cannot open file '%s'\n", optarg);
 				return -1;
 			}
 			send_file(optarg);
@@ -412,19 +414,19 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if(autoboot) {
+	if (autoboot) {
 		DPRINT("Initializing libirecovery\n");
 		irecv_init();
-		
+
 #ifndef _NDEBUG_
 		irecv_set_debug_level(3);
 #endif
-		
+
 		/* Poll for DFU mode */
-		while (poll_device_for_recovery2()) {
+		while (poll_device(RECOVERYMODE)) {
 			sleep(1);
 		}
-		
+
 		/* Check the device */
 		err = irecv_get_device(client, &device);
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
@@ -432,26 +434,26 @@ int main(int argc, char **argv)
 		}
 		STATUS("[*] Device found.\n");
 
-		DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
-			   device->chip_id);
+		DPRINT("Device found: name: %s, processor s5l%dxsi\n",
+		       device->product, device->chip_id);
 		DPRINT("iBoot information: %s\n", client->serial);
 
 		STATUS("[*] Fixing recovery loop...\n");
 		irecv_send_command(client, "setenv auto-boot true");
 		irecv_send_command(client, "saveenv");
 		client = irecv_reconnect(client, 2);
-		
+
 		irecv_send_command(client, "reboot");
-		
+
 		STATUS("[*] Operation completed.\n");
 		exit(0);
 	}
 
-	if(dump_bootrom || raw_load) {
+	if (dump_bootrom || raw_load) {
 		/* i know, hacky */
 		goto actually_do_stuff;
 	}
-	
+
 	if ((plistFile =
 	     createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
 		plist = (char *)malloc(plistFile->getLength(plistFile));
@@ -459,15 +461,15 @@ int main(int argc, char **argv)
 				plistFile->getLength(plistFile));
 		plistFile->close(plistFile);
 		info = createRoot(plist);
-	} else if((pwndfu == false) &&
-			  (plistFile = createAbstractFileFromFile(fopen(plist, "rb"))) == NULL) {
+	} else if ((pwndfu == false) &&
+		   (plistFile =
+		    createAbstractFileFromFile(fopen(plist, "rb"))) == NULL) {
 		usage();
 		FATAL("plist must be specified in this mode!\n\n");
 	}
-
 	// Initialize Firmware structure //
 	bzero(&Firmware, sizeof(firmware));
-	Firmware.items = sizeof(image_names)/sizeof(char*);
+	Firmware.items = sizeof(image_names) / sizeof(char *);
 	Firmware.item = malloc(Firmware.items * sizeof(firmware_item));
 
 	if (Firmware.item == NULL) {
@@ -475,20 +477,20 @@ int main(int argc, char **argv)
 	}
 
 	bzero(Firmware.item, Firmware.items * sizeof(firmware_item));
-	
+
 	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
 	if (bundle != NULL) {
-		for (i=0; i<Firmware.items; i++) {
-			Dictionary *entry = (Dictionary*)getValueByKey(bundle, image_names[i]);
+		for (i = 0; i < Firmware.items; i++) {
+			Dictionary *entry =
+			    (Dictionary *) getValueByKey(bundle,
+							 image_names[i]);
 			if (entry != NULL) {
 				StringValue *key = NULL, *iv = NULL, *name =
 				    NULL, *vfkey = NULL;
 
 				key =
-				    (StringValue *) getValueByKey(entry,
-								  "Key");
-				iv = (StringValue *) getValueByKey(entry,
-								   "IV");
+				    (StringValue *) getValueByKey(entry, "Key");
+				iv = (StringValue *) getValueByKey(entry, "IV");
 				name =
 				    (StringValue *) getValueByKey(entry,
 								  "FileName");
@@ -519,7 +521,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-actually_do_stuff:
+ actually_do_stuff:
 	/* to be done */
 	DPRINT("Initializing libirecovery\n");
 	irecv_init();
@@ -529,29 +531,35 @@ actually_do_stuff:
 #endif
 
 	/* Poll for DFU mode */
-	while (poll_device_for_dfu()) {
+	while (poll_device(DFU)) {
 		sleep(1);
 	}
 
 	/* Check the device */
-    if(strcmp(client->serial, "89000000000001")) {
-        err = irecv_get_device(client, &device);
-        if (device == NULL || device->index == DEVICE_UNKNOWN) {
-            FATAL("Bad device. errno %d\n", err);
-        }
-        STATUS("[*] Device found.\n");
-        DPRINT("Device found: name: %s, processor s5l%dxsi\n", device->product,
-               device->chip_id);
-        DPRINT("iBoot information: %s\n", client->serial);
-    } else {
-        DPRINT("Using 8900 device descriptor.\n");
-        STATUS("[*] S5L8900XRB device found.\n");
-        
-        device = malloc(sizeof(irecv_device));
-        memset(device, 0, sizeof(irecv_device));
-        device->chip_id = 8900;
-        device->product = "S5L_Generic";
-    }
+	if (strcmp(client->serial, "89000000000001")) {
+		err = irecv_get_device(client, &device);
+		if (device == NULL || device->index == DEVICE_UNKNOWN) {
+			FATAL("Bad device. errno %d\n", err);
+		}
+		STATUS("[*] Device found.\n");
+		DPRINT("Device found: name: %s, processor s5l%dxsi\n",
+		       device->product, device->chip_id);
+		DPRINT("iBoot information: %s\n", client->serial);
+
+		if (device->chip_id == 8900) {
+			FATAL
+			    ("It looks like your device is in WTF mode already! Get into DFU mode.\n");
+		}
+
+	} else {
+		DPRINT("Using 8900 device descriptor.\n");
+		STATUS("[*] S5L8900XRB device found.\n");
+
+		device = malloc(sizeof(irecv_device));
+		memset(device, 0, sizeof(irecv_device));
+		device->chip_id = 8900;
+		device->product = "S5L_Generic";
+	}
 
 	Dictionary *temporaryDict =
 	    (Dictionary *) getValueByKey(info, "FirmwareInfo");
@@ -561,17 +569,17 @@ actually_do_stuff:
 	if (urlKey != NULL)
 		device->url = urlKey->value;
 
-	if(url) {
+	if (url) {
 		processedname = malloc(strlen(url) + sizeof("file://"));
-		if(!processedname) {
+		if (!processedname) {
 			printf("Could not allocate memory\n");
 			exit(-1);
 		}
 		memset(processedname, 0, strlen(url) + sizeof("file://"));
-		snprintf(processedname, strlen(url) + sizeof("file://"), "file://%s", url);
+		snprintf(processedname, strlen(url) + sizeof("file://"),
+			 "file://%s", url);
 		device->url = processedname;
 	}
-
 
 	STATUS("[*] Exploiting bootrom...\n");
 	/* What jailbreak exploit is this thing capable of? */
@@ -603,7 +611,7 @@ actually_do_stuff:
 	} else if (device->chip_id == 8900) {
 		DPRINT
 		    ("This device is compatible with the pwnage2 exploit. Sending.\n");
-		//err = pwnage2();
+		err = pwnage2();
 		if (err) {
 			ERR("Error during pwnage2ing.\n");
 		}
@@ -614,7 +622,7 @@ actually_do_stuff:
 		}
 	} else {
 		FATAL("Support for the S5L%dX isn't done yet.\n",
-		       device->chip_id);
+		      device->chip_id);
 	}
 
 	/* We are owned now! */
@@ -639,12 +647,13 @@ actually_do_stuff:
 	irecv_set_interface(client, 1, 1);
 
 	if (pwnrecovery) {
-		FATAL("Device has a pwned iBEC uploaded. Do whatever you want \n");
+		FATAL
+		    ("Device has a pwned iBEC uploaded. Do whatever you want \n");
 	}
 
 	/* upload logo */
 	STATUS("[*] Uploading boot logo...\n");
-	if(bootlogo) {
+	if (bootlogo) {
 		Firmware.item[APPLELOGO].name = bootlogo;
 	}
 
@@ -665,12 +674,12 @@ actually_do_stuff:
 		irecv_exit();
 
 		DPRINT("Reinitializing libirecovery.\n");
-		
+
 		INFO("HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
 		sleep(5);
 		irecv_init();
 
-		while (poll_device_for_recovery2()) {
+		while (poll_device(RECOVERYMODE)) {
 			sleep(1);
 		}
 
@@ -689,7 +698,7 @@ actually_do_stuff:
 
 	/* upload kernel */
 	STATUS("[*] Uploading kernel...\n");
-	if(kernelcache) {
+	if (kernelcache) {
 		Firmware.item[KERNELCACHE].name = kernelcache;
 	}
 	upload_image(Firmware.item[KERNELCACHE], 3, 1);

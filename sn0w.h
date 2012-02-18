@@ -129,6 +129,11 @@ typedef enum _firmware_images {
 	NEEDSERVICE
 } firmware_images_t;
 
+typedef enum _modes_t {
+	DFU = 0,
+	RECOVERYMODE
+} modes_t;
+
 typedef struct _firmware {
 	firmware_item *item;
 	uint8_t items;

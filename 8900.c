@@ -85,15 +85,16 @@ void close8900(AbstractFile * file)
 			if (((Img2Header *) info->buffer)->signature ==
 			    IMG2_SIGNATURE) {
 				((Img2Header *) info->buffer)->dataLenPadded =
-				    ((Img2Header *) info->buffer)->
-				    dataLenPadded % 16 ==
-				    0 ? ((Img2Header *) info->
-					 buffer)->dataLenPadded
-				    : ((((Img2Header *) info->buffer)->
-					dataLenPadded / 16) + 1) * 16;
+				    ((Img2Header *) info->
+				     buffer)->dataLenPadded % 16 ==
+				    0 ? ((Img2Header *) info->buffer)->
+				    dataLenPadded
+				    : ((((Img2Header *) info->
+					 buffer)->dataLenPadded / 16) + 1) * 16;
 				info->header.sizeOfData =
-				    ((Img2Header *) info->buffer)->
-				    dataLenPadded + sizeof(Img2Header);
+				    ((Img2Header *) info->
+				     buffer)->dataLenPadded +
+				    sizeof(Img2Header);
 
 				cksum =
 				    crc32(0, (unsigned char *)info->buffer,
@@ -105,9 +106,9 @@ void close8900(AbstractFile * file)
 
 			info->header.sizeOfData =
 			    (info->header.sizeOfData) % 16 ==
-			    0 ? info->header.
-			    sizeOfData : ((info->header.sizeOfData / 16) +
-					  1) * 16;
+			    0 ? info->
+			    header.sizeOfData : ((info->header.sizeOfData / 16)
+						 + 1) * 16;
 			if (info->header.sizeOfData != origSize) {
 				info->buffer =
 				    realloc(info->buffer,
@@ -167,9 +168,9 @@ void close8900(AbstractFile * file)
 
 		memset(ivec, 0, 16);
 		AES_cbc_encrypt(md,
-				(unsigned char *)&(info->header.
-						   headerSignature), 0x10,
-				&(info->encryptKey), ivec, AES_ENCRYPT);
+				(unsigned char *)&(info->
+						   header.headerSignature),
+				0x10, &(info->encryptKey), ivec, AES_ENCRYPT);
 
 		info->file->seek(info->file, 0);
 		info->file->write(info->file, &(info->header),

@@ -82,7 +82,6 @@ unsigned char steaks4uce_bootrom_dump_sc[] = {
 	0x00, 0x40, 0x02, 0x00,
 };
 
-
 int steaks4uce()
 {
 	irecv_error_t error = IRECV_E_SUCCESS;
@@ -130,11 +129,12 @@ int steaks4uce()
 	}
 	DPRINT("Uploading shellcode.\n");
 	memset(data, 0, 0x800);
-	if(dump_bootrom)
+	if (dump_bootrom)
 		memcpy(data, steaks4uce_payload, sizeof(steaks4uce_payload));
 	else
-		memcpy(data, steaks4uce_bootrom_dump_sc, sizeof(steaks4uce_bootrom_dump_sc));
-		
+		memcpy(data, steaks4uce_bootrom_dump_sc,
+		       sizeof(steaks4uce_bootrom_dump_sc));
+
 	ret = irecv_control_transfer(client, 0x21, 1, 0, 0, data, 0x800, 1000);
 	if (ret < 0) {
 		DPRINT("Failed to upload shellcode.\n");
@@ -151,7 +151,8 @@ int steaks4uce()
 	int send_size = 0x100 + sizeof(payload);
 #ifdef BIG_ENDIAN
 	*((unsigned int *)&payload[0x14]) = send_size;
-	*((unsigned int *)&payload[0x14]) = __builtin_bswap32(*((unsigned int *)&payload[0x14]));
+	*((unsigned int *)&payload[0x14]) =
+	    __builtin_bswap32(*((unsigned int *)&payload[0x14]));
 	memset(data, 0, 0x800);
 	memcpy(&data[0x100], payload, sizeof(payload));
 #else
@@ -183,31 +184,32 @@ int steaks4uce()
 		DPRINT("Unable to reconnect\n");
 		return -1;
 	}
-	
-#if 0	/* not really functional, need to fix */
-	if(dump_bootrom == true) {
+#if 0				/* not really functional, need to fix */
+	if (dump_bootrom == true) {
 		FILE *fp = fopen("bootrom.bin", "wb");
 		uint32_t address = 0;
 		unsigned char data[0x800];
-		
+
 		memset(data, 0, 0x800);
-		
+
 		client = irecv_reconnect(client, 2);
 		if (client == NULL) {
 			DPRINT("%s\n", irecv_strerror(error));
 			DPRINT("Unable to reconnect\n");
 			return -1;
 		}
-		
+
 		do {
-			error = irecv_control_transfer(client, 0xA1, 2, 0, 0, data, 0x800, 100);
-			if(error < 0)
+			error =
+			    irecv_control_transfer(client, 0xA1, 2, 0, 0, data,
+						   0x800, 100);
+			if (error < 0)
 				break;
 			fwrite(data, 1, 0x800, fp);
 			address += 0x800;
 			DPRINT("Dumping 0x%08x\n", address);
-		} while(address < 0x10000);
-		
+		} while (address < 0x10000);
+
 		DPRINT("dumped.\n");
 		exit(0);
 	}

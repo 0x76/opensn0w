@@ -29,63 +29,66 @@
 static unsigned int quit = 0;
 
 void print_progress_bar(double progress);
-int received_cb(irecv_client_t client, const irecv_event_t* event);
-int progress_cb(irecv_client_t client, const irecv_event_t* event);
-int precommand_cb(irecv_client_t client, const irecv_event_t* event);
-int postcommand_cb(irecv_client_t client, const irecv_event_t* event);
+int received_cb(irecv_client_t client, const irecv_event_t * event);
+int progress_cb(irecv_client_t client, const irecv_event_t * event);
+int precommand_cb(irecv_client_t client, const irecv_event_t * event);
+int postcommand_cb(irecv_client_t client, const irecv_event_t * event);
 void init_shell(irecv_client_t client);
 
-int irecovery_shell_initialize() {
+int irecovery_shell_initialize()
+{
 	irecv_error_t err;
-	
+
 	printf("Initializing libirecovery...\n");
 	irecv_init();
-	
+
 #ifndef __APPLE__
 	irecv_set_debug_level(3);
 #endif
-	
-	while((err = irecv_open(&client)) != IRECV_E_SUCCESS) {
+
+	while ((err = irecv_open(&client)) != IRECV_E_SUCCESS) {
 		if (err != IRECV_E_SUCCESS) {
 			printf("Connect the device. err %d\n", err);
 			sleep(1);
-		} else if(err == IRECV_E_SUCCESS) {
+		} else if (err == IRECV_E_SUCCESS) {
 			break;
 		}
 	};
-	
-	if(!client) {
+
+	if (!client) {
 		printf("Null client!\n");
 		exit(-1);
 	}
-	
+
 	/* Check the device */
 	printf("iBoot information: %s\n", client->serial);
-	
+
 	printf("Starting shell...\n");
 
-        irecv_reset(client);
-        client = irecv_reconnect(client, 2);
-        irecv_set_interface(client, 0, 0);
-        irecv_set_interface(client, 1, 1);
-	
+	irecv_reset(client);
+	client = irecv_reconnect(client, 2);
+	irecv_set_interface(client, 0, 0);
+	irecv_set_interface(client, 1, 1);
+
 	init_shell(client);
-	
+
 	client = irecv_reconnect(client, 2);
 	exit(0);
 }
 
-void load_command_history() {
+void load_command_history()
+{
 	read_history(FILE_HISTORY_PATH);
-}   
+}
 
-void append_command_to_history(char* cmd) {
+void append_command_to_history(char *cmd)
+{
 	add_history(cmd);
 	write_history(FILE_HISTORY_PATH);
 }
 
-
-void init_shell(irecv_client_t client) {
+void init_shell(irecv_client_t client)
+{
 	irecv_error_t error = 0;
 	load_command_history();
 	irecv_event_subscribe(client, IRECV_PROGRESS, &progress_cb, NULL);
@@ -98,25 +101,26 @@ void init_shell(irecv_client_t client) {
 			printf("%s\n", irecv_strerror(error));
 			break;
 		}
-        
-		char* cmd = readline("> ");
+
+		char *cmd = readline("> ");
 		if (cmd && *cmd) {
 			error = irecv_send_command(client, cmd);
 			if (error != IRECV_E_SUCCESS) {
 				quit = 1;
 			}
-			
+
 			append_command_to_history(cmd);
 			free(cmd);
 		}
 	}
 }
 
-int received_cb(irecv_client_t client, const irecv_event_t* event) {
+int received_cb(irecv_client_t client, const irecv_event_t * event)
+{
 	if (event->type == IRECV_RECEIVED) {
 		int i = 0;
 		int size = event->size;
-		char* data = (char*)event->data;
+		char *data = (char *)event->data;
 		for (i = 0; i < size; i++) {
 			printf("%c", data[i]);
 		}
@@ -124,17 +128,19 @@ int received_cb(irecv_client_t client, const irecv_event_t* event) {
 	return 0;
 }
 
-int precommand_cb(irecv_client_t client, const irecv_event_t* event) {
+int precommand_cb(irecv_client_t client, const irecv_event_t * event)
+{
 	return 0;
 }
 
-int postcommand_cb(irecv_client_t client, const irecv_event_t* event) {
-	char* value = NULL;
-	char* action = NULL;
-	char* command = NULL;
-	char* argument = NULL;
+int postcommand_cb(irecv_client_t client, const irecv_event_t * event)
+{
+	char *value = NULL;
+	char *action = NULL;
+	char *command = NULL;
+	char *argument = NULL;
 	irecv_error_t error = IRECV_E_SUCCESS;
-	
+
 	if (event->type == IRECV_POSTCOMMAND) {
 		command = strdup(event->data);
 		action = strtok(command, " ");
@@ -149,47 +155,48 @@ int postcommand_cb(irecv_client_t client, const irecv_event_t* event) {
 			printf("%s\n", value);
 			free(value);
 		}
-        
+
 		if (!strcmp(action, "reboot")) {
 			quit = 1;
 		}
 	}
-	
-	if (command) free(command);
+
+	if (command)
+		free(command);
 	return 0;
 }
 
-int progress_cb(irecv_client_t client, const irecv_event_t* event) {
+int progress_cb(irecv_client_t client, const irecv_event_t * event)
+{
 	if (event->type == IRECV_PROGRESS) {
 		print_progress_bar(event->progress);
 	}
 	return 0;
 }
 
-
-void print_progress_bar(double progress) {
+void print_progress_bar(double progress)
+{
 	int i = 0;
-	if(progress < 0) {
+	if (progress < 0) {
 		return;
 	}
-	
-	if(progress > 100) {  
+
+	if (progress > 100) {
 		progress = 100;
 	}
-	
+
 	printf("\r[");
-	for(i = 0; i < 50; i++) {
-		if(i < progress / 2) {
+	for (i = 0; i < 50; i++) {
+		if (i < progress / 2) {
 			printf("=");
 		} else {
 			printf(" ");
 		}
 	}
-	
+
 	printf("] %3.1f%%", progress);
 	fflush(stdout);
-	if(progress == 100) { 
+	if (progress == 100) {
 		printf("\n");
 	}
 }
-

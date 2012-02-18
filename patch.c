@@ -49,7 +49,8 @@ int patch_devtree(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, devicetree_root_name.original,
 		     devicetree_root_name.length)) {
-			DPRINT("Patching devicetree_root_name... at 0x%08x\n", i);
+			DPRINT("Patching devicetree_root_name... at 0x%08x\n",
+			       i);
 			memcpy(candidate, devicetree_root_name.patched,
 			       devicetree_root_name.length);
 			continue;
@@ -196,7 +197,7 @@ int patch_kernel(char *buffer, size_t length)
 		if (!memcmp
 		    (candidate, kernel_xattr.original, kernel_xattr.length)) {
 			DPRINT("Patching kernel xattr check... at 0x%08x\n", i);
-			memcpy((char*)candidate, (char*)kernel_xattr.patched,
+			memcpy((char *)candidate, (char *)kernel_xattr.patched,
 			       kernel_xattr.length);
 			continue;
 		}
@@ -256,8 +257,8 @@ int patch_file(char *filename)
 	char *buffer;
 	Dictionary *data;
 	char *buf;
-	char* tokenizedname;
-	char* dup = strndup(filename, 255);
+	char *tokenizedname;
+	char *dup = strndup(filename, 255);
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -268,9 +269,9 @@ int patch_file(char *filename)
 	}
 
 	DPRINT("getting keys\n");
-    
+
 	tokenizedname = strtok(dup, ".,");
-    
+
 	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
 	StringValue *ivValue = (StringValue *) getValueByKey(data, "IV");
@@ -340,7 +341,6 @@ int patch_file(char *filename)
 		return -1;
 	}
 
-
 	DPRINT("pwned file is %s, will upload later\n", buffer);
 
 	newFile =
@@ -368,7 +368,7 @@ int patch_file(char *filename)
 
 	/* write patched contents */
 	DPRINT("writing pwned file\n");
-	
+
 	newFile->write(newFile, inData, inDataSize);
 	newFile->close(newFile);
 	newFile2->write(newFile2, inData, inDataSize);

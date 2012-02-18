@@ -151,24 +151,24 @@ AbstractFile *createAbstractFileFromComp(AbstractFile * file)
 	file->read(file, compressed, info->header.length_compressed);
 
 	uint32_t real_uncompressed = decompress_lzss(info->buffer, compressed,
-						     info->
-						     header.length_compressed);
+						     info->header.
+						     length_compressed);
 	real_uncompressed = info->header.length_uncompressed;
 	if (real_uncompressed != info->header.length_uncompressed) {
 		ERR("mismatch: %d %d %d %x %x\n",
-		     info->header.length_compressed, real_uncompressed,
-		     info->header.length_uncompressed,
-		     compressed[info->header.length_compressed - 2],
-		     compressed[info->header.length_compressed - 1]);
+		    info->header.length_compressed, real_uncompressed,
+		    info->header.length_uncompressed,
+		    compressed[info->header.length_compressed - 2],
+		    compressed[info->header.length_compressed - 1]);
 		free(compressed);
 		free(info);
 		return NULL;
 	}
 
 	DPRINT("match: %d %d %d %x %x\n", info->header.length_compressed,
-	     real_uncompressed, info->header.length_uncompressed,
-	     compressed[info->header.length_compressed - 2],
-	     compressed[info->header.length_compressed - 1]);
+	       real_uncompressed, info->header.length_uncompressed,
+	       compressed[info->header.length_compressed - 2],
+	       compressed[info->header.length_compressed - 1]);
 
 	free(compressed);
 
