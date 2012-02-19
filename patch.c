@@ -22,6 +22,7 @@
 extern Dictionary *firmwarePatches, *patchDict, *info;
 extern unsigned char iBEC_bootargs_ramdisk[];
 extern int UsingRamdisk;
+extern char* version;
 
 Dictionary *get_key_dictionary_from_bundle(char *member)
 {
@@ -308,23 +309,23 @@ int patch_file(char *filename)
 	//hex_dump(inData, 0x240);
 
 	/* zero buffer */
-	buffer = malloc(strlen(filename) + 5);
+	buffer = malloc(strlen(filename) + 5 + strlen(version));
 	if (!buffer) {
 		ERR("Cannot allocate memory\n");
 		return -1;
 	}
-	memset(buffer, 0, strlen(filename) + 5);
+	memset(buffer, 0, strlen(filename) + 5 + strlen(version));
 
 	/* zero buffer */
-	buf = malloc(strlen(filename) + 5);
+	buf = malloc(strlen(filename) + 8 + strlen(version));
 	if (!buf) {
 		ERR("Cannot allocate memory\n");
 		return -1;
 	}
-	memset(buffer, 0, strlen(filename) + 5);
+	memset(buffer, 0, strlen(filename) + 8 + strlen(version));
 
-	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
-	snprintf(buf, strlen(filename) + 5, "%s.dec", filename);
+	snprintf(buffer, strlen(filename) + 8 + strlen(version), "%s.pwn", filename);
+	snprintf(buf, strlen(filename) + 8 + strlen(version), "%s.dec", filename);
 	unlink(buf);
 	unlink(buffer);
 

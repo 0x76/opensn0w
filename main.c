@@ -25,6 +25,7 @@ int opensn0w_debug_level = DBGFLTR_RELEASE;
 bool verboseflag = false, dump_bootrom = false, raw_load = false, raw_load_exit = false;
 int Img3DecryptLast = TRUE;
 int UsingRamdisk = FALSE;
+char *version = "UNKNOWN";
 
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
@@ -261,35 +262,36 @@ int upload_image(firmware_item item, int mode, int patch)
 	else
 		filename++;
 
-	DPRINT("Checking if %s already exists\n", filename);
+	buffer = malloc(strlen(filename) + 10 + strlen(version));
+	if (!buffer) {
+		ERR("Cannot allocate memory\n");
+		return -1;
+	}
+	memset(buffer, 0, strlen(filename) + 10 + strlen(version));
+
+
+	snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s", filename, version);
+
+	DPRINT("Checking if %s already exists\n", buffer);
 
 	memset(path, 0, 255);
 
-	if (stat(filename, &buf) != 0) {
-		if (fetch_image(item.name, filename) < 0) {
+	if (stat(buffer, &buf) != 0) {
+		if (fetch_image(item.name, buffer) < 0) {
 			ERR("Unable to upload DFU image\n");
 			return -1;
 		}
 	}
 
 	if (patch)
-		patch_file(filename);
-
-	buffer = malloc(strlen(filename) + 5);
-	if (!buffer) {
-		ERR("Cannot allocate memory\n");
-		return -1;
-	}
-	memset(buffer, 0, strlen(filename) + 5);
+		patch_file(buffer);
 
 	if (patch) {
-		snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
-	} else {
-		snprintf(buffer, strlen(filename) + 5, "%s", filename);
+		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.pwn", filename, version);
 	}
 
 	if(raw_load == true && strcasestr(item.name, "iBSS")) {
-		snprintf(buffer, strlen(filename) + 5, "%s.dec", filename);
+		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.dec", filename, version);
 	}
 
 	DPRINT("Uploading %s to device\n", buffer);
@@ -568,7 +570,7 @@ int main(int argc, char **argv)
 		device = malloc(sizeof(irecv_device));
 		memset(device, 0, sizeof(irecv_device));
 		device->chip_id = 8900;
-		device->product = "S5L_Generic";
+		device->product = "s5l8900xall";
 	}
 
 	Dictionary *temporaryDict =
@@ -576,8 +578,34 @@ int main(int argc, char **argv)
 	StringValue *urlKey = NULL;
 	if (temporaryDict != NULL)
 		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
-	if (urlKey != NULL)
+	if (urlKey != NULL) {
+		char *p = NULL, dup[256];
+		int len;
+
+		memset(dup, 0, 256);
+
 		device->url = urlKey->value;
+		if (temporaryDict != NULL)
+			urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
+		if (urlKey != NULL)
+			p = urlKey->value;
+		if(!p)
+			goto out;
+
+		p = strstr(p, device->product);
+		if(!p)
+			goto out;
+
+		len = strlen(p);
+		if(len <= 0)
+			goto out;
+
+		strncpy(dup, p, len - sizeof("Restore.ipsw"));
+		version = strdup(dup);
+		
+	}
+
+out:
 
 	if (url) {
 		processedname = malloc(strlen(url) + sizeof("file://"));
