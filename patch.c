@@ -325,6 +325,8 @@ int patch_file(char *filename)
 
 	snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
 	snprintf(buf, strlen(filename) + 5, "%s.dec", filename);
+	unlink(buf);
+	unlink(buffer);
 
 	/* open output */
 	DPRINT("opening %s (output) as an abstract file\n", filename);
