@@ -39,11 +39,8 @@
 
 static size_t count = 0;
 
-#ifdef BIG_ENDIAN
 char endianness = IS_BIG_ENDIAN;
-#else
-char endianness = IS_LITTLE_ENDIAN;
-#endif
+//char endianness = IS_LITTLE_ENDIAN;
 
 int
 download_file_from_zip(const char *url, const char *path, const char *output,
@@ -54,6 +51,17 @@ download_file_from_zip(const char *url, const char *path, const char *output,
 	ZipInfo *info;
 	unsigned int size;
 	unsigned char *data;
+
+	switch(endian()) {
+		case ENDIAN_BIG:
+			endianness = IS_BIG_ENDIAN;
+			break;
+		case ENDIAN_LITTLE:
+			endianness = IS_LITTLE_ENDIAN;
+			break;
+		default:
+			break;
+	}
 
 	info = PartialZipInit(url);
 	if (!info) {

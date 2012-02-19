@@ -39,12 +39,10 @@
 #include <ctype.h>
 #include "debug.h"
 
-/*
- * comment this if you're on a big endian cpu
- * ex: powerpc64
- */
-
-#undef BIG_ENDIAN
+typedef enum ____endian_t {
+	ENDIAN_BIG = 1,
+	ENDIAN_LITTLE
+} __endian_t;
 
 extern irecv_device_t device;
 extern irecv_client_t client;
@@ -84,6 +82,8 @@ extern patch devicetree_root_name;
 int limera1n();
 int steaks4uce();
 int pwnage2();
+int endian();
+char* endian_to_string(int endian);
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
 int patch_file(char *filename);

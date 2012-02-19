@@ -312,11 +312,7 @@ void print_configuration()
 #else
 	printf("Configuration: This is the DEBUG binary. ");
 #endif
-#ifdef BIG_ENDIAN
-	printf("Compiled for big endian.\n\n");
-#else
-	printf("Compiled for little endian.\n\n");
-#endif
+	printf("Running on %s.\n\n", endian_to_string(endian()));
 }
 
 int main(int argc, char **argv)
