@@ -62,7 +62,7 @@ Dictionary *firmwarePatches, *patchDict, *info;
 			"%s homepage: <http://www.opensn0w.com>\n" \
 			"For complete documentation, see the UNIX manual.\n", \
 			"opensn0w", \
-			"s5l8930x, s5l8920x, s5l8922x, s5l8720x", "opensn0w", "opensn0w"); \
+			"s5l8930x, s5l8920x, s5l8922x, s5l8720x, s5l8900x", "opensn0w", "opensn0w"); \
 			exit(-1);
 
 static const char *image_names[] = {
