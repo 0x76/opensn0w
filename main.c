@@ -289,7 +289,7 @@ int upload_image(firmware_item item, int mode, int patch)
 	}
 
 	if(raw_load == true && strcasestr(item.name, "iBSS")) {
-		snprintf(buffer, strlen(filename + 5), "%s.dec", filename);
+		snprintf(buffer, strlen(filename) + 5, "%s.dec", filename);
 	}
 
 	DPRINT("Uploading %s to device\n", buffer);
