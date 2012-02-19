@@ -19,7 +19,7 @@
 
 #include "sn0w.h"
 
-extern bool dump_bootrom, raw_load;
+extern bool dump_bootrom, raw_load, raw_load_exit;
 
 /* The following is from Chronic-Dev's syringe */
 
@@ -251,7 +251,8 @@ int limera1n()
 		exit(0);
 	} else if (raw_load == true) {
 		DPRINT("RAW LOAD COMPLETE.\n");
-		//exit(0);
+		if(raw_load_exit == true)
+			exit(0);
 	}
 
 	return 0;

@@ -22,7 +22,7 @@
 #define __SN0W_VERSION__ "0.0.0.1-pre2"
 
 int opensn0w_debug_level = DBGFLTR_RELEASE;
-bool verboseflag = false, dump_bootrom = false, raw_load = false;
+bool verboseflag = false, dump_bootrom = false, raw_load = false, raw_load_exit = false;
 int Img3DecryptLast = TRUE;
 int UsingRamdisk = FALSE;
 
@@ -45,6 +45,7 @@ Dictionary *firmwarePatches, *patchDict, *info;
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
+			"   -Z                 Use raw image load payload only.\n" \
 			"   -z                 Use raw image load payload and boot device. (Use on devices with corrupted Chip ID)\n" \
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -s                 Start iRecovery recovery mode shell.\n" \
@@ -331,8 +332,11 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vdAhBzsp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vZdAhBzsp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
+		case 'Z':
+			raw_load_exit = true;
+			break;
 		case 'B':
 			dump_bootrom = true;
 			break;
