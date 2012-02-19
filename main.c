@@ -144,7 +144,7 @@ int poll_device(int mode)
 				return 0;
 			}
 		case kRecoveryMode2:
-			if (mode == RECOVERY) {
+			if (mode == RECOVERYMODE) {
 				return 0;
 			}
 		default:
