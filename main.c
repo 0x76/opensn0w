@@ -324,6 +324,16 @@ int main(int argc, char **argv)
 	Dictionary *bundle;
 	firmware Firmware;
 
+#ifndef _WIN32
+	struct sigaction sigact;
+
+	sigact.sa_sigaction = critical_error_handler;
+	sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+	if (sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL) != 0) {
+		FATAL("Error setting signal handler for %d (%s)\n", SIGSEGV, strsignal(SIGSEGV));
+	}
+#endif
+
 	printf("opensn0w, an open source jailbreaking program.\n"
 	       "version: " __SN0W_VERSION__ "\n\n"
 	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
@@ -449,7 +459,7 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
-	if (dump_bootrom || raw_load) {
+	if (dump_bootrom || raw_load_exit) {
 		/* i know, hacky */
 		goto actually_do_stuff;
 	}

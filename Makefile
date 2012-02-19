@@ -13,7 +13,7 @@ PLIST_DIR=/usr/local/share/opensn0w/
 LIBS=-lusb-1.0 -lcurl -lz -lreadline -lpng -lssl -lcrypto 
 OBJS=main.o limera1n.o libpartial.o crtsup.o libirecovery.o patch.o patches.o img3.o nor_files.o \
 	img2.o 8900.o abstractfile.o lzss.o lzssfile.o plist.o base64.o keys.o \
-	steaks4uce.o pwnage2.o shell.o
+	steaks4uce.o pwnage2.o shell.o sighldr.o
 all: opensn0w
 
 .SILENT:

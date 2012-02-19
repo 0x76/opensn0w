@@ -40,6 +40,15 @@
 #include <ctype.h>
 #include "debug.h"
 
+#ifndef _WIN32
+#include <execinfo.h>
+#include <signal.h>
+#include <ucontext.h>
+#include <unistd.h>
+
+void critical_error_handler(int sig_num, siginfo_t * info, void *ucontext);
+#endif
+
 typedef enum ____endian_t {
 	ENDIAN_BIG = 1,
 	ENDIAN_LITTLE
