@@ -50,7 +50,8 @@ void critical_error_handler(int sig_num, siginfo_t * info, void *ucontext)
 	}
 
 	free(messages);
-	printf("\n\nPlease file a bug report with the information above.\n(Please file with full verbose log.)\n");
+	printf("\n\nPlease file a bug report with the information above.\n(Please file with full verbose log.)\n"
+               "Report opensn0w bugs to rms@velocitylimitless.org.\n");
 
 	exit(EXIT_FAILURE);
 }
