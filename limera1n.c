@@ -169,7 +169,7 @@ int limera1n()
 	if (dump_bootrom == true) {
 		memset(shellcode, 0x0, 0x800);
 		memcpy(shellcode, bootrom_dump_sc, 72);
-	} else if (raw_load == true) {
+	} else if (raw_load == true || raw_load_exit == true) {
 		memset(shellcode, 0x0, 0x800);
 		memcpy(shellcode, s5l8930x_image_raw_jump_bin,
 		       s5l8930x_image_raw_jump_bin_len);
