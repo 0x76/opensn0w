@@ -4,7 +4,7 @@ CC=gcc
 # Add -D_NDEBUG_ to make release binary
 #
 
-CFLAGS=-Wall -I. -g -Ixpwntool -fPIC -O3
+CFLAGS=-Wall -I. -g -Ixpwntool -fPIC -O3 -rdynamic
 OS_TARGET=opensn0w
 LDFLAGS=
 MANDIR=/usr/local/man/man1/

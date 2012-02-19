@@ -34,7 +34,7 @@ void critical_error_handler(int sig_num, siginfo_t * info, void *ucontext)
 	/* Get the address at the time the signal was raised from the EIP (x86) */
 
 	/* fixme: need more platforms */
-	printf("%s\n\nCallee: %p\n",
+	printf("%s.\nCallee address: %p\n",
 		strsignal(sig_num), info->si_addr);
 
 	size = backtrace(array, 50);
@@ -46,10 +46,11 @@ void critical_error_handler(int sig_num, siginfo_t * info, void *ucontext)
 
 	/* skip first stack frame (points here) */
 	for (i = 1; i < size && messages != NULL; ++i) {
-		printf("*** %d -- %s\n", i, messages[i]);
+		printf("Symbol(%d): %s\n", i, messages[i]);
 	}
 
 	free(messages);
+	printf("\n\nPlease file a bug report with the information above.\n(Please file with full verbose log.)\n");
 
 	exit(EXIT_FAILURE);
 }

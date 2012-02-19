@@ -249,7 +249,7 @@ int limera1n()
 
 		DPRINT("dumped.\n");
 		exit(0);
-	} else if (raw_load == true) {
+	} else if (raw_load == true || raw_load_exit == true) {
 		DPRINT("RAW LOAD COMPLETE.\n");
 		if(raw_load_exit == true)
 			exit(0);
