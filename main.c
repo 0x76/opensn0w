@@ -44,7 +44,7 @@ Dictionary *firmwarePatches, *patchDict, *info;
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
-			"   -z                 Use raw image load payload and exit...\n" \
+			"   -z                 Use raw image load payload and boot device. (Use on devices with corrupted Chip ID)\n" \
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -s                 Start iRecovery recovery mode shell.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
@@ -284,6 +284,10 @@ int upload_image(firmware_item item, int mode, int patch)
 		snprintf(buffer, strlen(filename) + 5, "%s.pwn", filename);
 	} else {
 		snprintf(buffer, strlen(filename) + 5, "%s", filename);
+	}
+
+	if(raw_load == true && strcasestr(item.name, "iBSS")) {
+		snprintf(buffer, strlen(filename + 5), "%s.dec", filename);
 	}
 
 	DPRINT("Uploading %s to device\n", buffer);
