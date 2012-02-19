@@ -137,3 +137,19 @@ char* endian_to_string(int endian) {
 	}
 	return NULL;
 }
+
+#define BUFSIZE		2048
+
+void debug_printf(int dbglevel, char *fmt, ...) {
+	char buf[BUFSIZE];		/* i know,  too large */
+	va_list ap;
+
+	va_start(ap, fmt);
+	vsnprintf(buf, BUFSIZE, fmt, ap);
+	va_end(ap);
+
+	if(dbglevel <= opensn0w_debug_level)
+		printf(buf);
+
+	return;
+}

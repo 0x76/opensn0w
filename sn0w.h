@@ -31,6 +31,7 @@
 #include <getopt.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "libpartial.h"
 #include "common.h"
 #include "xpwn/libxpwn.h"

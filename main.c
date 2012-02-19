@@ -19,8 +19,9 @@
 
 #include "sn0w.h"
 
-#define __SN0W_VERSION__ "0.0.0.1-pre"
+#define __SN0W_VERSION__ "0.0.0.1-pre2"
 
+int opensn0w_debug_level = DBGFLTR_RELEASE;
 bool verboseflag = false, dump_bootrom = false, raw_load = false;
 int Img3DecryptLast = TRUE;
 int UsingRamdisk = FALSE;
@@ -129,29 +130,29 @@ int poll_device(int mode)
 
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		STATUS("Connect the device in DFU mode. [%d]\n", try);
+		STATUS("Connect the device in %s mode. [%u]\n", mode_to_string(mode), try);
 		DPRINT("Error: %d (%s)\n", err, irecv_strerror(err));
 		try++;
 		return 1;
 	}
 
 	switch (client->mode) {
-	case kDfuMode2:
-	case kDfuMode:
-		if (mode == DFU) {
-			return 0;
-		}
-	case kRecoveryMode2:
-		if (mode == RECOVERY) {
-			return 0;
-		}
-	default:
-		STATUS("Connect the device in %s mode. [%d]\n",
-		       mode_to_string(mode), try);
-		DPRINT("Error: %d (%s)\n", err, "Bad Device Identifier");
-		irecv_close(client);
-		try++;
-		return 1;
+		case kDfuMode2:
+		case kDfuMode:
+			if (mode == DFU) {
+				return 0;
+			}
+		case kRecoveryMode2:
+			if (mode == RECOVERY) {
+				return 0;
+			}
+		default:
+			STATUS("Connect the device in %s mode. [%d]\n",
+			       mode_to_string(mode), try);
+			DPRINT("Error: %d (%s)\n", err, "Bad Device Identifier");
+			irecv_close(client);
+			try++;
+			return 1;
 	}
 
 	return 0;
@@ -307,11 +308,6 @@ int upload_image(firmware_item item, int mode, int patch)
 
 void print_configuration()
 {
-#ifdef _NDEBUG_
-	printf("Configuration: This is the RELEASE binary. ");
-#else
-	printf("Configuration: This is the DEBUG binary. ");
-#endif
 	printf("Running on %s.\n\n", endian_to_string(endian()));
 }
 
@@ -344,7 +340,7 @@ int main(int argc, char **argv)
 			autoboot = true;
 			break;
 		case 'v':
-			verboseflag = true;
+			opensn0w_debug_level = DBGFLTR_MISC;
 			break;
 		case 'R':
 			pwnrecovery = true;
