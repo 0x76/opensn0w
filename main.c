@@ -249,7 +249,7 @@ size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
 	return written;
 }
 
-int upload_image(firmware_item item, int mode, int patch)
+int upload_image(firmware_item item, int mode, int patch, int userprovided)
 {
 	char path[255];
 	struct stat buf;
@@ -269,8 +269,10 @@ int upload_image(firmware_item item, int mode, int patch)
 	}
 	memset(buffer, 0, strlen(filename) + 10 + strlen(version));
 
-
 	snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s", filename, version);
+
+	if(userprovided)
+		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s", filename);
 
 	DPRINT("Checking if %s already exists\n", buffer);
 
@@ -283,16 +285,17 @@ int upload_image(firmware_item item, int mode, int patch)
 		}
 	}
 
-	if (patch)
+	if (patch && !userprovided)
 		patch_file(buffer);
 
-	if (patch) {
+	if (patch && !userprovided) {
 		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.pwn", filename, version);
 	}
 
 	if(raw_load == true && strcasestr(item.name, "iBSS")) {
 		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.dec", filename, version);
 	}
+
 
 	DPRINT("Uploading %s to device\n", buffer);
 
@@ -671,11 +674,11 @@ out:
 		UsingRamdisk = TRUE;
 
 	STATUS("[*] Uploading stage zero (iBSS)...\n");
-	upload_image(Firmware.item[IBSS], 0, 1);
+	upload_image(Firmware.item[IBSS], 0, 1, 0);
 	client = irecv_reconnect(client, 2);
 
 	STATUS("[*] Uploading stage one (iBEC)...\n");
-	upload_image(Firmware.item[IBEC], 0, 1);
+	upload_image(Firmware.item[IBEC], 0, 1, 0);
 	client = irecv_reconnect(client, 10);
 
 	STATUS("[*] Waiting for reset...\n");
@@ -695,7 +698,7 @@ out:
 		Firmware.item[APPLELOGO].name = bootlogo;
 	}
 
-	upload_image(Firmware.item[APPLELOGO], 2, 0);
+	upload_image(Firmware.item[APPLELOGO], 2, 0, 0);
 
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
@@ -705,7 +708,7 @@ out:
 	if (ramdisk) {
 		STATUS("[*] Uploading ramdisk...\n");
 		Firmware.item[RESTORERAMDISK].name = ramdisk;
-		upload_image(Firmware.item[RESTORERAMDISK], 4, 0);
+		upload_image(Firmware.item[RESTORERAMDISK], 4, 0, 1);
 		irecv_reset(client);
 		sleep(5);
 		irecv_close(client);
@@ -729,7 +732,7 @@ out:
 
 	/* upload devicetree */
 	STATUS("[*] Uploading device tree...\n");
-	upload_image(Firmware.item[DEVICETREE], 1, 1);
+	upload_image(Firmware.item[DEVICETREE], 1, 1, 0);
 	client = irecv_reconnect(client, 2);
 	irecv_send_command(client, "devicetree");
 	client = irecv_reconnect(client, 2);
@@ -739,7 +742,7 @@ out:
 	if (kernelcache) {
 		Firmware.item[KERNELCACHE].name = kernelcache;
 	}
-	upload_image(Firmware.item[KERNELCACHE], 3, 1);
+	upload_image(Firmware.item[KERNELCACHE], 3, 1, 1);
 	client = irecv_reconnect(client, 2);
 
 	/* BootX */
