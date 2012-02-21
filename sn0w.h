@@ -99,6 +99,7 @@ int limera1n();
 int steaks4uce();
 int pwnage2();
 int endian();
+void dos_cursor();
 char* endian_to_string(int endian);
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);

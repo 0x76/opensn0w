@@ -868,7 +868,7 @@ irecv_error_t irecv_send_buffer(irecv_client_t client, unsigned char *buffer,
 				progress = 100;
 			}
 
-			printf("\r[");
+			STATUS("\r[*] Uploading image: [");
 			for (i = 0; i < 50; i++) {
 				if (i < progress / 2) {
 					printf("=");
@@ -1153,7 +1153,7 @@ int irecv_write_file(const char *filename, const void *data, size_t size)
 	DPRINT("Writing data to %s\n", filename);
 	file = fopen(filename, "wb");
 	if (file == NULL) {
-		//error("read_file: Unable to open file %s\n", filename);
+		ERROR("read_file: Unable to open file %s\n", filename);
 		return -1;
 	}
 
@@ -1161,7 +1161,7 @@ int irecv_write_file(const char *filename, const void *data, size_t size)
 	fclose(file);
 
 	if (bytes != size) {
-		//error("ERROR: Unable to write entire file: %s: %d of %d\n", filename, bytes, size);
+		ERROR("ERROR: Unable to write entire file: %s: %d of %d\n", filename, bytes, size);
 		return -1;
 	}
 
@@ -1181,7 +1181,7 @@ int irecv_read_file(const char *filename, char **data, uint32_t * size)
 
 	file = fopen(filename, "rb");
 	if (file == NULL) {
-		//error("read_file: File %s not found\n", filename);
+		ERROR("read_file: File %s not found\n", filename);
 		return -1;
 	}
 
@@ -1191,7 +1191,7 @@ int irecv_read_file(const char *filename, char **data, uint32_t * size)
 
 	buffer = (char *)malloc(length);
 	if (buffer == NULL) {
-		//error("ERROR: Out of memory\n");
+		ERROR("ERROR: Out of memory\n");
 		fclose(file);
 		return -1;
 	}
@@ -1199,7 +1199,7 @@ int irecv_read_file(const char *filename, char **data, uint32_t * size)
 	fclose(file);
 
 	if (bytes != length) {
-		//error("ERROR: Unable to read entire file\n");
+		ERROR("ERROR: Unable to read entire file\n");
 		free(buffer);
 		return -1;
 	}

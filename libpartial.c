@@ -146,7 +146,33 @@ receiveData(void *data, size_t size, size_t nmemb, void **pFileData)
 		*progress =
 		    ((double)count / (double)file->compressedSize) * 100.0;
 		info->progressCallback(info, file, *progress);
+	} else if(file) {
+		int i = 0;
+		double progress2 =
+		    ((double)count / (double)file->compressedSize) * 100.0;
+		*progress =
+                    ((double)count / (double)file->compressedSize) * 100.0;
+		if (progress2 < 0) {
+			//return;
+		}
+		if (progress2 > 100) {
+			progress2 = 100;
+		}
+
+		STATUS("\r[*] Uploading image: [");
+		for (i = 0; i < 50; i++) {
+			if (i < progress2 / 2) {
+				printf("=");
+			} else {
+				printf(" ");
+			}
+		}
+		printf("] %3.1f%%", progress2);
+		if (progress2 == 100) {
+			printf("\n");
+		}
 	}
+
 
 	return size * nmemb;
 }

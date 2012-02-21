@@ -132,8 +132,8 @@ int poll_device(int mode)
 
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		STATUS("Connect the device in %s mode. [%u]\n", mode_to_string(mode), try);
-		DPRINT("Error: %d (%s)\n", err, irecv_strerror(err));
+		STATUS("Connect the device in %s mode. [%u]\r", mode_to_string(mode), try);
+		fflush(stdout);
 		try++;
 		return 1;
 	}
@@ -149,9 +149,8 @@ int poll_device(int mode)
 				return 0;
 			}
 		default:
-			STATUS("Connect the device in %s mode. [%d]\n",
+			STATUS("Connect the device in %s mode. [%u]\r",
 			       mode_to_string(mode), try);
-			DPRINT("Error: %d (%s)\n", err, "Bad Device Identifier");
 			irecv_close(client);
 			try++;
 			return 1;
@@ -185,6 +184,7 @@ int send_command(char *name)
 		FATAL("Null client!\n");
 	}
 
+	STATUS("[*] Sending command \"%s\" to iBoot...\n", name);
 	irecv_send_command(client, name);
 
 	exit(err);

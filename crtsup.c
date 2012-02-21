@@ -149,7 +149,17 @@ void debug_printf(int dbglevel, char *fmt, ...) {
 	va_end(ap);
 
 	if(dbglevel <= opensn0w_debug_level)
-		printf(buf);
+		printf("%s", buf);
 
 	return;
 }
+
+void dos_cursor() {
+	static int position = 0;
+	char cursor[4] = {'/', '-', '\\', '|'};
+			// / - \ |
+	printf("%c\b", cursor[position]);
+	fflush(stdout);
+	position = (position + 1) % 4;
+}
+

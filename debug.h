@@ -26,5 +26,5 @@ void debug_printf(int dbglevel, char *fmt, ...);
 #define DPRINT(fmt, ...) debug_printf(DBGFLTR_DPRINT, "(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 #define STATUS(fmt, ...) debug_printf(DBGFLTR_RELEASE, fmt,  ##__VA_ARGS__)
 //#define STATUS(fmt, ...) printf(fmt, ##__VA_ARGS__)
-
+#define ERROR	ERR
 #endif
