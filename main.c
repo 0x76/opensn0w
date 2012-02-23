@@ -324,6 +324,7 @@ int main(int argc, char **argv)
 	    NULL, *plist = NULL, *ramdisk = NULL;
 	char *processedname;
 	int pwndfu = false, pwnrecovery = false, autoboot = false;
+	int userprovided = 0;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
 	Dictionary *bundle;
@@ -695,11 +696,12 @@ out:
 	/* upload logo */
 	STATUS("[*] Uploading boot logo...\n");
 	if (bootlogo) {
+		userprovided = 1;
 		Firmware.item[APPLELOGO].name = bootlogo;
 	}
 
-	upload_image(Firmware.item[APPLELOGO], 2, 0, 0);
-
+	upload_image(Firmware.item[APPLELOGO], 2, 0, userprovided);
+	userprovided = 0;
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
 	client = irecv_reconnect(client, 2);
@@ -741,8 +743,10 @@ out:
 	STATUS("[*] Uploading kernel...\n");
 	if (kernelcache) {
 		Firmware.item[KERNELCACHE].name = kernelcache;
+		userprovided = 1;
 	}
-	upload_image(Firmware.item[KERNELCACHE], 3, 1, 1);
+	upload_image(Firmware.item[KERNELCACHE], 3, 1, 0);
+	userprovided = 0;
 	client = irecv_reconnect(client, 2);
 
 	/* BootX */
