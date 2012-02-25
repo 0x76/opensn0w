@@ -93,6 +93,11 @@ extern patch kernel_redsn0w_unknown0;
 extern patch kernel_redsn0w_unknown1;
 extern patch kernel_redsn0w_unknown2;
 extern patch kernel_redsn0w_unknown3;
+extern patch kernel_nor0;
+extern patch kernel_nor1;
+extern patch kernel_nor2;
+extern patch kernel_nor3;
+extern patch kernel_nor4;
 
 extern patch devicetree_root_name;
 

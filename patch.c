@@ -131,6 +131,11 @@ int patch_kernel(char *buffer, size_t length)
 		PATCH_FILE(candidate, kernel_redsn0w_unknown1, "redsn0w unknown 1");
 		PATCH_FILE(candidate, kernel_redsn0w_unknown2, "redsn0w unknown 2");
 		PATCH_FILE(candidate, kernel_redsn0w_unknown3, "redsn0w unknown 3");
+		PATCH_FILE(candidate, kernel_nor0, "NOR patch 0");
+		PATCH_FILE(candidate, kernel_nor1, "NOR patch 1");
+		PATCH_FILE(candidate, kernel_nor2, "NOR patch 2");
+		PATCH_FILE(candidate, kernel_nor3, "NOR patch 3");
+		PATCH_FILE(candidate, kernel_nor4, "NOR patch 4");
 	}
 	return 0;
 }

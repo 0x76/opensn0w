@@ -320,8 +320,7 @@ CDFile *PartialZipFindFile(ZipInfo * info, const char *fileName)
 	unsigned int i;
 	for (i = 0; i < info->centralDirectoryDesc->CDEntries; i++) {
 		CDFile *candidate = (CDFile *) cur;
-		const char *curFileName = cur + sizeof(CDFile);
-
+		char *curFileName = cur + sizeof(CDFile);
 		if (strlen(fileName) == candidate->lenFileName
 		    && strncmp(fileName, curFileName,
 			       candidate->lenFileName) == 0)
