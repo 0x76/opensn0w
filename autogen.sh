@@ -9,6 +9,7 @@ if test ! -f $TOP_DIR/configure.ac ; then
 fi
 
 AUTOCONF=${AUTOCONF:-autoconf}
+AUTOMAKE=${AUTOMAKE:-automake}
 ACLOCAL=${ACLOCAL:-aclocal}
 AUTOHEADER=${AUTOHEADER:-autoheader}
 
@@ -77,5 +78,6 @@ cd $TOP_DIR
 run_or_die $ACLOCAL
 run_or_die $AUTOHEADER
 run_or_die $AUTOCONF
+run_or_die $AUTOMAKE
 
 ./configure "$@"
