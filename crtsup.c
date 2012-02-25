@@ -164,7 +164,7 @@ void dos_cursor() {
 }
 
 
-#ifdef _WIN32
+#ifndef HAVE_STRCASESTR
 char *strcasestr (char *haystack, char *needle)
 {
 	char *p, *startn = 0, *np = 0;
@@ -185,7 +185,9 @@ char *strcasestr (char *haystack, char *needle)
 	return 0;
 }
 
+#endif
 
+#ifndef HAVE_STRNDUP
 char *strndup (const char *s, size_t n) {
 	char *result;
 	size_t len = strlen (s);

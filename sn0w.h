@@ -39,6 +39,7 @@
 #include <xpwn/plist.h>
 #include <ctype.h>
 #include "debug.h"
+#include "config.h"
 
 #ifdef __APPLE__
 #define _SVID_SOURCE
