@@ -158,8 +158,10 @@ int patch_file(char *filename)
 	char *buffer;
 	Dictionary *data;
 	char *buf;
-	char *tokenizedname;
+	char *tokenizedname, *truename = NULL, *name2;
 	char *dup = strndup(filename, 255);
+	char *dup2 = strndup(filename, 255);
+	char *build_train = strndup(version, 255);
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -172,6 +174,10 @@ int patch_file(char *filename)
 	DPRINT("getting keys\n");
 
 	tokenizedname = strtok(dup, ".,");
+	truename = strtok(dup2, "_");
+	name2 = strtok(build_train, "_"); /* device */
+	name2 = strtok(NULL, "_");        /* version */
+	name2 = strtok(NULL, "_");        /* build */
 
 	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
@@ -272,10 +278,28 @@ int patch_file(char *filename)
 	/* write patched contents */
 	DPRINT("writing pwned file\n");
 
-	newFile->write(newFile, inData, inDataSize);
-	newFile->close(newFile);
 	newFile2->write(newFile2, inData, inDataSize);
 	newFile2->close(newFile2);
+
+	/* bsdiff */
+	if(name2[0] != '9') {
+		char patchbuf[255], newname[255];
+		snprintf(patchbuf, 255, "%s.%s/%s.patch", device->model, name2, truename);
+		snprintf(newname, 255, "%s.pwn_bsdiff", filename);
+		bsdiff(buf, newname, patchbuf);
+
+		newFile2 = createAbstractFileFromFile(fopen(newname, "wb"));
+		if (!newFile2) {
+			DPRINT("Cannot open outfile\n");
+			return -1;
+		}
+		newFile2->read(newFile2, inData, inDataSize);
+		newFile2->close(newFile);
+	}
+
+	newFile->write(newFile, inData, inDataSize);
+
+	newFile->close(newFile);
 
 	free(buffer);
 

@@ -112,7 +112,7 @@ void hex_dump(void *data, int size);
 int patch_file(char *filename);
 int irecovery_shell_initialize();
 Dictionary *get_key_dictionary_from_bundle(char *member);
-
+int bsdiff(char *oldfile, char *newfile, char *patchfile);
 #ifdef _WIN32
 char *strcasestr (char *haystack, char *needle);
 char *strndup (const char *s, size_t n) ;

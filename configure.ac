@@ -24,6 +24,7 @@ AC_CHECK_LIB([ssl], [SSL_accept])
 AC_CHECK_LIB([z], [inflate])
 
 AC_CHECK_LIB([usb-1.0], [libusb_init])
+AC_CHECK_LIB([bz2], [BZ2_bzRead])
 AC_CHECK_LIB([readline], [readline])
 AC_CHECK_LIB([curl], [curl_free])
 

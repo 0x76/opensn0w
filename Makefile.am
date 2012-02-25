@@ -38,7 +38,8 @@ opensn0w_SOURCES = 8900.c \
 	pwnage2.c \
 	shell.c \
 	sighldr.c \
-	steaks4uce.c
+	steaks4uce.c \
+	bsdiff.c
 
 opensn0wkeydir = $(datarootdir)/FirmwareBundles
 opensn0wkey_DATA = Keys/AppleTV2,1_4.1_8M89.plist \
