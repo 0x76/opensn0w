@@ -27,7 +27,9 @@ extern "C" {
 #ifndef WIN32
 #include <libusb-1.0/libusb.h>
 #else
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #define sleep(n) Sleep(1000 * n)
 #endif

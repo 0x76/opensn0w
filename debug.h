@@ -5,6 +5,13 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#ifdef _WIN32
+#ifdef ERROR
+#undef ERROR
+#endif
+#endif
+
+
 extern int opensn0w_debug_level;
 void debug_printf(int dbglevel, char *fmt, ...);
 

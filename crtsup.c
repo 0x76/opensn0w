@@ -163,3 +163,42 @@ void dos_cursor() {
 	position = (position + 1) % 4;
 }
 
+
+#ifdef _WIN32
+char *strcasestr (char *haystack, char *needle)
+{
+	char *p, *startn = 0, *np = 0;
+
+	for (p = haystack; *p; p++) {
+		if (np) {
+			if (toupper(*p) == toupper(*np)) {
+				if (!*++np)
+					return startn;
+			} else
+				np = 0;
+		} else if (toupper(*p) == toupper(*needle)) {
+			np = needle + 1;
+			startn = p;
+		}
+	}
+
+	return 0;
+}
+
+
+char *strndup (const char *s, size_t n) {
+	char *result;
+	size_t len = strlen (s);
+
+	if (n < len)
+		len = n;
+
+	result = (char *) malloc (len + 1);
+	if (!result)
+		return 0;
+
+	result[len] = '\0';
+	return (char *) memcpy (result, s, len);
+}
+
+#endif

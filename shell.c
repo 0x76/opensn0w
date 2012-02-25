@@ -101,8 +101,16 @@ void init_shell(irecv_client_t client)
 			printf("%s\n", irecv_strerror(error));
 			break;
 		}
-
+#ifndef _WIN32
 		char *cmd = readline("> ");
+#else
+		char *cmd = malloc(512);
+		if(!cmd) {
+			abort();
+		}
+		memset(cmd, 0, 512);
+		fgets(cmd, 512, stdin);
+#endif
 		if (cmd && *cmd) {
 			error = irecv_send_command(client, cmd);
 			if (error != IRECV_E_SUCCESS) {

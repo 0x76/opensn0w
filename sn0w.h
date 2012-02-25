@@ -107,6 +107,11 @@ int patch_file(char *filename);
 int irecovery_shell_initialize();
 Dictionary *get_key_dictionary_from_bundle(char *member);
 
+#ifdef _WIN32
+char *strcasestr (char *haystack, char *needle);
+char *strndup (const char *s, size_t n) ;
+#endif
+
 typedef enum _image_magic {
 	IMG3 = 0,
 	IMG2,

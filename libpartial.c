@@ -39,6 +39,7 @@
 
 static size_t count = 0;
 
+
 char endianness = IS_BIG_ENDIAN;
 //char endianness = IS_LITTLE_ENDIAN;
 

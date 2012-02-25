@@ -41,7 +41,7 @@ extern "C" {
 #define fseeko fseeko64
 #define ftello ftello64
 #define off_t off64_t
-#define mkdir(x, y) mkdir(x)
+//#define mkdir(x, y) mkdir(x)
 #define PATH_SEPARATOR "\\"
 #define sleep(n) Sleep(1000 * n)
 #else

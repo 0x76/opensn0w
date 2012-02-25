@@ -484,7 +484,7 @@ int main(int argc, char **argv)
 		FATAL("plist must be specified in this mode!\n\n");
 	}
 	// Initialize Firmware structure //
-	bzero(&Firmware, sizeof(firmware));
+	memset(&Firmware, 0, sizeof(firmware));
 	Firmware.items = sizeof(image_names) / sizeof(char *);
 	Firmware.item = malloc(Firmware.items * sizeof(firmware_item));
 
@@ -492,7 +492,7 @@ int main(int argc, char **argv)
 		FATAL("Unable to allocate memory for decryption keys!\n");
 	}
 
-	bzero(Firmware.item, Firmware.items * sizeof(firmware_item));
+	memset(Firmware.item, 0, Firmware.items * sizeof(firmware_item));
 
 	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
 	if (bundle != NULL) {

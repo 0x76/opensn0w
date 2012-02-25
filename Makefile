@@ -10,7 +10,7 @@ LDFLAGS=
 MANDIR=/usr/local/man/man1/
 BINDIR=/usr/local/bin/
 PLIST_DIR=/usr/local/share/opensn0w/
-LIBS=-lusb-1.0 -lcurl -lz -lreadline -lpng -lssl -lcrypto 
+LIBS=-lusb-1.0 -lcurl -lz -lreadline -lssl -lcrypto  -L/usr/local/lib -lsetupapi
 OBJS=main.o limera1n.o libpartial.o crtsup.o libirecovery.o patch.o patches.o img3.o nor_files.o \
 	img2.o 8900.o abstractfile.o lzss.o lzssfile.o plist.o base64.o keys.o \
 	steaks4uce.o pwnage2.o shell.o sighldr.o
@@ -20,6 +20,11 @@ all: opensn0w
 .SUFFIXES: .c .o
 
 UNAME := $(shell uname -s)
+
+ifeq ($(findstring MINGW32,$(UNAME)),MINGW32)
+	CFLAGS=-Wall -I. -g -Ixpwntool -O3 -I/usr/local/include
+	LIBS=-lusb-1.0 -lcurl -lz -lreadline -lssl -lcrypto  -L/usr/local/lib -lsetupapi
+endif
 
 ifeq ($(UNAME),Darwin)
 	CFLAGS = -Wall -I. -g -I./include -I/usr/local/include -I/opt/local/include -Ilibusb-1.0  -Ixpwntool

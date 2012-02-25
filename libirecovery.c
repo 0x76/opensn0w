@@ -28,7 +28,9 @@
 #ifndef WIN32
 #include <libusb-1.0/libusb.h>
 #else
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #include <setupapi.h>
 #endif
@@ -73,7 +75,7 @@ irecv_error_t mobiledevice_connect(irecv_client_t * client)
 	SP_DEVICE_INTERFACE_DATA currentInterface;
 	HDEVINFO usbDevices;
 	DWORD i;
-	LPSTR path;
+	LPSTR path = NULL;
 	irecv_client_t _client =
 	    (irecv_client_t) malloc(sizeof(struct irecv_client));
 	memset(_client, 0, sizeof(struct irecv_client));
@@ -262,7 +264,6 @@ int irecv_control_transfer(irecv_client_t client,
 				       wValue, wIndex, data, wLength, timeout);
 #else
 	DWORD count = 0;
-	DWORD ret;
 	BOOL bRet;
 	OVERLAPPED overlapped;
 
@@ -288,7 +289,7 @@ int irecv_control_transfer(irecv_client_t client,
 			sizeof(usb_control_request) + wLength, packet,
 			sizeof(usb_control_request) + wLength, NULL,
 			&overlapped);
-	ret = WaitForSingleObject(overlapped.hEvent, timeout);
+	WaitForSingleObject(overlapped.hEvent, timeout);
 	bRet = GetOverlappedResult(client->handle, &overlapped, &count, FALSE);
 	CloseHandle(overlapped.hEvent);
 	if (!bRet) {
@@ -330,7 +331,7 @@ int irecv_bulk_transfer(irecv_client_t client,
 	} else {
 		ret = 0;
 	}
-	ret == 0 ? -1 : 0;
+	ret = (ret == 0 ? -1 : 0);
 #endif
 
 	return ret;
@@ -538,10 +539,8 @@ irecv_error_t irecv_reset(irecv_client_t client)
 #ifndef WIN32
 	libusb_reset_device(client->handle);
 #else
-	int ret;
 	DWORD count;
-	ret =
-	    DeviceIoControl(client->handle, 0x22000C, NULL, 0, NULL, 0, &count,
+	DeviceIoControl(client->handle, 0x22000C, NULL, 0, NULL, 0, &count,
 			    NULL);
 #endif
 
@@ -1025,8 +1024,11 @@ irecv_error_t irecv_get_ecid(irecv_client_t client, unsigned long long *ecid)
 		*ecid = 0;
 		return IRECV_E_UNKNOWN_ERROR;
 	}
+#ifndef _WIN32
 	sscanf(ecid_string, "ECID:%qX", ecid);
-
+#else
+	sscanf(ecid_string, "ECID:%I64x", ecid);
+#endif
 	return IRECV_E_SUCCESS;
 }
 
