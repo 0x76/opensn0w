@@ -149,17 +149,17 @@ int steaks4uce()
 	}
 
 	int send_size = 0x100 + sizeof(payload);
-#ifdef BIG_ENDIAN
-	*((unsigned int *)&payload[0x14]) = send_size;
-	*((unsigned int *)&payload[0x14]) =
-	    __builtin_bswap32(*((unsigned int *)&payload[0x14]));
-	memset(data, 0, 0x800);
-	memcpy(&data[0x100], payload, sizeof(payload));
-#else
-	*((unsigned int *)&payload[0x14]) = send_size;
-	memset(data, 0, 0x800);
-	memcpy(&data[0x100], payload, sizeof(payload));
-#endif
+	if(endian() == ENDIAN_BIG) {
+		*((unsigned int *)&payload[0x14]) = send_size;
+		*((unsigned int *)&payload[0x14]) =
+		    __builtin_bswap32(*((unsigned int *)&payload[0x14]));
+		memset(data, 0, 0x800);
+		memcpy(&data[0x100], payload, sizeof(payload));
+	} else {
+		*((unsigned int *)&payload[0x14]) = send_size;
+		memset(data, 0, 0x800);
+		memcpy(&data[0x100], payload, sizeof(payload));
+	}
 
 	ret =
 	    irecv_control_transfer(client, 0x21, 1, 0, 0, data, send_size,

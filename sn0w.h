@@ -111,6 +111,7 @@ void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
 int patch_file(char *filename);
 int irecovery_shell_initialize();
+bool file_exists(const char *fileName);
 Dictionary *get_key_dictionary_from_bundle(char *member);
 int bsdiff(char *oldfile, char *newfile, char *patchfile);
 #ifdef _WIN32

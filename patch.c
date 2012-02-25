@@ -284,17 +284,22 @@ int patch_file(char *filename)
 	/* bsdiff */
 	if(name2[0] != '9') {
 		char patchbuf[255], newname[255];
-		snprintf(patchbuf, 255, "%s.%s/%s.patch", device->model, name2, truename);
-		snprintf(newname, 255, "%s.pwn_bsdiff", filename);
-		bsdiff(buf, newname, patchbuf);
 
-		newFile2 = createAbstractFileFromFile(fopen(newname, "wb"));
+		snprintf(patchbuf, 255, "patches/%s.%s/%s.patch", device->model, name2, truename);
+		snprintf(newname, 255, "%s.pwn_bsdiff", filename);
+		if(file_exists(patchbuf) == TRUE) {
+			DPRINT("Running bspatch(%s, %s, %s);\n", buf, newname, patchbuf);
+			bsdiff(buf, newname, patchbuf);
+		}
+
+		newFile2 = createAbstractFileFromFile(fopen(newname, "rb"));
 		if (!newFile2) {
 			DPRINT("Cannot open outfile\n");
 			return -1;
 		}
 		newFile2->read(newFile2, inData, inDataSize);
-		newFile2->close(newFile);
+		newFile2->close(newFile2);
+		unlink(newname);
 	}
 
 	newFile->write(newFile, inData, inDataSize);

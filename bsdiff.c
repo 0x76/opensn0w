@@ -36,6 +36,7 @@ __FBSDID
 #include <err.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <debug.h>
 
 /* Compatibility layer for reading either the old BSDIFF40 or the new BSDIFN40
  patch formats: */
