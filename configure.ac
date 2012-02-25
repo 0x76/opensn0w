@@ -32,6 +32,13 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([fcntl.h inttypes.h limits.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/mount.h sys/socket.h sys/time.h unistd.h])
 
+case "$target" in
+*-*-mingw32)
+    CFLAGS="-I/mingw/include $CFLAGS"
+    LIBS="$LIBS -lsetupapi"
+        ;;
+esac
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_CONST
@@ -68,3 +75,11 @@ AC_CHECK_FUNCS([bzero clock_gettime dup2 memchr memmove memset mkdir rmdir socke
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+
+echo "
+Configuration:
+	opensn0w version     : ${PACKAGE_VERSION}
+	LDFLAGS              : ${LDFLAGS}
+	CFLAGS               : ${CFLAGS}
+
+Type make to build opensn0w, and make install to install it."
