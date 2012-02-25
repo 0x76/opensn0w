@@ -330,6 +330,19 @@ int main(int argc, char **argv)
 	Dictionary *bundle;
 	firmware Firmware;
 
+
+	switch(endian()) {
+		case ENDIAN_BIG:
+			endianness = IS_BIG_ENDIAN;
+			break;
+		case ENDIAN_LITTLE:
+			endianness = IS_LITTLE_ENDIAN;
+			break;
+		default:
+			break;
+	}
+
+
 #ifndef _WIN32
 	struct sigaction sigact;
 
