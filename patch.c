@@ -19,6 +19,7 @@
 
 #include "sn0w.h"
 
+#undef HAVE_LIBBZ2
 /* preprocessor macros */
 #define PATCH_FILE(candidate, original_data, name) \
 	if(!memcmp(candidate, original_data.original, original_data.length)) { \
@@ -159,12 +160,12 @@ int patch_file(char *filename)
 	Dictionary *data;
 	char *buf;
 	char *tokenizedname;
-#ifdef HAVE_LIBBZ2 
-	char *truename = NULL, *name2;
-#endif
-	char *dup = strndup(filename, 255);
+#ifdef HAVE_LIBBZ2
+	char *truename = NULL, *name2 = NULL;
 	char *dup2 = strndup(filename, 255);
 	char *build_train = strndup(version, 255);
+#endif
+	char *dup = strndup(filename, 255);
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -177,10 +178,12 @@ int patch_file(char *filename)
 	DPRINT("getting keys\n");
 
 	tokenizedname = strtok(dup, ".,");
+#ifdef HAVE_LIBBZ2
 	truename = strtok(dup2, "_");
 	name2 = strtok(build_train, "_"); /* device */
 	name2 = strtok(NULL, "_");        /* version */
 	name2 = strtok(NULL, "_");        /* build */
+#endif
 
 	data = get_key_dictionary_from_bundle(tokenizedname);
 	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
