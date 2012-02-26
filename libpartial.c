@@ -149,7 +149,7 @@ receiveData(void *data, size_t size, size_t nmemb, void **pFileData)
 			progress2 = 100;
 		}
 
-		STATUS("\r[*] Uploading image: [");
+		STATUS("\r[*] Downloading image: [");
 		for (i = 0; i < 50; i++) {
 			if (i < progress2 / 2) {
 				printf("=");

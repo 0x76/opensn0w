@@ -21,8 +21,11 @@
   **/
 
 #include "sn0w.h"
+
+#ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 
 #define FILE_HISTORY_PATH ".opensn0w_irecovery_sh"
 
@@ -78,14 +81,14 @@ int irecovery_shell_initialize()
 
 void load_command_history()
 {
-#ifndef _WIN32
+#ifdef HAVE_LIBREADLINE
 	read_history(FILE_HISTORY_PATH);
 #endif
 }
 
 void append_command_to_history(char *cmd)
 {
-#ifndef _WIN32
+#ifdef HAVE_LIBREADLINE
 	add_history(cmd);
 	write_history(FILE_HISTORY_PATH);
 #endif
@@ -105,7 +108,7 @@ void init_shell(irecv_client_t client)
 			printf("%s\n", irecv_strerror(error));
 			break;
 		}
-#ifndef _WIN32
+#ifdef HAVE_LIBREADLINE
 		char *cmd = readline("> ");
 #else
 		char *cmd = malloc(512);

@@ -560,8 +560,11 @@ int main(int argc, char **argv)
 		STATUS("[*] Fixing recovery loop...\n");
 		irecv_send_command(client, "setenv auto-boot true");
 		irecv_send_command(client, "saveenv");
+#ifndef _WIN32
 		client = irecv_reconnect(client, 2);
-
+#else
+		client = irecv_reconnect(client, 5);
+#endif
 		irecv_send_command(client, "reboot");
 
 		STATUS("[*] Operation completed.\n");
@@ -780,15 +783,27 @@ out:
 
 	STATUS("[*] Uploading stage zero (iBSS)...\n");
 	upload_image(Firmware.item[IBSS], 0, 1, 0);
-	client = irecv_reconnect(client, 2);
+#ifndef _WIN32
+	client = irecv_reconnect(client, 30);
+#else
+	client = irecv_reconnect(client, 5);
+#endif
 
 	STATUS("[*] Uploading stage one (iBEC)...\n");
 	upload_image(Firmware.item[IBEC], 0, 1, 0);
+#ifndef _WIN32
+	client = irecv_reconnect(client, 45);
+#else
 	client = irecv_reconnect(client, 10);
+#endif
 
 	STATUS("[*] Waiting for reset...\n");
-	irecv_reset(client);
+#ifndef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
 	client = irecv_reconnect(client, 2);
+#endif
+	irecv_reset(client);
 	irecv_set_interface(client, 0, 0);
 	irecv_set_interface(client, 1, 1);
 
@@ -808,7 +823,11 @@ out:
 	userprovided = 0;
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
+#ifndef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
 	client = irecv_reconnect(client, 2);
+#endif
 
 	/* upload ramdisk */
 	if (ramdisk) {
@@ -839,9 +858,18 @@ out:
 	/* upload devicetree */
 	STATUS("[*] Uploading device tree...\n");
 	upload_image(Firmware.item[DEVICETREE], 1, 1, 0);
+#ifndef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
 	client = irecv_reconnect(client, 2);
+#endif
+
 	irecv_send_command(client, "devicetree");
+#ifndef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
 	client = irecv_reconnect(client, 2);
+#endif
 
 	/* upload kernel */
 	STATUS("[*] Uploading kernel...\n");
@@ -851,7 +879,11 @@ out:
 	}
 	upload_image(Firmware.item[KERNELCACHE], 3, 1, 0);
 	userprovided = 0;
+#ifndef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
 	client = irecv_reconnect(client, 2);
+#endif
 
 	/* BootX */
 	STATUS("[*] Booting.\n");
