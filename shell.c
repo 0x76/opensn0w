@@ -78,13 +78,17 @@ int irecovery_shell_initialize()
 
 void load_command_history()
 {
+#ifndef _WIN32
 	read_history(FILE_HISTORY_PATH);
+#endif
 }
 
 void append_command_to_history(char *cmd)
 {
+#ifndef _WIN32
 	add_history(cmd);
 	write_history(FILE_HISTORY_PATH);
+#endif
 }
 
 void init_shell(irecv_client_t client)
