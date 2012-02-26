@@ -21,11 +21,11 @@
 
 /* preprocessor macros */
 #define PATCH_FILE(candidate, original_data, name) \
-    if(!memcmp(candidate, original_data.original, original_data.length)) { \
-        DPRINT("Patching " name " check at 0x%08x\n", i); \
-        memcpy(candidate, original_data.patched, original_data.length); \
-        continue; \
-    }
+	if(!memcmp(candidate, original_data.original, original_data.length)) { \
+		DPRINT("Patching " name " check at 0x%08x\n", i); \
+		memcpy(candidate, original_data.patched, original_data.length); \
+		continue; \
+	}
 
 /* globals */
 extern Dictionary *firmwarePatches, *patchDict, *info;
@@ -94,17 +94,17 @@ int patch_bootloaders(char *buffer, size_t length)
 
 	for (i = 0; i < length; i++) {
 		char *candidate = &buffer[i];
-        PATCH_FILE(candidate, iBSS_SDOM, "SDOM tag");
-        PATCH_FILE(candidate, iBSS_PROD, "PROD tag");
-        PATCH_FILE(candidate, iBSS_CHIP, "CHIP tag");
-        PATCH_FILE(candidate, iBSS_TYPE, "TYPE tag");
-        PATCH_FILE(candidate, iBSS_SEPO, "SEPO tag");
-        PATCH_FILE(candidate, iBSS_CEPO, "CEPO tag");
-        PATCH_FILE(candidate, iBSS_BORD, "BORD tag");
-        PATCH_FILE(candidate, iBSS_ECID, "ECID tag");
-        PATCH_FILE(candidate, iBSS_SHSH, "SHSH tag");
-        PATCH_FILE(candidate, iBEC_bootargs, "iBoot boot-args");
-        PATCH_FILE(candidate, iBEC_bootargs_jmp, "iBoot boot-args conditional");
+		PATCH_FILE(candidate, iBSS_SDOM, "SDOM tag");
+		PATCH_FILE(candidate, iBSS_PROD, "PROD tag");
+		PATCH_FILE(candidate, iBSS_CHIP, "CHIP tag");
+		PATCH_FILE(candidate, iBSS_TYPE, "TYPE tag");
+		PATCH_FILE(candidate, iBSS_SEPO, "SEPO tag");
+		PATCH_FILE(candidate, iBSS_CEPO, "CEPO tag");
+		PATCH_FILE(candidate, iBSS_BORD, "BORD tag");
+		PATCH_FILE(candidate, iBSS_ECID, "ECID tag");
+		PATCH_FILE(candidate, iBSS_SHSH, "SHSH tag");
+		PATCH_FILE(candidate, iBEC_bootargs, "iBoot boot-args");
+		PATCH_FILE(candidate, iBEC_bootargs_jmp, "iBoot boot-args conditional");
 	}
 	return 0;
 }
@@ -127,10 +127,10 @@ int patch_kernel(char *buffer, size_t length)
 		PATCH_FILE(candidate, kernel__PE_i_can_has_debugger, "_PE_i_can_has_debugger");
 		PATCH_FILE(candidate, kernel_IOAESAccelerator, "IOAESAccelerator usage");
 		PATCH_FILE(candidate, kernel_sigcheck, "Code signature enforcement 2");
-        PATCH_FILE(candidate, kernel_redsn0w_unknown0, "redsn0w unknown 0");
-        PATCH_FILE(candidate, kernel_redsn0w_unknown1, "redsn0w unknown 1");
-        PATCH_FILE(candidate, kernel_redsn0w_unknown2, "redsn0w unknown 2");
-        PATCH_FILE(candidate, kernel_redsn0w_unknown3, "redsn0w unknown 3");
+		PATCH_FILE(candidate, kernel_redsn0w_unknown0, "redsn0w unknown 0");
+		PATCH_FILE(candidate, kernel_redsn0w_unknown1, "redsn0w unknown 1");
+		PATCH_FILE(candidate, kernel_redsn0w_unknown2, "redsn0w unknown 2");
+		PATCH_FILE(candidate, kernel_redsn0w_unknown3, "redsn0w unknown 3");
 	}
 	return 0;
 }
