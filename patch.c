@@ -158,7 +158,10 @@ int patch_file(char *filename)
 	char *buffer;
 	Dictionary *data;
 	char *buf;
-	char *tokenizedname, *truename = NULL, *name2;
+	char *tokenizedname;
+#ifdef HAVE_LIBBZ2 
+	char *truename = NULL, *name2;
+#endif
 	char *dup = strndup(filename, 255);
 	char *dup2 = strndup(filename, 255);
 	char *build_train = strndup(version, 255);
