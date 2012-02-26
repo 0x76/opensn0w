@@ -27,6 +27,7 @@ AC_CHECK_LIB([usb-1.0], [libusb_init])
 AC_CHECK_LIB([bz2], [BZ2_bzRead])
 AC_CHECK_LIB([readline], [readline])
 AC_CHECK_LIB([curl], [curl_free])
+AC_CHECK_LIB([curldll], [curl_free])
 
 dnl use pretty build output with automake >= 1.11
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],
