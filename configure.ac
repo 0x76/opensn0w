@@ -3,6 +3,12 @@
 
 AC_PREREQ(2.61)
 AC_INIT([opensn0w], [0.1], [rms@velocitylimitless.org])
+
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+AC_GNU_SOURCE
+
 AC_CONFIG_SRCDIR([8900.c])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([-Wall])
@@ -44,6 +50,7 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_TYPE_UID_T
 AC_C_INLINE
+AC_C_BIGENDIAN
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT8_T
@@ -58,6 +65,8 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
 AC_C_VOLATILE
+AC_PROG_CC_C99
+
 
 # Checks for library functions.
 AC_FUNC_CHOWN
@@ -72,6 +81,15 @@ AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([bzero clock_gettime dup2 memchr memmove memset mkdir rmdir socket strcasecmp strchr strdup strndup strrchr strstr strtol uname strcasestr strndup])
+
+AC_PATH_PROG(RM, rm)
+AC_PATH_PROG(MV, mv)
+AC_PATH_PROG(CP, cp)
+AC_PATH_PROG(LN, ln)
+AC_PATH_PROG(TAR, tar)
+AC_PATH_PROG(AR, ar)
+AC_PATH_PROG(INSTALL, install)
+
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
