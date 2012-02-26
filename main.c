@@ -21,15 +21,18 @@
 
 #define __SN0W_VERSION__ "0.0.0.1-pre2"
 
+/* globals */
+
 int opensn0w_debug_level = DBGFLTR_RELEASE;
 bool verboseflag = false, dump_bootrom = false, raw_load = false, raw_load_exit = false;
 int Img3DecryptLast = TRUE;
 int UsingRamdisk = FALSE;
 char *version = "UNKNOWN";
-
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
+
+/* usage */
 
 #define usage(x) \
 	printf("Usage: %s [OPTIONS]\n" \
@@ -67,6 +70,8 @@ Dictionary *firmwarePatches, *patchDict, *info;
 			"s5l8930x, s5l8920x, s5l8922x, s5l8720x, s5l8900x", "opensn0w", "opensn0w"); \
 			exit(-1);
 
+/* image names */
+
 static const char *image_names[] = {
 	"iBSS",
 	"DeviceTree",
@@ -89,6 +94,13 @@ static const char *image_names[] = {
 	"NeedService"
 };
 
+/*!
+ * \fn void boot_args_process(char *args)
+ * \brief Process iPhone boot arguments for iBoot injection.
+ *
+ * \param args Arguments for iBoot
+ */
+ 
 void boot_args_process(char *args)
 {
 	char buffer[39];
@@ -107,23 +119,44 @@ void boot_args_process(char *args)
 	memcpy(iBEC_bootargs.patched, buffer, 39);
 }
 
+/*!
+ * \fn bool file_exists(const char *fileName)
+ * \brief Check if file exists.
+ *
+ * \param fileName filename.
+ */
+ 
 bool file_exists(const char *fileName)
 {
 	struct stat buf;
 	return !stat(fileName, &buf);
 }
 
+/*!
+ * \fn char *mode_to_string(int mode)
+ * \brief Required \a mode to string.
+ *
+ * \param mode Required mode (DFU/iBoot)
+ */
+
 char *mode_to_string(int mode)
 {
 	switch (mode) {
-	case DFU:
-		return "DFU";
-	case RECOVERYMODE:
-		return "Recovery/iBoot";
-	default:
-		return "UNKNOWN";
+		case DFU:
+			return "DFU";
+		case RECOVERYMODE:
+			return "Recovery/iBoot";
+		default:
+			return "UNKNOWN";
 	}
 }
+
+/*!
+ * \fn int poll_device(int mode)
+ * \brief Poll device for specified \a mode.
+ *
+ * \param mode Required mode (DFU/iBoot).
+ */
 
 int poll_device(int mode)
 {
@@ -159,6 +192,13 @@ int poll_device(int mode)
 	return 0;
 }
 
+/*!
+ * \fn int send_command(char *name)
+ * \brief Send \a name as an iBoot command to device.
+ *
+ * \param name iBoot command.
+ */
+
 int send_command(char *name)
 {
 	irecv_error_t err;
@@ -190,6 +230,14 @@ int send_command(char *name)
 	exit(err);
 	return err;
 }
+
+/*!
+ * \fn int send_filename(char *name)
+ * \brief Send \a name as file to device.
+ *
+ * \param name iBoot file.
+ */
+
 
 int send_file(char *name)
 {
@@ -230,6 +278,14 @@ int send_file(char *name)
 	return err;
 }
 
+/*!
+ * \fn int fetch_image(const char *path, const char *output)
+ * \brief Fetch a specified image from the Internet.
+ *
+ * \param path Filename in zip.
+ * \param output Output filename.
+ */
+
 int fetch_image(const char *path, const char *output)
 {
 	DPRINT("Fetching %s...\n", path);
@@ -242,12 +298,33 @@ int fetch_image(const char *path, const char *output)
 	return 0;
 }
 
+/*!
+ * \fn size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
+ * \brief Wrapper for fwrite.
+ *
+ * \param ptr Buffer for data.
+ * \param size Size of written data.
+ * \param mem Number of members of written data.
+ * \param stream File descriptor structure.
+ */
+
 size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
 {
 	size_t written;
 	written = fwrite(ptr, size, mem, stream);
 	return written;
 }
+
+/*!
+ * \fn int upload_image(firmware_item item, int mode, int patch, int userprovided)
+ * \brief Upload image to device based on \a item and \a patch it if necessary.
+ *
+ * \param item Firmware item to be uploaded.
+ * \param mode Notify DFU mode if upload should be finished or not.
+ * \param patch Patch file.
+ * \param userprovided User provided.
+ */
+
 
 int upload_image(firmware_item item, int mode, int patch, int userprovided)
 {
@@ -296,7 +373,6 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.dec", filename, version);
 	}
 
-
 	DPRINT("Uploading %s to device\n", buffer);
 
 	if (client->mode != kDfuMode)
@@ -312,10 +388,23 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	return 0;
 }
 
-void print_configuration()
+/*!
+ * \fn void print_configuration(void)
+ * \brief Print system configuration.
+ */
+
+void print_configuration(void)
 {
 	printf("Running on %s.\n\n", endian_to_string(endian()));
 }
+
+/*!
+ * \fn int main(int argc, char **argv)
+ * \brief Main opensn0w routine!
+ *
+ * \param argc Argument count.
+ * \param argv Argument variables.      
+ */
 
 int main(int argc, char **argv)
 {
@@ -330,7 +419,7 @@ int main(int argc, char **argv)
 	Dictionary *bundle;
 	firmware Firmware;
 
-
+	/* configure xpwn endian */
 	switch(endian()) {
 		case ENDIAN_BIG:
 			endianness = IS_BIG_ENDIAN;
@@ -342,7 +431,7 @@ int main(int argc, char **argv)
 			break;
 	}
 
-
+	/* set up signals */
 #ifndef _WIN32
 	struct sigaction sigact;
 
@@ -442,7 +531,8 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-
+	
+	/* Do stuff */
 	if (autoboot) {
 		DPRINT("Initializing libirecovery\n");
 		irecv_init();
@@ -496,7 +586,8 @@ int main(int argc, char **argv)
 		usage();
 		FATAL("plist must be specified in this mode!\n\n");
 	}
-	// Initialize Firmware structure //
+	
+	/* Initialize Firmware structure */
 	memset(&Firmware, 0, sizeof(firmware));
 	Firmware.items = sizeof(image_names) / sizeof(char *);
 	Firmware.item = malloc(Firmware.items * sizeof(firmware_item));
@@ -731,7 +822,7 @@ out:
 
 		DPRINT("Reinitializing libirecovery.\n");
 
-		INFO("HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
+		STATUS("[!] HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
 		sleep(5);
 		irecv_init();
 

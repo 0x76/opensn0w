@@ -19,11 +19,27 @@
 
 #include "sn0w.h"
 
+/* preprocessor macros */
+#define PATCH_FILE(candidate, original_data, name) \
+    if(!memcmp(candidate, original_data.original, original_data.length)) { \
+        DPRINT("Patching " name " check at 0x%08x\n", i); \
+        memcpy(candidate, original_data.patched, original_data.length); \
+        continue; \
+    }
+
+/* globals */
 extern Dictionary *firmwarePatches, *patchDict, *info;
 extern unsigned char iBEC_bootargs_ramdisk[];
 extern int UsingRamdisk;
 extern char* version;
 
+/*!
+ * \fn Dictionary *get_key_dictionary_from_bundle(char *member)
+ * \brief Get \a member from firmware property list
+ * 
+ * \param member Plist Member
+ */
+ 
 Dictionary *get_key_dictionary_from_bundle(char *member)
 {
 	firmwarePatches = (Dictionary *) getValueByKey(info, "FirmwareKeys");
@@ -42,23 +58,31 @@ Dictionary *get_key_dictionary_from_bundle(char *member)
 	return NULL;
 }
 
+/*!
+ * \fn int patch_devtree(char *buffer, size_t length)
+ * \brief Patch firmware DeviceTree.
+ * 
+ * \param buffer Decrypted image.
+ * \param length Image length.
+ */
+ 
 int patch_devtree(char *buffer, size_t length)
 {
 	int i;
 	for (i = 0; i < length; i++) {
 		char *candidate = &buffer[i];
-		if (!memcmp
-		    (candidate, devicetree_root_name.original,
-		     devicetree_root_name.length)) {
-			DPRINT("Patching devicetree_root_name... at 0x%08x\n",
-			       i);
-			memcpy(candidate, devicetree_root_name.patched,
-			       devicetree_root_name.length);
-			continue;
-		}
+		PATCH_FILE(candidate, devicetree_root_name, "DeviceTree secure-root");
 	}
 	return 0;
 }
+
+/*!
+ * \fn int patch_bootloaders(char *buffer, size_t length)
+ * \brief Patch firmware iBSS/iBEC.
+ * 
+ * \param buffer Decrypted image.
+ * \param length Image length.
+ */
 
 int patch_bootloaders(char *buffer, size_t length)
 {
@@ -70,183 +94,54 @@ int patch_bootloaders(char *buffer, size_t length)
 
 	for (i = 0; i < length; i++) {
 		char *candidate = &buffer[i];
-		if (!memcmp(candidate, iBSS_SDOM.original, iBSS_SDOM.length)) {
-			DPRINT("Patching bootloader SDOM check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_SDOM.patched, iBSS_SDOM.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_PROD.original, iBSS_PROD.length)) {
-			DPRINT("Patching bootloader PROD check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_PROD.patched, iBSS_PROD.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_CHIP.original, iBSS_CHIP.length)) {
-			DPRINT("Patching bootloader CHIP check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_CHIP.patched, iBSS_CHIP.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_TYPE.original, iBSS_TYPE.length)) {
-			DPRINT("Patching bootloader TYPE check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_TYPE.patched, iBSS_TYPE.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_SEPO.original, iBSS_SEPO.length)) {
-			DPRINT("Patching bootloader SEPO check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_SEPO.patched, iBSS_SEPO.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_CEPO.original, iBSS_CEPO.length)) {
-			DPRINT("Patching bootloader CEPO check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_CEPO.patched, iBSS_CEPO.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_BORD.original, iBSS_BORD.length)) {
-			DPRINT("Patching bootloader BORD check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_BORD.patched, iBSS_BORD.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_ECID.original, iBSS_ECID.length)) {
-			DPRINT("Patching bootloader ECID check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_ECID.patched, iBSS_ECID.length);
-			continue;
-		}
-		if (!memcmp(candidate, iBSS_SHSH.original, iBSS_SHSH.length)) {
-			DPRINT("Patching bootloader SHSH check... at 0x%08x\n",
-			       i);
-			memcpy(candidate, iBSS_SHSH.patched, iBSS_SHSH.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, iBEC_bootargs.original, iBEC_bootargs.length)) {
-			DPRINT("Patching bootargs... at 0x%08x\n", i);
-			memcpy(candidate, iBEC_bootargs.patched,
-			       iBEC_bootargs.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, iBEC_bootargs_jmp.original,
-		     iBEC_bootargs_jmp.length)) {
-			DPRINT("Patching bootargs check... at 0x%08x\n", i);
-			memcpy(candidate, iBEC_bootargs_jmp.patched,
-			       iBEC_bootargs_jmp.length);
-			continue;
-		}
+        PATCH_FILE(candidate, iBSS_SDOM, "SDOM tag");
+        PATCH_FILE(candidate, iBSS_PROD, "PROD tag");
+        PATCH_FILE(candidate, iBSS_CHIP, "CHIP tag");
+        PATCH_FILE(candidate, iBSS_TYPE, "TYPE tag");
+        PATCH_FILE(candidate, iBSS_SEPO, "SEPO tag");
+        PATCH_FILE(candidate, iBSS_CEPO, "CEPO tag");
+        PATCH_FILE(candidate, iBSS_BORD, "BORD tag");
+        PATCH_FILE(candidate, iBSS_ECID, "ECID tag");
+        PATCH_FILE(candidate, iBSS_SHSH, "SHSH tag");
+        PATCH_FILE(candidate, iBEC_bootargs, "iBoot boot-args");
+        PATCH_FILE(candidate, iBEC_bootargs_jmp, "iBoot boot-args conditional");
 	}
 	return 0;
 }
 
+/*!
+ * \fn int patch_kernel(char *buffer, size_t length)
+ * \brief Patch firmware kernelcache.
+ * 
+ * \param buffer Decrypted image.
+ * \param length Image length.
+ */
+ 
 int patch_kernel(char *buffer, size_t length)
 {
 	int i;
 	for (i = 0; i < length; i++) {
 		char *candidate = &buffer[i];
-		if (!memcmp
-		    (candidate, kernel_CSED.original, kernel_CSED.length)) {
-			DPRINT("Patching kernel CSED check... at 0x%08x\n", i);
-			memcpy(candidate, kernel_CSED.patched,
-			       kernel_CSED.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel_AMFI.original, kernel_AMFI.length)) {
-			DPRINT("Patching kernel AMFI check... at 0x%08x\n", i);
-			memcpy(candidate, kernel_AMFI.patched,
-			       kernel_AMFI.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel__PE_i_can_has_debugger.original,
-		     kernel__PE_i_can_has_debugger.length)) {
-			DPRINT
-			    ("Patching kernel _i_can_has_debugger check... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel__PE_i_can_has_debugger.patched,
-			       kernel__PE_i_can_has_debugger.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel_IOAESAccelerator.original,
-		     kernel_IOAESAccelerator.length)) {
-			DPRINT
-			    ("Patching kernel IOAESAccelerator check... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel_IOAESAccelerator.patched,
-			       kernel_IOAESAccelerator.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel_sigcheck.original,
-		     kernel_sigcheck.length)) {
-			DPRINT
-			    ("Patching kernel signature enforcement check... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel_sigcheck.patched,
-			       kernel_sigcheck.length);
-			continue;
-		}
-#if 0
-		/* bug report from Hackintech: makes bad kernel */
-		/* buggy on big endian, bad kernel on ps3. */
-		if (!memcmp
-		    (candidate, kernel_xattr.original, kernel_xattr.length)) {
-			DPRINT("Patching kernel xattr check... at 0x%08x\n", i);
-			memcpy((char *)candidate, (char *)kernel_xattr.patched,
-			       kernel_xattr.length);
-			continue;
-		}
-#endif
-		if (!memcmp
-		    (candidate, kernel_redsn0w_unknown0.original,
-		     kernel_redsn0w_unknown0.length)) {
-			DPRINT
-			    ("Patching unknown kernel check (redsn0w 0)... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel_redsn0w_unknown0.patched,
-			       kernel_redsn0w_unknown0.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel_redsn0w_unknown1.original,
-		     kernel_redsn0w_unknown1.length)) {
-			DPRINT
-			    ("Patching unknown kernel check (redsn0w 1)... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel_redsn0w_unknown1.patched,
-			       kernel_redsn0w_unknown1.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel_redsn0w_unknown2.original,
-		     kernel_redsn0w_unknown2.length)) {
-			DPRINT
-			    ("Patching unknown kernel check (redsn0w 2)... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel_redsn0w_unknown2.patched,
-			       kernel_redsn0w_unknown2.length);
-			continue;
-		}
-		if (!memcmp
-		    (candidate, kernel_redsn0w_unknown3.original,
-		     kernel_redsn0w_unknown3.length)) {
-			DPRINT
-			    ("Patching unknown kernel check (redsn0w 3)... at 0x%08x\n",
-			     i);
-			memcpy(candidate, kernel_redsn0w_unknown3.patched,
-			       kernel_redsn0w_unknown3.length);
-			continue;
-		}
+		PATCH_FILE(candidate, kernel_CSED, "Code signature enforcement");
+		PATCH_FILE(candidate, kernel_AMFI, "AMFIv2 binary");
+		PATCH_FILE(candidate, kernel__PE_i_can_has_debugger, "_PE_i_can_has_debugger");
+		PATCH_FILE(candidate, kernel_IOAESAccelerator, "IOAESAccelerator usage");
+		PATCH_FILE(candidate, kernel_sigcheck, "Code signature enforcement 2");
+        PATCH_FILE(candidate, kernel_redsn0w_unknown0, "redsn0w unknown 0");
+        PATCH_FILE(candidate, kernel_redsn0w_unknown1, "redsn0w unknown 1");
+        PATCH_FILE(candidate, kernel_redsn0w_unknown2, "redsn0w unknown 2");
+        PATCH_FILE(candidate, kernel_redsn0w_unknown3, "redsn0w unknown 3");
 	}
 	return 0;
 }
 
+/*!
+ * \fn int patch_file(char *filename)
+ * \brief Patch firmware binary
+ * 
+ * \param filename Filename to decrypt and patch.
+ */
+ 
 int patch_file(char *filename)
 {
 	AbstractFile *template = NULL, *inFile, *certificate =
