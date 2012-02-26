@@ -281,6 +281,7 @@ int patch_file(char *filename)
 	newFile2->write(newFile2, inData, inDataSize);
 	newFile2->close(newFile2);
 
+#ifdef HAVE_LIBBZ2
 	/* bsdiff */
 	if(name2[0] != '9') {
 		char patchbuf[255], newname[255];
@@ -301,7 +302,7 @@ int patch_file(char *filename)
 		newFile2->close(newFile2);
 		unlink(newname);
 	}
-
+#endif
 	newFile->write(newFile, inData, inDataSize);
 
 	newFile->close(newFile);
