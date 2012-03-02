@@ -54,6 +54,7 @@ Dictionary *firmwarePatches, *patchDict, *info;
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -s                 Start iRecovery recovery mode shell.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
+			"   -X                 Download all files from plist.\n" \
 			"   -S [file]          Send file to device.\n" \
 			"   -C [command]       Send command to device.\n" \
 			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
@@ -315,6 +316,62 @@ size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
 	return written;
 }
 
+
+/*!
+ * \fn int download_all_the_files()
+ * \brief Download ALL the files
+ */
+int download_all_the_files(firmware Firmware) {
+	char path[255];
+	struct stat buf;
+	char *buffer;
+	char *filename;
+	firmware_item item;
+	int i;
+
+	for(i = 0; i < NEEDSERVICE; i++) {
+begin:
+		item = Firmware.item[i];
+		if(item.name != NULL) {
+
+			filename = strrchr(item.name, '/');
+
+			if (filename == NULL)
+				filename = item.name;
+			else
+				filename++;
+
+			if(strstr(filename, "dmg")) {
+				i++;
+				goto begin;
+			}
+	
+			buffer = malloc(strlen(filename) + 10 + strlen(version));
+			if (!buffer) {
+				ERR("Cannot allocate memory\n");
+				return -1;
+			}
+			memset(buffer, 0, strlen(filename) + 10 + strlen(version));
+
+			snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s", filename, version);
+
+			DPRINT("Checking if %s already exists\n", buffer);
+
+			memset(path, 0, 255);
+
+			if (stat(buffer, &buf) != 0) {
+				if (fetch_image(item.name, buffer) < 0) {
+					ERR("Unable to download image\n");
+					goto begin;
+				}
+			}
+
+			free(buffer);
+		}
+	}
+	return 0;
+}
+
 /*!
  * \fn int upload_image(firmware_item item, int mode, int patch, int userprovided)
  * \brief Upload image to device based on \a item and \a patch it if necessary.
@@ -325,7 +382,6 @@ size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
  * \param userprovided User provided.
  */
 
-
 int upload_image(firmware_item item, int mode, int patch, int userprovided)
 {
 	char path[255];
@@ -333,7 +389,7 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	irecv_error_t error = IRECV_E_SUCCESS;
 	char *buffer;
 	char *filename = strrchr(item.name, '/');
-
+	
 	if (filename == NULL)
 		filename = item.name;
 	else
@@ -412,7 +468,7 @@ int main(int argc, char **argv)
 	char *kernelcache = NULL, *bootlogo = NULL, *url =
 	    NULL, *plist = NULL, *ramdisk = NULL;
 	char *processedname;
-	int pwndfu = false, pwnrecovery = false, autoboot = false;
+	int pwndfu = false, pwnrecovery = false, autoboot = false, download = false;
 	int userprovided = 0;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
@@ -450,7 +506,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vZdAhBzsp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "vZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'Z':
 			raw_load_exit = true;
@@ -472,6 +528,9 @@ int main(int argc, char **argv)
 			break;
 		case 'a':
 			boot_args_process(optarg);
+			break;
+		case 'X':
+			download = true;
 			break;
 		case 'd':
 			pwndfu = true;
@@ -715,7 +774,6 @@ int main(int argc, char **argv)
 		version = strdup(dup);
 		
 	}
-
 out:
 
 	if (url) {
@@ -728,6 +786,11 @@ out:
 		snprintf(processedname, strlen(url) + sizeof("file://"),
 			 "file://%s", url);
 		device->url = processedname;
+	}
+
+	if(download) {
+		download_all_the_files(Firmware);
+		exit(0);
 	}
 
 	STATUS("[*] Exploiting bootrom...\n");
