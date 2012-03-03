@@ -114,9 +114,19 @@ int irecovery_shell_initialize();
 bool file_exists(const char *fileName);
 Dictionary *get_key_dictionary_from_bundle(char *member);
 int bsdiff(char *oldfile, char *newfile, char *patchfile);
-#ifdef _WIN32
+
+/* crt supplement */
+
+#ifndef HAVE_STRCASESTR
 char *strcasestr (char *haystack, char *needle);
-char *strndup (const char *s, size_t n) ;
+#endif
+
+#ifndef HAVE_STRNDUP
+char *strndup (const char *s, size_t n);
+#endif
+
+#ifndef HAVE_WCSCASECMP
+int wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 #endif
 
 typedef enum _image_magic {

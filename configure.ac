@@ -43,7 +43,7 @@ AC_CHECK_HEADERS([fcntl.h inttypes.h limits.h netinet/in.h stddef.h stdint.h std
 case "$target" in
 *-*-mingw32)
     CFLAGS="-I/mingw/include $CFLAGS"
-    LIBS="$LIBS -lsetupapi"
+    LIBS="$LIBS -lsetupapi -lpsapi"
         ;;
 esac
 
@@ -82,7 +82,7 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([bzero clock_gettime dup2 memchr memmove memset mkdir rmdir socket strcasecmp strchr strdup strndup strrchr strstr strtol uname strcasestr strndup])
+AC_CHECK_FUNCS([bzero wcscasecmp clock_gettime dup2 memchr memmove memset mkdir rmdir socket strcasecmp strchr strdup strndup strrchr strstr strtol uname strcasestr strndup])
 
 AC_PATH_PROG(RM, rm)
 AC_PATH_PROG(MV, mv)

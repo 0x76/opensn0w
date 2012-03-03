@@ -204,3 +204,20 @@ char *strndup (const char *s, size_t n) {
 }
 
 #endif
+
+#ifndef HAVE_WCSCASECMP
+
+int
+wcscasecmp(const wchar_t *s1, const wchar_t *s2)
+{
+	wchar_t l1, l2;
+
+	while ((l1 = towlower(*s1++)) == (l2 = towlower(*s2++))) {
+		if (l1 == 0)
+			return (0);
+	}
+
+	return ((wchar_t)l1 - (wchar_t)l2);
+}
+
+#endif

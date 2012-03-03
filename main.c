@@ -454,6 +454,131 @@ void print_configuration(void)
 	printf("Running on %s.\n\n", endian_to_string(endian()));
 }
 
+/*
+ * win32 support, from wine
+ */
+
+#ifdef _WIN32
+
+#include <psapi.h>
+
+struct pid_close_info
+{
+    DWORD pid;
+    BOOL found;
+};
+
+static BOOL CALLBACK pid_enum_proc(HWND hwnd, LPARAM lParam)
+{
+    struct pid_close_info *info = (struct pid_close_info *)lParam;
+    DWORD hwnd_pid;
+
+    GetWindowThreadProcessId(hwnd, &hwnd_pid);
+
+    if (hwnd_pid == info->pid)
+    {
+        //PostMessageW(hwnd, WM_CLOSE, 0, 0);
+        info->found = TRUE;
+    }
+
+    return TRUE;
+}
+
+
+static DWORD *enumerate_processes(DWORD *list_count)
+{
+    DWORD *pid_list, alloc_bytes = 1024 * sizeof(*pid_list), needed_bytes;
+
+    pid_list = HeapAlloc(GetProcessHeap(), 0, alloc_bytes);
+    if (!pid_list)
+        return NULL;
+
+    for (;;)
+    {
+        DWORD *realloc_list;
+
+        if (!EnumProcesses(pid_list, alloc_bytes, &needed_bytes))
+        {
+            HeapFree(GetProcessHeap(), 0, pid_list);
+            return NULL;
+        }
+
+        /* EnumProcesses can't signal an insufficient buffer condition, so the
+         * only way to possibly determine whether a larger buffer is required
+         * is to see whether the written number of bytes is the same as the
+         * buffer size. If so, the buffer will be reallocated to twice the
+         * size. */
+        if (alloc_bytes != needed_bytes)
+            break;
+
+        alloc_bytes *= 2;
+        realloc_list = HeapReAlloc(GetProcessHeap(), 0, pid_list, alloc_bytes);
+        if (!realloc_list)
+        {
+            HeapFree(GetProcessHeap(), 0, pid_list);
+            return NULL;
+        }
+        pid_list = realloc_list;
+    }
+
+    *list_count = needed_bytes / sizeof(*pid_list);
+    return pid_list;
+}
+
+static BOOL get_process_name_from_pid(DWORD pid, WCHAR *buf, DWORD chars)
+{
+    HANDLE process;
+    HMODULE module;
+    DWORD required_size;
+
+    process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    if (!process)
+        return FALSE;
+
+    if (!EnumProcessModules(process, &module, sizeof(module), &required_size))
+    {
+        CloseHandle(process);
+        return FALSE;
+    }
+
+    if (!GetModuleBaseNameW(process, module, buf, chars))
+    {
+        CloseHandle(process);
+        return FALSE;
+    }
+
+    CloseHandle(process);
+    return TRUE;
+}
+
+bool is_process_running(WCHAR* process_name) {
+	DWORD *pid_list, pid_list_size;
+	DWORD index;
+	BOOL found_process = FALSE;
+	pid_list = enumerate_processes(&pid_list_size);
+
+	if (!pid_list)
+	{
+		return FALSE;
+	}
+
+	for (index = 0; index < pid_list_size; index++) {
+		WCHAR process_name2[MAX_PATH];
+
+		if (get_process_name_from_pid(pid_list[index], process_name2, MAX_PATH) == TRUE &&
+		    !wcscasecmp(process_name2, process_name)) {
+			struct pid_close_info info = { pid_list[index] };
+
+			found_process = TRUE;
+			EnumWindows(pid_enum_proc, (LPARAM)&info);
+		}
+
+	}
+	return found_process;
+}
+
+#endif
+
 /*!
  * \fn int main(int argc, char **argv)
  * \brief Main opensn0w routine!
@@ -590,7 +715,28 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-	
+
+	/* kill iTunes */
+#ifdef _WIN32
+	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
+		char c;
+		STATUS("[!] iTunes is currently running or its helper process is running.\n");
+		STATUS("[!] WARNING: You will need to close iTunes to use opensn0w, would you like to kill it? [Y/n] ");
+		c = tolower(getchar());
+		switch(c) {
+			case 'n':
+				FATAL("Please kill iTunes before using opensn0w!\n");
+				break;
+			case 'y':
+				system("taskkill /f /im iTunes.exe");
+				system("taskkill /f /im iTunesHelper.exe");
+			default:
+				system("taskkill /f /im iTunes.exe");
+				system("taskkill /f /im iTunesHelper.exe");
+		}
+	}
+#endif
+
 	/* Do stuff */
 	if (autoboot) {
 		DPRINT("Initializing libirecovery\n");
