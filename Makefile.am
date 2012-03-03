@@ -18,9 +18,6 @@ bin_PROGRAMS = opensn0w
 
 man1_MANS = opensn0w.1
 
-.rc.o:
-	windres -I/mingw/include -o $@ $<
-
 opensn0w_SOURCES = 8900.c \
 	abstractfile.c \
 	base64.c \
@@ -43,6 +40,10 @@ opensn0w_SOURCES = 8900.c \
 	sighldr.c \
 	steaks4uce.c \
 	bsdiff.c
+
+.rc.o:
+	@echo "  WRES  " $<
+	@windres -I/mingw/include -o $@ $<
 
 if WINDOWS
         opensn0w_SOURCES += opensn0w.rc
