@@ -18,6 +18,14 @@ bin_PROGRAMS = opensn0w
 
 man1_MANS = opensn0w.1
 
+nodist_opensn0w_SOURCES = date.h
+CLEANFILES = date.h
+
+date.h: Makefile
+	@date "+#define __BUILDDATE__ %g%m%d-%H%M" > date.h
+	@echo \#define __BUILDMACHINE__ ${USERDOMAIN}\(${USERNAME}\) >> date.h
+	@touch Makefile
+
 opensn0w_SOURCES = 8900.c \
 	abstractfile.c \
 	base64.c \
@@ -43,9 +51,12 @@ opensn0w_SOURCES = 8900.c \
 
 .rc.o:
 	@echo "  WRES  " $<
-	@windres -I/mingw/include -o $@ $<
+	@windres -I/mingw/include $(RCFLAGS) -o $@ $<
 
 if WINDOWS
+
+opensn0w.$(OBJEXT): date.h
+
         opensn0w_SOURCES += opensn0w.rc
 endif
 
