@@ -18,6 +18,9 @@ bin_PROGRAMS = opensn0w
 
 man1_MANS = opensn0w.1
 
+.rc.o:
+	windres -I/mingw/include -o $@ $<
+
 opensn0w_SOURCES = 8900.c \
 	abstractfile.c \
 	base64.c \
@@ -40,6 +43,11 @@ opensn0w_SOURCES = 8900.c \
 	sighldr.c \
 	steaks4uce.c \
 	bsdiff.c
+
+if WINDOWS
+        opensn0w_SOURCES += opensn0w.rc
+endif
+
 
 opensn0wkeydir = $(datarootdir)/FirmwareBundles
 opensn0wkey_DATA = Keys/AppleTV2,1_4.1_8M89.plist \

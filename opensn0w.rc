@@ -1,0 +1,14 @@
+#include "windows.h"
+#include <winver.h>
+#include "osverp.h"
+
+#define VER_FILETYPE			VFT_APP
+#define VER_FILESUBTYPE			VFT2_UNKNOWN
+#define VER_FILEDESCRIPTION_STR		"opensn0w, an open-source jailbreaking utility."
+#define VER_INTERNALNAME_STR		"opensn0w.exe"
+#define VER_ORIGINALFILENAME_STR	"opensn0w.exe"
+#define VER_LANGNEUTRAL
+
+#include "common.ver"
+
+2 RT_MANIFEST opensn0w.exe.manifest

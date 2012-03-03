@@ -40,8 +40,17 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([fcntl.h inttypes.h limits.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/mount.h sys/socket.h sys/time.h unistd.h])
 
+AS_CASE([$target],
+  [*mingw32*], [os="windows"],
+  [*darwin*],  [os="mac"],
+               [os="unix"])
+
+AM_CONDITIONAL([WINDOWS], [test "x$os" = "xwindows"])
+
 case "$target" in
 *-*-mingw32)
+    AC_DEFINE_UNQUOTED(MINGW,1,[This is a MinGW system])
+    AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
     CFLAGS="-I/mingw/include $CFLAGS"
     LIBS="$LIBS -lsetupapi -lpsapi"
         ;;
