@@ -608,6 +608,9 @@ int main(int argc, char **argv)
 		/* Check the device */
 		err = irecv_get_device(client, &device);
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
+#ifdef _WIN32
+			STATUS("[!] Make sure your device is in the appropriate mode, and that iTunes is installed and closed!\n");
+#endif
 			FATAL("Bad device. errno %d\n", err);
 		}
 		STATUS("[*] Device found.\n");
@@ -721,6 +724,9 @@ int main(int argc, char **argv)
 	if (strcmp(client->serial, "89000000000001")) {
 		err = irecv_get_device(client, &device);
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
+#ifdef _WIN32
+			STATUS("[!] Make sure your device is in DFU mode, and that iTunes is installed and closed!\n");
+#endif
 			FATAL("Bad device. errno %d\n", err);
 		}
 		STATUS("[*] Device found.\n");
