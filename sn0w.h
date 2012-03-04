@@ -190,4 +190,8 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided);
 #error GUI is only supported on Windows for now! Sorry!
 #endif
 
+#ifdef _GUI_ENABLE_
+VOID GuiToggleDFUTimers(BOOL show);
+#endif
+
 #endif

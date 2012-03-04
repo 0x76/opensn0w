@@ -163,6 +163,10 @@ volatile bool jailbreaking = false;
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
 
+/*!
+ * \fn int is_compatible(void)
+ * \brief Check if device is in DFU mode.
+ */
 int is_compatible(void) {
 	irecv_get_device(client, &device);
 	if (device == NULL) {
@@ -173,16 +177,24 @@ int is_compatible(void) {
 	return TRUE;
 }
 
-int
-irecv_event_cb_t_callback(
-	irecv_client_t client,
-	const irecv_event_t * event
-	)
-{
+/*!
+ * \fn int irecv_event_cb_t_callback(irecv_client_t client, const irecv_event_t * event)
+ * \brief Callback function for irecovery progress.
+ *
+ * \param client Device
+ * \param event iRecovery Event
+ */
+int irecv_event_cb_t_callback(irecv_client_t client, const irecv_event_t * event) {
 	SendMessage(progress, PBM_SETPOS, (int)event->progress, 0);
 	return 0;
 }
 
+/*!
+ * \fn DWORD win32_jailbreak(LPVOID lpThreadParameter)
+ * \brief Windows jailbreak routine.
+ *
+ * \param lpThreadParameter Unused
+ */
 DWORD win32_jailbreak(LPVOID lpThreadParameter)
 {
 	OPENFILENAME ofn;
@@ -201,6 +213,12 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 	ofn.nMaxFileTitle = 0;
 	ofn.lpstrInitialDir = NULL;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	ShowWindow(counter, SW_HIDE);
+	ShowWindow(seconds, SW_HIDE);
+	ShowWindow(reset, SW_HIDE);
+	GuiToggleDFUTimers(FALSE);
+	ShowWindow(enter, SW_SHOW);
 	
 	if(autoboot == false) {
 		GetOpenFileName(&ofn);
@@ -211,27 +229,13 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 	return 0;
 }
 
-
-VOID
-GuiCenterWindow(
-	HWND Window
-	)
-/*
-
-Routine Description:
-
-	Center the window on screen.
-
-Arguments:
-
-	Window	- current window hwnd.
-
-Return Value:
-
-	None.
-
---*/
-{
+/*!
+ * \fn VOID GuiCenterWindow(HWND Window)
+ * \brief Center window in screen.
+ *
+ * \param Window hwnd for current Window.
+ */
+VOID GuiCenterWindow(HWND Window) {
 	RECT ScreenRectangle;
 	INT ScreenWidth;
 	INT ScreenHeight;
@@ -256,51 +260,22 @@ Return Value:
 
 HDC hdcMem = NULL;
 
-VOID
-GuiBoldifyLabel(
-	HWND label,
-	BOOL bold
-	)
-/*
-
-Routine Description:
-
-	Make text bolded.
-
-Arguments:
-
-	label	- hWnd of label.
-	bold	- Enable/disable state.
-
-Return Value:
-
-	None.
-
---*/
-{
+/*!
+ * \fn VOID GuiBoldifyLabel(HWND label, BOOL bold)
+ * \brief Make text bold
+ *
+ * \param label hwnd for current label.
+ * \param bold Enable/disable bold state.
+ */
+VOID GuiBoldifyLabel(HWND label, BOOL bold) {
 	SendMessage(label, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 }
 
-VOID
-GuiUpdateDFUStatusText(
-	VOID
-	)
-/*
-
-Routine Description:
-
-	Update iPhone DFU text.
-
-Arguments:
-
-	None.
-
-Return Value:
-
-	None.
-
---*/
-{	
+/*!
+ * \fn VOID GuiUpdateDFUStatusText(VOID)
+ * \brief Change DFU status text
+ */
+VOID GuiUpdateDFUStatusText(VOID) {	
 	if (DfuPhase != DFU_PHASE_NONE) {
 		GuiBoldifyLabel(first, FALSE);
 		GuiBoldifyLabel(second, FALSE);
@@ -323,26 +298,13 @@ Return Value:
 	SendMessage(counter, WM_SETTEXT, 0, (LPARAM)text);
 }
 
-VOID
-GuiToggleDFUTimers(
-	BOOL show
-	)
-/*
-
-Routine Description:
-
-	Update iPhone DFU timer text.
-
-Arguments:
-
-	show 	- Show timer text.
-
-Return Value:
-
-	None.
-
---*/
-{
+/*!
+ * \fn VOID GuiToggleDFUTimers(BOOL show)
+ * \brief Toggle DFU timer text.
+ *
+ * \param show Show/hide text.
+ */
+VOID GuiToggleDFUTimers(BOOL show) {
 	
 	if (DfuTimer)
 		KillTimer(window, DfuTimer);
@@ -385,30 +347,19 @@ Return Value:
 	}
 }
 
-BOOL DeviceInDFU() {
+/*!
+ * \fn BOOL DeviceInDFU(VOID)
+ * \brief Check if device is in DFU.
+ */
+BOOL DeviceInDFU(VOID) {
     return poll_device(DFU) == 0 && is_compatible() == TRUE;
 }
 
-BOOL
-GuiUpdateJailbreakStatus(
-	VOID
-	)
-/*
-
-Routine Description:
-
-	Update iPhone jailbreak status.
-
-Arguments:
-
-	None.
-
-Return Value:
-
-	DFU state.
-
---*/
-{
+/*!
+ * \fn BOOL GuiUpdateJailbreakStatus(VOID)
+ * \brief Update GUI jailbreak status.
+ */
+BOOL GuiUpdateJailbreakStatus(VOID) {
 	BOOL dfu = DeviceInDFU();
 	
 	if (dfu) {
@@ -426,11 +377,11 @@ Return Value:
 	return dfu;
 }
 
-VOID
-PerformJailbreak(
-	VOID
-	)
-{
+/*!
+ * \fn VOID PerformJailbreak(VOID)
+ * \brief Callee subroutine for jailbreak thread start.
+ */
+VOID PerformJailbreak(VOID) {
 	DWORD dwGenericThread;
 	EnableWindow(progress, TRUE);
 	EnableWindow(nButton, FALSE);
@@ -447,33 +398,16 @@ PerformJailbreak(
 	hJailbreakThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)win32_jailbreak, NULL, 0, &dwGenericThread);
 }
 
-LRESULT
-CALLBACK
-GuiWindowProcedure(
-	HWND hWnd,
-	UINT uMessage,
-	WPARAM wParam,
-	LPARAM lParam
-	)
-/*
-
-Routine Description:
-
-	Main function.
-
-Arguments:
-
-	hWnd		- Window instance
-	uMessage	- WM Message
-	wParam		- Word parameter.
-	lParam		- Long parameter.
-
-Return Value:
-
-	Normal error values for HRESULT.
-
-*/
-{
+/*!
+ * \fn LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+ * \brief Our window procedure.
+ *
+ * \param hWnd Current window.
+ * \param uMessage Window message.
+ * \param wParam Word parameter.
+ * \param lParam Long parameter.
+ */
+LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam) {
 	switch(uMessage) {
 		case WM_CREATE: {
 			HDC hDC = GetDC(window);
@@ -495,8 +429,8 @@ Return Value:
 					GuiToggleDFUTimers(TRUE);
 			} else if (LOWORD(wParam) == 4) {
 				MessageBox(hWnd, 
-					"By rms, acfrazier and Maximus,\n"
-					"Special thanks to MuscleNerd.\n"
+					"By rms, acfrazier, sbingner and Maximus,\n"
+					"Special thanks to MuscleNerd and iH8sn0w.\n"
 					"\n"
 					"Parts of this program are from planetbeing's xpwn, and Chronic-Dev's doctors and syringe."
 					"\n\n"
@@ -537,11 +471,13 @@ Return Value:
 	return DefWindowProc(hWnd, uMessage, wParam, lParam);
 }
 
-BOOL
-MessageLoop(
-	BOOL blocking
-	)
-{
+/*!
+ * \fn BOOL MessageLoop(BOOL blocking)
+ * \brief Check for incoming blocking messages.
+ *
+ * \param blocking Blocking message boolean value.
+ */
+BOOL MessageLoop(BOOL blocking) {
     MSG messages;
 
     if (!(blocking ? 
@@ -555,36 +491,21 @@ MessageLoop(
     return TRUE;
 }
 
-INT
-WINAPI
-WinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpszArgument,
-	INT nFunsterStil
-	)
-/*
-
-Routine Description:
-
-	Main function.
-
-Arguments:
-
-	hInstance		- Instance
-	hPrevInstance	- Previous instance
-	lpszArgument	- Program arguments
-
-Return Value:
-
-	Normal int values.
-
---*/
-{
+/*!
+ * \fn INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, INT nFunsterStil) {
+ * \brief Windows GUI subroutine.
+ *
+ * \param hInstance Current module handle.
+ * \param hPrevInstance Unused.
+ * \param lpszArgument Current module arguments.
+ * \param nFunsterStil Window command.
+ */
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, INT nFunsterStil) {
 	WNDCLASSEX wc;	
 	INITCOMMONCONTROLSEX icex;
 
 	/* configure xpwn endian */
+	
 	switch(endian()) {
 		case ENDIAN_BIG:
 			endianness = IS_BIG_ENDIAN;
@@ -598,9 +519,7 @@ Return Value:
 	
 	opensn0w_debug_level = DBGFLTR_MISC;
 	
-	//
-	// Initialize window class.
-	//
+	/* initialize window class */
 	
 	wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = 0;
@@ -616,6 +535,8 @@ Return Value:
     wc.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), TEXT("ID"), IMAGE_ICON, 16, 16, 0);
     if(!RegisterClassEx(&wc))
 		return GetLastError();
+	
+	/* kill iTunes */
 	
 	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
 		int c = MessageBox(NULL, (LPCSTR)"iTunes is currently running or its helper process is running.\n\n"
@@ -634,121 +555,81 @@ Return Value:
 		}
 	}
 	
-	//
-	// Initialize common controls.
-	//
+	/* initialize common controls */
 	
 	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	icex.dwICC  = ICC_PROGRESS_CLASS;
 	InitCommonControlsEx(&icex);
 
-	//
-    // Main window
-	//
+	/* main */
 	
     window = CreateWindowEx(0, szClassName, TEXT("opensn0w-gui"), WS_OVERLAPPED | WS_SYSMENU | SS_OWNERDRAW, CW_USEDEFAULT, CW_USEDEFAULT, 520 + GetSystemMetrics(SM_CXFIXEDFRAME), 260 + GetSystemMetrics(SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION), HWND_DESKTOP, NULL, hInstance, NULL);
 
-	//
-	// Title
-	//
+	/* title */
 	
 	title = CreateWindowEx(0, TEXT("STATIC"), TEXT("opensn0w"), WS_VISIBLE | WS_CHILD | SS_CENTER, 121, 2, 257, 44, window, NULL, NULL, NULL);
     SendMessage(title, WM_SETFONT, (WPARAM) CreateFont(42, 0, 0, 0, FW_EXTRALIGHT, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	//
-	// Subtitle
-	//
+	/* subtitle */
 	
 	subtitle = CreateWindowEx(0, TEXT("STATIC"), TEXT("An open-source jailbreaking utility for all platforms."), WS_VISIBLE | WS_CHILD | SS_CENTER, 15, 52, 480, 17, window, NULL, NULL, NULL);
 	SendMessage(subtitle, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	//
-	// Jailbreak button
-	//
+	/* jailbreak */
 	
 	nButton = CreateWindowEx(0, TEXT("BUTTON"), TEXT("Jailbreak"), BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20, 205, 138, 25, window, (HMENU) 1, NULL, NULL);
 	SendMessage(nButton, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), FALSE);    
 
-	//
-	// Progress bar
-	//
+	/* progress */
 
 	progress = CreateWindowEx(0, PROGRESS_CLASS, NULL, WS_CHILD | WS_VISIBLE | PBS_SMOOTH, 165, 206, 335, 23, window, NULL, NULL, NULL);
 	SendMessage(progress, PBM_SETPOS, 0, 0);
 	EnableWindow(progress, FALSE);
 	
-	//
-	// Copyright warning
-	//
+	/* copyright */
 	
 	copyright = CreateWindowEx(0, TEXT("STATIC"), TEXT("Parts of this program are from xpwn, doctors and syringe. Licensed under the GNU GPL."), WS_VISIBLE | WS_CHILD | SS_NOTIFY | SS_CENTER, 15, 236, 480, 13, window, (HMENU) 4, NULL, NULL);
 	SendMessage(copyright, WM_SETFONT, (WPARAM) CreateFont(12, 0, 0, 0, FW_DONTCARE, FALSE, TRUE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 	
-	//
-	// DFU group box
-	//
+	/* dfu group box */
 	
 	group = CreateWindowEx(0, TEXT("BUTTON"), TEXT(""), BS_GROUPBOX | WS_VISIBLE | WS_CHILD, 20, 70, 480, 125, window, NULL, NULL, NULL);
 
-	//
-	// Label #1
-	//
+	/* dfu labels */
 	
 	first = CreateWindowEx(0, TEXT("STATIC"), DfuText[0], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 20, 370, 17, group, NULL, NULL, NULL);
 	SendMessage(first, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	//
-	// Label #2
-	//
-	
 	second = CreateWindowEx(0, TEXT("STATIC"), DfuText[1], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 45, 370, 17, group, NULL, NULL, NULL);
 	SendMessage(second, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
-
-	//
-	// Label #3
-	//
 	
 	third = CreateWindowEx(0, TEXT("STATIC"), DfuText[2], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 70, 370, 17, group, NULL, NULL, NULL);
 	SendMessage(third, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
-
-	//
-	// Label #4
-	//
 	
 	fourth = CreateWindowEx(0, TEXT("STATIC"), DfuText[3], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 95, 370, 17, group, NULL, NULL, NULL);
 	SendMessage(fourth, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	//
-	// Countdown timer
-	//
+	/* countdown */
 	
 	counter = CreateWindowEx(0, TEXT("STATIC"), TEXT(""), WS_VISIBLE | WS_CHILD | SS_CENTER, 390, 15, 60, 60, group, NULL, NULL, NULL);
     SendMessage(counter, WM_SETFONT, (WPARAM) CreateFont(64, 0, 0, 0, FW_EXTRALIGHT, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	//
-	// Seconds label
-	//
+	/* seconds */
 	
 	seconds = CreateWindowEx(0, TEXT("STATIC"), TEXT("Seconds"), WS_VISIBLE | WS_CHILD | SS_CENTER, 390, 75, 60, 15, group, NULL, NULL, NULL);
 	SendMessage(seconds, WM_SETFONT, (WPARAM) CreateFont(12, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	//
-	// Reset button
-	//
+	/* reset */
 	
 	reset = CreateWindowEx(0, TEXT("BUTTON"), TEXT("Reset"), BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20 + 390, 70 + 95, 60, 20, window, (HMENU) 2, NULL, NULL);
 	SendMessage(reset, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), FALSE);
 	
-	//
-	// Enter button
-	//
+	/* enter */
 	
 	enter = CreateWindowEx(0, TEXT("BUTTON"), TEXT("Help me get into DFU mode!"), BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20 + 176, 70 + 50, 160, 25, window, (HMENU) 3, NULL, NULL);
 	SendMessage(enter, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), FALSE);
 
-	//
-	// Show user.
-	//
+	/* show user */
 	
 	GuiToggleDFUTimers(FALSE);
 	GuiCenterWindow(window);
@@ -1256,12 +1137,6 @@ void jailbreak() {
 	firmware Firmware;
 
 	jailbreaking = true;
-	
-#ifdef _GUI_ENABLE_
-	ShowWindow(counter, SW_HIDE);
-	ShowWindow(seconds, SW_HIDE);
-	ShowWindow(reset, SW_HIDE);
-#endif
 
 	/* kill iTunes */
 #ifdef _WIN32
