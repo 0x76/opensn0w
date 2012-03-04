@@ -33,7 +33,6 @@
 #include <direct.h>
 #include <stdio.h>
 
-
 typedef enum _DFU_PHASES {
 	DFU_PHASE_NONE = 0,
 	DFU_PHASE_READY,
@@ -127,14 +126,13 @@ HWND second = NULL;
 HWND third = NULL;
 HWND fourth = NULL;
 HWND enter = NULL;
-HANDLE hJailbreakThread = NULL;	
+HANDLE hJailbreakThread = NULL;
 BOOL jbcomplete = FALSE;
 INT DfuTimer = 0;
 INT DfuPhase = 0;
 INT DfuCountdown = 0;
 
-LPCSTR DfuText[] =
-{
+LPCSTR DfuText[] = {
 	"Get ready, did you remember to turn off your device?",
 	"Hold the sleep/wake button. (2s)",
 	"Continue holding sleep/wake; hold down home (10s)",
@@ -149,14 +147,16 @@ LPCSTR DfuText[] =
 /* globals */
 
 int opensn0w_debug_level = DBGFLTR_RELEASE;
-bool verboseflag = false, dump_bootrom = false, raw_load = false, raw_load_exit = false;
+bool verboseflag = false, dump_bootrom = false, raw_load =
+    false, raw_load_exit = false;
 int Img3DecryptLast = TRUE;
 int UsingRamdisk = FALSE;
 char *version = "UNKNOWN";
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
-char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
+char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
+    NULL, *ramdisk = NULL;
 int pwndfu = false, pwnrecovery = false, autoboot = false, download = false;
 volatile bool jailbreaking = false;
 
@@ -167,7 +167,8 @@ volatile bool jailbreaking = false;
  * \fn int is_compatible(void)
  * \brief Check if device is in DFU mode.
  */
-int is_compatible(void) {
+int is_compatible(void)
+{
 	irecv_get_device(client, &device);
 	if (device == NULL) {
 		DPRINT("Null device, continuing to probe.\n");
@@ -184,7 +185,9 @@ int is_compatible(void) {
  * \param client Device
  * \param event iRecovery Event
  */
-int irecv_event_cb_t_callback(irecv_client_t client, const irecv_event_t * event) {
+int irecv_event_cb_t_callback(irecv_client_t client,
+			      const irecv_event_t * event)
+{
 	SendMessage(progress, PBM_SETPOS, (int)event->progress, 0);
 	return 0;
 }
@@ -219,12 +222,12 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 	ShowWindow(reset, SW_HIDE);
 	GuiToggleDFUTimers(FALSE);
 	ShowWindow(enter, SW_SHOW);
-	
-	if(autoboot == false) {
+
+	if (autoboot == false) {
 		GetOpenFileName(&ofn);
 		plist = szFile;
 	}
-	
+
 	jailbreak();
 	return 0;
 }
@@ -235,26 +238,27 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
  *
  * \param Window hwnd for current Window.
  */
-VOID GuiCenterWindow(HWND Window) {
+VOID GuiCenterWindow(HWND Window)
+{
 	RECT ScreenRectangle;
 	INT ScreenWidth;
 	INT ScreenHeight;
 	INT MetricWidth;
 	INT MetricHeight;
 	INT x, y;
-	
+
 	GetWindowRect(Window, &ScreenRectangle);
 	ScreenWidth = ScreenRectangle.right - ScreenRectangle.left;
 	ScreenHeight = ScreenRectangle.bottom - ScreenRectangle.top;
-	
+
 	MetricWidth = GetSystemMetrics(SM_CXSCREEN);
 	MetricHeight = GetSystemMetrics(SM_CYSCREEN);
-	
+
 	x = (MetricWidth - ScreenWidth) >> 1;
 	y = (MetricHeight - ScreenHeight) >> 1;
-	
+
 	MoveWindow(Window, x, y, ScreenWidth, ScreenHeight, FALSE);
-	
+
 	return;
 }
 
@@ -267,22 +271,30 @@ HDC hdcMem = NULL;
  * \param label hwnd for current label.
  * \param bold Enable/disable bold state.
  */
-VOID GuiBoldifyLabel(HWND label, BOOL bold) {
-	SendMessage(label, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
+VOID GuiBoldifyLabel(HWND label, BOOL bold)
+{
+	SendMessage(label, WM_SETFONT,
+		    (WPARAM) CreateFont(14, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL,
+					FALSE, FALSE, FALSE, ANSI_CHARSET,
+					OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
+					DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
 }
 
 /*!
  * \fn VOID GuiUpdateDFUStatusText(VOID)
  * \brief Change DFU status text
  */
-VOID GuiUpdateDFUStatusText(VOID) {	
+VOID GuiUpdateDFUStatusText(VOID)
+{
 	if (DfuPhase != DFU_PHASE_NONE) {
 		GuiBoldifyLabel(first, FALSE);
 		GuiBoldifyLabel(second, FALSE);
 		GuiBoldifyLabel(third, FALSE);
 		GuiBoldifyLabel(fourth, FALSE);
 	}
-	
+
 	if (DfuPhase == DFU_PHASE_READY)
 		GuiBoldifyLabel(first, TRUE);
 	if (DfuPhase == DFU_PHASE_POWER)
@@ -291,11 +303,11 @@ VOID GuiUpdateDFUStatusText(VOID) {
 		GuiBoldifyLabel(third, TRUE);
 	if (DfuPhase == DFU_PHASE_HOME)
 		GuiBoldifyLabel(fourth, TRUE);
-	
+
 	char text[0x10];
 	sprintf(text, "%d", DfuCountdown);
-	
-	SendMessage(counter, WM_SETTEXT, 0, (LPARAM)text);
+
+	SendMessage(counter, WM_SETTEXT, 0, (LPARAM) text);
 }
 
 /*!
@@ -304,13 +316,14 @@ VOID GuiUpdateDFUStatusText(VOID) {
  *
  * \param show Show/hide text.
  */
-VOID GuiToggleDFUTimers(BOOL show) {
-	
+VOID GuiToggleDFUTimers(BOOL show)
+{
+
 	if (DfuTimer)
 		KillTimer(window, DfuTimer);
-	
+
 	DfuTimer = 0;
-	
+
 	if (show) {
 		ShowWindow(first, SW_SHOW);
 		ShowWindow(second, SW_SHOW);
@@ -320,17 +333,17 @@ VOID GuiToggleDFUTimers(BOOL show) {
 		ShowWindow(reset, SW_HIDE);
 		ShowWindow(seconds, SW_HIDE);
 		ShowWindow(enter, SW_HIDE);
-		
+
 		UpdateWindow(window);
 		UpdateWindow(group);
-		
+
 		DfuCountdown = 4;
 		DfuPhase = DFU_PHASE_READY;
 		DfuTimer = SetTimer(window, DFU_TIMER_ID, 1000, NULL);
 		GuiUpdateDFUStatusText();
-	} else { 
+	} else {
 		DfuPhase = DFU_PHASE_NONE;
-		
+
 		ShowWindow(enter, SW_SHOW);
 		ShowWindow(first, SW_HIDE);
 		ShowWindow(second, SW_HIDE);
@@ -351,29 +364,34 @@ VOID GuiToggleDFUTimers(BOOL show) {
  * \fn BOOL DeviceInDFU(VOID)
  * \brief Check if device is in DFU.
  */
-BOOL DeviceInDFU(VOID) {
-    return poll_device(DFU) == 0 && is_compatible() == TRUE;
+BOOL DeviceInDFU(VOID)
+{
+	return poll_device(DFU) == 0 && is_compatible() == TRUE;
 }
 
 /*!
  * \fn BOOL GuiUpdateJailbreakStatus(VOID)
  * \brief Update GUI jailbreak status.
  */
-BOOL GuiUpdateJailbreakStatus(VOID) {
+BOOL GuiUpdateJailbreakStatus(VOID)
+{
 	BOOL dfu = DeviceInDFU();
-	
+
 	if (dfu) {
-		SendMessage(nButton, WM_SETTEXT, 0, (LPARAM)TEXT("Jailbreak!"));
-		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Ready to Jailbreak."));
+		SendMessage(nButton, WM_SETTEXT, 0,
+			    (LPARAM) TEXT("Jailbreak!"));
+		SendMessage(enter, WM_SETTEXT, 0,
+			    (LPARAM) TEXT("Ready to Jailbreak."));
 		EnableWindow(nButton, TRUE);
 		EnableWindow(enter, FALSE);
-		
+
 		GuiToggleDFUTimers(FALSE);
 	} else {
-		SendMessage(nButton, WM_SETTEXT, 0, (LPARAM)TEXT("Waiting for DFU..."));
+		SendMessage(nButton, WM_SETTEXT, 0,
+			    (LPARAM) TEXT("Waiting for DFU..."));
 		EnableWindow(nButton, FALSE);
 	}
-	
+
 	return dfu;
 }
 
@@ -381,7 +399,8 @@ BOOL GuiUpdateJailbreakStatus(VOID) {
  * \fn VOID PerformJailbreak(VOID)
  * \brief Callee subroutine for jailbreak thread start.
  */
-VOID PerformJailbreak(VOID) {
+VOID PerformJailbreak(VOID)
+{
 	DWORD dwGenericThread;
 	EnableWindow(progress, TRUE);
 	EnableWindow(nButton, FALSE);
@@ -392,10 +411,12 @@ VOID PerformJailbreak(VOID) {
 	ShowWindow(seconds, SW_HIDE);
 	ShowWindow(enter, SW_SHOW);
 
-	SendMessage(nButton, WM_SETTEXT, 0, (LPARAM)TEXT("Jailbreaking..."));
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Jailbreaking..."));
+	SendMessage(nButton, WM_SETTEXT, 0, (LPARAM) TEXT("Jailbreaking..."));
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM) TEXT("Jailbreaking..."));
 
-	hJailbreakThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)win32_jailbreak, NULL, 0, &dwGenericThread);
+	hJailbreakThread =
+	    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) win32_jailbreak,
+			 NULL, 0, &dwGenericThread);
 }
 
 /*!
@@ -407,66 +428,71 @@ VOID PerformJailbreak(VOID) {
  * \param wParam Word parameter.
  * \param lParam Long parameter.
  */
-LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam) {
-	switch(uMessage) {
-		case WM_CREATE: {
+LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam,
+				    LPARAM lParam)
+{
+	switch (uMessage) {
+	case WM_CREATE:{
 			HDC hDC = GetDC(window);
 			hdcMem = CreateCompatibleDC(hDC);
 			return 0;
 		}
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		case WM_COMMAND:
-			if (LOWORD(wParam) == 1) {
-				PerformJailbreak();
-			} else if (LOWORD(wParam) == 2) {
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_COMMAND:
+		if (LOWORD(wParam) == 1) {
+			PerformJailbreak();
+		} else if (LOWORD(wParam) == 2) {
+			GuiToggleDFUTimers(TRUE);
+		} else if (LOWORD(wParam) == 3) {
+			if (jbcomplete)
+				PostQuitMessage(0);
+			else
 				GuiToggleDFUTimers(TRUE);
-			} else if (LOWORD(wParam) == 3) {
-				if (jbcomplete)
-					PostQuitMessage(0);
-				else
-					GuiToggleDFUTimers(TRUE);
-			} else if (LOWORD(wParam) == 4) {
-				MessageBox(hWnd, 
-					"By rms, acfrazier, sbingner and Maximus,\n"
-					"Special thanks to MuscleNerd and iH8sn0w.\n"
-					"\n"
-					"Parts of this program are from planetbeing's xpwn, and Chronic-Dev's doctors and syringe."
-					"\n\n"
-					"This program is free software and is licensed under the GNU GPLv3, if you have paid for this program, you have been fooled!\n", "Credits", 64);
-			}
-		case WM_TIMER:
-			if(jailbreaking == FALSE) {
-				ShowWindow(counter, SW_SHOW);
-				ShowWindow(seconds, SW_SHOW);
-				ShowWindow(reset, SW_SHOW);
-			}
-			if (wParam == DFU_TIMER_ID) {
-				DfuCountdown -= 1;
-				
-				if (DfuCountdown <= 0) {
-					if (DfuPhase == DFU_PHASE_HOME || DfuPhase == DFU_PHASE_NONE) {
-						DfuPhase = DFU_PHASE_NONE;
-						SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Try Again"));
-						GuiToggleDFUTimers(FALSE);
-					} else {
-						DfuPhase += 1;
-						if (DfuPhase == DFU_PHASE_POWER) {
-							DfuCountdown = 2;
-						} else if (DfuPhase == DFU_PHASE_BOTH) {
-							DfuCountdown = 10;
-						} else if (DfuPhase == DFU_PHASE_HOME) {
-							DfuCountdown = 15;
-						}
+		} else if (LOWORD(wParam) == 4) {
+			MessageBox(hWnd,
+				   "By rms, acfrazier, sbingner and Maximus,\n"
+				   "Special thanks to MuscleNerd and iH8sn0w.\n"
+				   "\n"
+				   "Parts of this program are from planetbeing's xpwn, and Chronic-Dev's doctors and syringe."
+				   "\n\n"
+				   "This program is free software and is licensed under the GNU GPLv3, if you have paid for this program, you have been fooled!\n",
+				   "Credits", 64);
+		}
+	case WM_TIMER:
+		if (jailbreaking == FALSE) {
+			ShowWindow(counter, SW_SHOW);
+			ShowWindow(seconds, SW_SHOW);
+			ShowWindow(reset, SW_SHOW);
+		}
+		if (wParam == DFU_TIMER_ID) {
+			DfuCountdown -= 1;
+
+			if (DfuCountdown <= 0) {
+				if (DfuPhase == DFU_PHASE_HOME
+				    || DfuPhase == DFU_PHASE_NONE) {
+					DfuPhase = DFU_PHASE_NONE;
+					SendMessage(enter, WM_SETTEXT, 0,
+						    (LPARAM) TEXT("Try Again"));
+					GuiToggleDFUTimers(FALSE);
+				} else {
+					DfuPhase += 1;
+					if (DfuPhase == DFU_PHASE_POWER) {
+						DfuCountdown = 2;
+					} else if (DfuPhase == DFU_PHASE_BOTH) {
+						DfuCountdown = 10;
+					} else if (DfuPhase == DFU_PHASE_HOME) {
+						DfuCountdown = 15;
 					}
 				}
-			
+			}
+
 			GuiUpdateDFUStatusText();
 			GuiUpdateJailbreakStatus();
 		}
-		default:
-			return DefWindowProc(hWnd, uMessage, wParam, lParam);
+	default:
+		return DefWindowProc(hWnd, uMessage, wParam, lParam);
 	}
 	return DefWindowProc(hWnd, uMessage, wParam, lParam);
 }
@@ -477,18 +503,20 @@ LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam, LPA
  *
  * \param blocking Blocking message boolean value.
  */
-BOOL MessageLoop(BOOL blocking) {
-    MSG messages;
+BOOL MessageLoop(BOOL blocking)
+{
+	MSG messages;
 
-    if (!(blocking ? 
-        GetMessage(&messages, NULL, 0, 0) :
-        PeekMessage(&messages, NULL, 0, 0, PM_REMOVE)
-    )) return FALSE;
+	if (!(blocking ?
+	      GetMessage(&messages, NULL, 0, 0) :
+	      PeekMessage(&messages, NULL, 0, 0, PM_REMOVE)
+	    ))
+		return FALSE;
 
-    TranslateMessage(&messages);
-    DispatchMessage(&messages);
+	TranslateMessage(&messages);
+	DispatchMessage(&messages);
 
-    return TRUE;
+	return TRUE;
 }
 
 /*!
@@ -500,148 +528,264 @@ BOOL MessageLoop(BOOL blocking) {
  * \param lpszArgument Current module arguments.
  * \param nFunsterStil Window command.
  */
-INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, INT nFunsterStil) {
-	WNDCLASSEX wc;	
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+		   LPSTR lpszArgument, INT nFunsterStil)
+{
+	WNDCLASSEX wc;
 	INITCOMMONCONTROLSEX icex;
 
 	/* configure xpwn endian */
-	
-	switch(endian()) {
-		case ENDIAN_BIG:
-			endianness = IS_BIG_ENDIAN;
-			break;
-		case ENDIAN_LITTLE:
-			endianness = IS_LITTLE_ENDIAN;
-			break;
-		default:
-			break;
+
+	switch (endian()) {
+	case ENDIAN_BIG:
+		endianness = IS_BIG_ENDIAN;
+		break;
+	case ENDIAN_LITTLE:
+		endianness = IS_LITTLE_ENDIAN;
+		break;
+	default:
+		break;
 	}
-	
+
 	opensn0w_debug_level = DBGFLTR_MISC;
-	
+
 	/* initialize window class */
-	
+
 	wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = 0;
-    wc.lpfnWndProc = GuiWindowProcedure;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hInstance = hInstance;
-    wc.hIcon = LoadIcon(GetModuleHandle(NULL), TEXT("ID"));
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH) (COLOR_BTNFACE + 1);
-    wc.lpszMenuName = NULL;
-    wc.lpszClassName = szClassName;
-    wc.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), TEXT("ID"), IMAGE_ICON, 16, 16, 0);
-    if(!RegisterClassEx(&wc))
+	wc.style = 0;
+	wc.lpfnWndProc = GuiWindowProcedure;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(GetModuleHandle(NULL), TEXT("ID"));
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH) (COLOR_BTNFACE + 1);
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = szClassName;
+	wc.hIconSm =
+	    (HICON) LoadImage(GetModuleHandle(NULL), TEXT("ID"), IMAGE_ICON, 16,
+			      16, 0);
+	if (!RegisterClassEx(&wc))
 		return GetLastError();
-	
+
 	/* kill iTunes */
-	
-	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
-		int c = MessageBox(NULL, (LPCSTR)"iTunes is currently running or its helper process is running.\n\n"
-						 "You will need to close iTunes to use opensn0w, would you like to kill it?", (LPCSTR)"Kill iTunes?", MB_YESNO | MB_ICONWARNING);
-		switch(c) {
-			case IDNO:
-				MessageBox(NULL, (LPCSTR)"Please kill iTunes before using opensn0w!\n", (LPCSTR)"Fatal Error", 0 | MB_ICONSTOP);
-				exit(-1);
-				break;
-			case IDYES:
-				system("taskkill /f /im iTunes.exe");
-				system("taskkill /f /im iTunesHelper.exe");
-			default:
-				system("taskkill /f /im iTunes.exe");
-				system("taskkill /f /im iTunesHelper.exe");
+
+	if (is_process_running(L"iTunes.exe") == TRUE
+	    || is_process_running(L"iTunesHelper.exe") == TRUE) {
+		int c =
+		    MessageBox(NULL,
+			       (LPCSTR)
+			       "iTunes is currently running or its helper process is running.\n\n"
+			       "You will need to close iTunes to use opensn0w, would you like to kill it?",
+			       (LPCSTR) "Kill iTunes?",
+			       MB_YESNO | MB_ICONWARNING);
+		switch (c) {
+		case IDNO:
+			MessageBox(NULL,
+				   (LPCSTR)
+				   "Please kill iTunes before using opensn0w!\n",
+				   (LPCSTR) "Fatal Error", 0 | MB_ICONSTOP);
+			exit(-1);
+			break;
+		case IDYES:
+			system("taskkill /f /im iTunes.exe");
+			system("taskkill /f /im iTunesHelper.exe");
+		default:
+			system("taskkill /f /im iTunes.exe");
+			system("taskkill /f /im iTunesHelper.exe");
 		}
 	}
-	
+
 	/* initialize common controls */
-	
+
 	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	icex.dwICC  = ICC_PROGRESS_CLASS;
+	icex.dwICC = ICC_PROGRESS_CLASS;
 	InitCommonControlsEx(&icex);
 
 	/* main */
-	
-    window = CreateWindowEx(0, szClassName, TEXT("opensn0w-gui"), WS_OVERLAPPED | WS_SYSMENU | SS_OWNERDRAW, CW_USEDEFAULT, CW_USEDEFAULT, 520 + GetSystemMetrics(SM_CXFIXEDFRAME), 260 + GetSystemMetrics(SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION), HWND_DESKTOP, NULL, hInstance, NULL);
+
+	window =
+	    CreateWindowEx(0, szClassName, TEXT("opensn0w-gui"),
+			   WS_OVERLAPPED | WS_SYSMENU | SS_OWNERDRAW,
+			   CW_USEDEFAULT, CW_USEDEFAULT,
+			   520 + GetSystemMetrics(SM_CXFIXEDFRAME),
+			   260 + GetSystemMetrics(SM_CYFIXEDFRAME) +
+			   GetSystemMetrics(SM_CYCAPTION), HWND_DESKTOP, NULL,
+			   hInstance, NULL);
 
 	/* title */
-	
-	title = CreateWindowEx(0, TEXT("STATIC"), TEXT("opensn0w"), WS_VISIBLE | WS_CHILD | SS_CENTER, 121, 2, 257, 44, window, NULL, NULL, NULL);
-    SendMessage(title, WM_SETFONT, (WPARAM) CreateFont(42, 0, 0, 0, FW_EXTRALIGHT, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
+
+	title =
+	    CreateWindowEx(0, TEXT("STATIC"), TEXT("opensn0w"),
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 121, 2, 257, 44,
+			   window, NULL, NULL, NULL);
+	SendMessage(title, WM_SETFONT,
+		    (WPARAM) CreateFont(42, 0, 0, 0, FW_EXTRALIGHT, FALSE,
+					FALSE, FALSE, ANSI_CHARSET,
+					OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
+					DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
 
 	/* subtitle */
-	
-	subtitle = CreateWindowEx(0, TEXT("STATIC"), TEXT("An open-source jailbreaking utility for all platforms."), WS_VISIBLE | WS_CHILD | SS_CENTER, 15, 52, 480, 17, window, NULL, NULL, NULL);
-	SendMessage(subtitle, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
+
+	subtitle =
+	    CreateWindowEx(0, TEXT("STATIC"),
+			   TEXT
+			   ("An open-source jailbreaking utility for all platforms."),
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 15, 52, 480, 17,
+			   window, NULL, NULL, NULL);
+	SendMessage(subtitle, WM_SETFONT,
+		    (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
 
 	/* jailbreak */
-	
-	nButton = CreateWindowEx(0, TEXT("BUTTON"), TEXT("Jailbreak"), BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20, 205, 138, 25, window, (HMENU) 1, NULL, NULL);
-	SendMessage(nButton, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), FALSE);    
+
+	nButton =
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Jailbreak"),
+			   BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20, 205, 138,
+			   25, window, (HMENU) 1, NULL, NULL);
+	SendMessage(nButton, WM_SETFONT,
+		    (WPARAM) GetStockObject(DEFAULT_GUI_FONT), FALSE);
 
 	/* progress */
 
-	progress = CreateWindowEx(0, PROGRESS_CLASS, NULL, WS_CHILD | WS_VISIBLE | PBS_SMOOTH, 165, 206, 335, 23, window, NULL, NULL, NULL);
+	progress =
+	    CreateWindowEx(0, PROGRESS_CLASS, NULL,
+			   WS_CHILD | WS_VISIBLE | PBS_SMOOTH, 165, 206, 335,
+			   23, window, NULL, NULL, NULL);
 	SendMessage(progress, PBM_SETPOS, 0, 0);
 	EnableWindow(progress, FALSE);
-	
+
 	/* copyright */
-	
-	copyright = CreateWindowEx(0, TEXT("STATIC"), TEXT("Parts of this program are from xpwn, doctors and syringe. Licensed under the GNU GPL."), WS_VISIBLE | WS_CHILD | SS_NOTIFY | SS_CENTER, 15, 236, 480, 13, window, (HMENU) 4, NULL, NULL);
-	SendMessage(copyright, WM_SETFONT, (WPARAM) CreateFont(12, 0, 0, 0, FW_DONTCARE, FALSE, TRUE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
-	
+
+	copyright =
+	    CreateWindowEx(0, TEXT("STATIC"),
+			   TEXT
+			   ("Parts of this program are from xpwn, doctors and syringe. Licensed under the GNU GPL."),
+			   WS_VISIBLE | WS_CHILD | SS_NOTIFY | SS_CENTER, 15,
+			   236, 480, 13, window, (HMENU) 4, NULL, NULL);
+	SendMessage(copyright, WM_SETFONT,
+		    (WPARAM) CreateFont(12, 0, 0, 0, FW_DONTCARE, FALSE, TRUE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
+
 	/* dfu group box */
-	
-	group = CreateWindowEx(0, TEXT("BUTTON"), TEXT(""), BS_GROUPBOX | WS_VISIBLE | WS_CHILD, 20, 70, 480, 125, window, NULL, NULL, NULL);
+
+	group =
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT(""),
+			   BS_GROUPBOX | WS_VISIBLE | WS_CHILD, 20, 70, 480,
+			   125, window, NULL, NULL, NULL);
 
 	/* dfu labels */
-	
-	first = CreateWindowEx(0, TEXT("STATIC"), DfuText[0], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 20, 370, 17, group, NULL, NULL, NULL);
-	SendMessage(first, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
 
-	second = CreateWindowEx(0, TEXT("STATIC"), DfuText[1], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 45, 370, 17, group, NULL, NULL, NULL);
-	SendMessage(second, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
-	
-	third = CreateWindowEx(0, TEXT("STATIC"), DfuText[2], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 70, 370, 17, group, NULL, NULL, NULL);
-	SendMessage(third, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
-	
-	fourth = CreateWindowEx(0, TEXT("STATIC"), DfuText[3], WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 95, 370, 17, group, NULL, NULL, NULL);
-	SendMessage(fourth, WM_SETFONT, (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
+	first =
+	    CreateWindowEx(0, TEXT("STATIC"), DfuText[0],
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 20, 370, 17,
+			   group, NULL, NULL, NULL);
+	SendMessage(first, WM_SETFONT,
+		    (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
+
+	second =
+	    CreateWindowEx(0, TEXT("STATIC"), DfuText[1],
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 45, 370, 17,
+			   group, NULL, NULL, NULL);
+	SendMessage(second, WM_SETFONT,
+		    (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
+
+	third =
+	    CreateWindowEx(0, TEXT("STATIC"), DfuText[2],
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 70, 370, 17,
+			   group, NULL, NULL, NULL);
+	SendMessage(third, WM_SETFONT,
+		    (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
+
+	fourth =
+	    CreateWindowEx(0, TEXT("STATIC"), DfuText[3],
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 5, 95, 370, 17,
+			   group, NULL, NULL, NULL);
+	SendMessage(fourth, WM_SETFONT,
+		    (WPARAM) CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
 
 	/* countdown */
-	
-	counter = CreateWindowEx(0, TEXT("STATIC"), TEXT(""), WS_VISIBLE | WS_CHILD | SS_CENTER, 390, 15, 60, 60, group, NULL, NULL, NULL);
-    SendMessage(counter, WM_SETFONT, (WPARAM) CreateFont(64, 0, 0, 0, FW_EXTRALIGHT, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
+
+	counter =
+	    CreateWindowEx(0, TEXT("STATIC"), TEXT(""),
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 390, 15, 60, 60,
+			   group, NULL, NULL, NULL);
+	SendMessage(counter, WM_SETFONT,
+		    (WPARAM) CreateFont(64, 0, 0, 0, FW_EXTRALIGHT, FALSE,
+					FALSE, FALSE, ANSI_CHARSET,
+					OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
+					DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
 
 	/* seconds */
-	
-	seconds = CreateWindowEx(0, TEXT("STATIC"), TEXT("Seconds"), WS_VISIBLE | WS_CHILD | SS_CENTER, 390, 75, 60, 15, group, NULL, NULL, NULL);
-	SendMessage(seconds, WM_SETFONT, (WPARAM) CreateFont(12, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Tahoma")), TRUE);
+
+	seconds =
+	    CreateWindowEx(0, TEXT("STATIC"), TEXT("Seconds"),
+			   WS_VISIBLE | WS_CHILD | SS_CENTER, 390, 75, 60, 15,
+			   group, NULL, NULL, NULL);
+	SendMessage(seconds, WM_SETFONT,
+		    (WPARAM) CreateFont(12, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Tahoma")), TRUE);
 
 	/* reset */
-	
-	reset = CreateWindowEx(0, TEXT("BUTTON"), TEXT("Reset"), BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20 + 390, 70 + 95, 60, 20, window, (HMENU) 2, NULL, NULL);
-	SendMessage(reset, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), FALSE);
-	
+
+	reset =
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Reset"),
+			   BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20 + 390,
+			   70 + 95, 60, 20, window, (HMENU) 2, NULL, NULL);
+	SendMessage(reset, WM_SETFONT,
+		    (WPARAM) GetStockObject(DEFAULT_GUI_FONT), FALSE);
+
 	/* enter */
-	
-	enter = CreateWindowEx(0, TEXT("BUTTON"), TEXT("Help me get into DFU mode!"), BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20 + 176, 70 + 50, 160, 25, window, (HMENU) 3, NULL, NULL);
-	SendMessage(enter, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), FALSE);
+
+	enter =
+	    CreateWindowEx(0, TEXT("BUTTON"),
+			   TEXT("Help me get into DFU mode!"),
+			   BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 20 + 176,
+			   70 + 50, 160, 25, window, (HMENU) 3, NULL, NULL);
+	SendMessage(enter, WM_SETFONT,
+		    (WPARAM) GetStockObject(DEFAULT_GUI_FONT), FALSE);
 
 	/* show user */
-	
+
 	GuiToggleDFUTimers(FALSE);
 	GuiCenterWindow(window);
-    ShowWindow(window, nFunsterStil);
-    while(MessageLoop(TRUE));
-	
+	ShowWindow(window, nFunsterStil);
+	while (MessageLoop(TRUE)) ;
+
 	return 0;
 }
 
 #endif
 #endif
-
 
 /*!
  * \fn void boot_args_process(char *args)
@@ -649,7 +793,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszArgum
  *
  * \param args Arguments for iBoot
  */
- 
+
 void boot_args_process(char *args)
 {
 	char buffer[39];
@@ -674,7 +818,7 @@ void boot_args_process(char *args)
  *
  * \param fileName filename.
  */
- 
+
 bool file_exists(const char *fileName)
 {
 	struct stat buf;
@@ -691,12 +835,12 @@ bool file_exists(const char *fileName)
 char *mode_to_string(int mode)
 {
 	switch (mode) {
-		case DFU:
-			return "DFU";
-		case RECOVERYMODE:
-			return "Recovery/iBoot";
-		default:
-			return "UNKNOWN";
+	case DFU:
+		return "DFU";
+	case RECOVERYMODE:
+		return "Recovery/iBoot";
+	default:
+		return "UNKNOWN";
 	}
 }
 
@@ -714,28 +858,29 @@ int poll_device(int mode)
 
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
-		STATUS("Connect the device in %s mode. [%u]\r", mode_to_string(mode), try);
+		STATUS("Connect the device in %s mode. [%u]\r",
+		       mode_to_string(mode), try);
 		fflush(stdout);
 		try++;
 		return 1;
 	}
 
 	switch (client->mode) {
-		case kDfuMode2:
-		case kDfuMode:
-			if (mode == DFU) {
-				return 0;
-			}
-		case kRecoveryMode2:
-			if (mode == RECOVERYMODE) {
-				return 0;
-			}
-		default:
-			STATUS("Connect the device in %s mode. [%u]\r",
-			       mode_to_string(mode), try);
-			irecv_close(client);
-			try++;
-			return 1;
+	case kDfuMode2:
+	case kDfuMode:
+		if (mode == DFU) {
+			return 0;
+		}
+	case kRecoveryMode2:
+		if (mode == RECOVERYMODE) {
+			return 0;
+		}
+	default:
+		STATUS("Connect the device in %s mode. [%u]\r",
+		       mode_to_string(mode), try);
+		irecv_close(client);
+		try++;
+		return 1;
 	}
 
 	return 0;
@@ -786,7 +931,6 @@ int send_command(char *name)
  *
  * \param name iBoot file.
  */
-
 
 int send_file(char *name)
 {
@@ -864,12 +1008,12 @@ size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
 	return written;
 }
 
-
 /*!
  * \fn int download_all_the_files()
  * \brief Download ALL the files
  */
-int download_all_the_files(firmware Firmware) {
+int download_all_the_files(firmware Firmware)
+{
 	char path[255];
 	struct stat buf;
 	char *buffer;
@@ -877,10 +1021,10 @@ int download_all_the_files(firmware Firmware) {
 	firmware_item item;
 	int i;
 
-	for(i = 0; i < NEEDSERVICE; i++) {
-begin:
+	for (i = 0; i < NEEDSERVICE; i++) {
+ begin:
 		item = Firmware.item[i];
-		if(item.name != NULL) {
+		if (item.name != NULL) {
 
 			filename = strrchr(item.name, '/');
 
@@ -889,19 +1033,23 @@ begin:
 			else
 				filename++;
 
-			if(strstr(filename, "dmg")) {
+			if (strstr(filename, "dmg")) {
 				i++;
 				goto begin;
 			}
-	
-			buffer = malloc(strlen(filename) + 10 + strlen(version));
+
+			buffer =
+			    malloc(strlen(filename) + 10 + strlen(version));
 			if (!buffer) {
 				ERR("Cannot allocate memory\n");
 				return -1;
 			}
-			memset(buffer, 0, strlen(filename) + 10 + strlen(version));
+			memset(buffer, 0,
+			       strlen(filename) + 10 + strlen(version));
 
-			snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s", filename, version);
+			snprintf(buffer,
+				 strlen(filename) + 10 + strlen(version),
+				 "%s_%s", filename, version);
 
 			DPRINT("Checking if %s already exists\n", buffer);
 
@@ -937,7 +1085,7 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	irecv_error_t error = IRECV_E_SUCCESS;
 	char *buffer;
 	char *filename = strrchr(item.name, '/');
-	
+
 	if (filename == NULL)
 		filename = item.name;
 	else
@@ -950,10 +1098,12 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	}
 	memset(buffer, 0, strlen(filename) + 10 + strlen(version));
 
-	snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s", filename, version);
+	snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s",
+		 filename, version);
 
-	if(userprovided)
-		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s", filename);
+	if (userprovided)
+		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s",
+			 filename);
 
 	DPRINT("Checking if %s already exists\n", buffer);
 
@@ -970,11 +1120,13 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 		patch_file(buffer);
 
 	if (patch && !userprovided) {
-		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.pwn", filename, version);
+		snprintf(buffer, strlen(filename) + 10 + strlen(version),
+			 "%s_%s.pwn", filename, version);
 	}
 
-	if(raw_load == true && strcasestr(item.name, "iBSS")) {
-		snprintf(buffer, strlen(filename) + 10 + strlen(version), "%s_%s.dec", filename, version);
+	if (raw_load == true && strcasestr(item.name, "iBSS")) {
+		snprintf(buffer, strlen(filename) + 10 + strlen(version),
+			 "%s_%s.dec", filename, version);
 	}
 
 	DPRINT("Uploading %s to device\n", buffer);
@@ -1010,115 +1162,112 @@ void print_configuration(void)
 
 #include <psapi.h>
 
-struct pid_close_info
-{
-    DWORD pid;
-    BOOL found;
+struct pid_close_info {
+	DWORD pid;
+	BOOL found;
 };
 
 static BOOL CALLBACK pid_enum_proc(HWND hwnd, LPARAM lParam)
 {
-    struct pid_close_info *info = (struct pid_close_info *)lParam;
-    DWORD hwnd_pid;
+	struct pid_close_info *info = (struct pid_close_info *)lParam;
+	DWORD hwnd_pid;
 
-    GetWindowThreadProcessId(hwnd, &hwnd_pid);
+	GetWindowThreadProcessId(hwnd, &hwnd_pid);
 
-    if (hwnd_pid == info->pid)
-    {
-        //PostMessageW(hwnd, WM_CLOSE, 0, 0);
-        info->found = TRUE;
-    }
+	if (hwnd_pid == info->pid) {
+		//PostMessageW(hwnd, WM_CLOSE, 0, 0);
+		info->found = TRUE;
+	}
 
-    return TRUE;
+	return TRUE;
 }
 
-
-static DWORD *enumerate_processes(DWORD *list_count)
+static DWORD *enumerate_processes(DWORD * list_count)
 {
-    DWORD *pid_list, alloc_bytes = 1024 * sizeof(*pid_list), needed_bytes;
+	DWORD *pid_list, alloc_bytes = 1024 * sizeof(*pid_list), needed_bytes;
 
-    pid_list = HeapAlloc(GetProcessHeap(), 0, alloc_bytes);
-    if (!pid_list)
-        return NULL;
+	pid_list = HeapAlloc(GetProcessHeap(), 0, alloc_bytes);
+	if (!pid_list)
+		return NULL;
 
-    for (;;)
-    {
-        DWORD *realloc_list;
+	for (;;) {
+		DWORD *realloc_list;
 
-        if (!EnumProcesses(pid_list, alloc_bytes, &needed_bytes))
-        {
-            HeapFree(GetProcessHeap(), 0, pid_list);
-            return NULL;
-        }
+		if (!EnumProcesses(pid_list, alloc_bytes, &needed_bytes)) {
+			HeapFree(GetProcessHeap(), 0, pid_list);
+			return NULL;
+		}
 
-        /* EnumProcesses can't signal an insufficient buffer condition, so the
-         * only way to possibly determine whether a larger buffer is required
-         * is to see whether the written number of bytes is the same as the
-         * buffer size. If so, the buffer will be reallocated to twice the
-         * size. */
-        if (alloc_bytes != needed_bytes)
-            break;
+		/* EnumProcesses can't signal an insufficient buffer condition, so the
+		 * only way to possibly determine whether a larger buffer is required
+		 * is to see whether the written number of bytes is the same as the
+		 * buffer size. If so, the buffer will be reallocated to twice the
+		 * size. */
+		if (alloc_bytes != needed_bytes)
+			break;
 
-        alloc_bytes *= 2;
-        realloc_list = HeapReAlloc(GetProcessHeap(), 0, pid_list, alloc_bytes);
-        if (!realloc_list)
-        {
-            HeapFree(GetProcessHeap(), 0, pid_list);
-            return NULL;
-        }
-        pid_list = realloc_list;
-    }
+		alloc_bytes *= 2;
+		realloc_list =
+		    HeapReAlloc(GetProcessHeap(), 0, pid_list, alloc_bytes);
+		if (!realloc_list) {
+			HeapFree(GetProcessHeap(), 0, pid_list);
+			return NULL;
+		}
+		pid_list = realloc_list;
+	}
 
-    *list_count = needed_bytes / sizeof(*pid_list);
-    return pid_list;
+	*list_count = needed_bytes / sizeof(*pid_list);
+	return pid_list;
 }
 
-static BOOL get_process_name_from_pid(DWORD pid, WCHAR *buf, DWORD chars)
+static BOOL get_process_name_from_pid(DWORD pid, WCHAR * buf, DWORD chars)
 {
-    HANDLE process;
-    HMODULE module;
-    DWORD required_size;
+	HANDLE process;
+	HMODULE module;
+	DWORD required_size;
 
-    process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
-    if (!process)
-        return FALSE;
+	process =
+	    OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,
+			pid);
+	if (!process)
+		return FALSE;
 
-    if (!EnumProcessModules(process, &module, sizeof(module), &required_size))
-    {
-        CloseHandle(process);
-        return FALSE;
-    }
+	if (!EnumProcessModules
+	    (process, &module, sizeof(module), &required_size)) {
+		CloseHandle(process);
+		return FALSE;
+	}
 
-    if (!GetModuleBaseNameW(process, module, buf, chars))
-    {
-        CloseHandle(process);
-        return FALSE;
-    }
+	if (!GetModuleBaseNameW(process, module, buf, chars)) {
+		CloseHandle(process);
+		return FALSE;
+	}
 
-    CloseHandle(process);
-    return TRUE;
+	CloseHandle(process);
+	return TRUE;
 }
 
-bool is_process_running(WCHAR* process_name) {
+bool is_process_running(WCHAR * process_name)
+{
 	DWORD *pid_list, pid_list_size;
 	DWORD index;
 	BOOL found_process = FALSE;
 	pid_list = enumerate_processes(&pid_list_size);
 
-	if (!pid_list)
-	{
+	if (!pid_list) {
 		return FALSE;
 	}
 
 	for (index = 0; index < pid_list_size; index++) {
 		WCHAR process_name2[MAX_PATH];
 
-		if (get_process_name_from_pid(pid_list[index], process_name2, MAX_PATH) == TRUE &&
-		    !wcscasecmp(process_name2, process_name)) {
+		if (get_process_name_from_pid
+		    (pid_list[index], process_name2, MAX_PATH) == TRUE
+		    && !wcscasecmp(process_name2, process_name)) {
 			struct pid_close_info info = { pid_list[index] };
 
 			found_process = TRUE;
-			EnumWindows(pid_enum_proc, (LPARAM)&info);
+			EnumWindows(pid_enum_proc, (LPARAM) & info);
 		}
 
 	}
@@ -1127,7 +1276,8 @@ bool is_process_running(WCHAR* process_name) {
 
 #endif
 
-void jailbreak() {
+void jailbreak()
+{
 	int i;
 	char *processedname;
 	int userprovided = 0;
@@ -1141,38 +1291,50 @@ void jailbreak() {
 	/* kill iTunes */
 #ifdef _WIN32
 #ifndef _GUI_ENABLE_
-	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
+	if (is_process_running(L"iTunes.exe") == TRUE
+	    || is_process_running(L"iTunesHelper.exe") == TRUE) {
 		char c;
-		STATUS("[!] iTunes is currently running or its helper process is running.\n");
-		STATUS("[!] WARNING: You will need to close iTunes to use opensn0w, would you like to kill it? [Y/n] ");
+		STATUS
+		    ("[!] iTunes is currently running or its helper process is running.\n");
+		STATUS
+		    ("[!] WARNING: You will need to close iTunes to use opensn0w, would you like to kill it? [Y/n] ");
 		c = tolower(getchar());
-		switch(c) {
-			case 'n':
-				FATAL("Please kill iTunes before using opensn0w!\n");
-				break;
-			case 'y':
-				system("taskkill /f /im iTunes.exe");
-				system("taskkill /f /im iTunesHelper.exe");
-			default:
-				system("taskkill /f /im iTunes.exe");
-				system("taskkill /f /im iTunesHelper.exe");
+		switch (c) {
+		case 'n':
+			FATAL("Please kill iTunes before using opensn0w!\n");
+			break;
+		case 'y':
+			system("taskkill /f /im iTunes.exe");
+			system("taskkill /f /im iTunesHelper.exe");
+		default:
+			system("taskkill /f /im iTunes.exe");
+			system("taskkill /f /im iTunesHelper.exe");
 		}
 	}
 #else
-	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
-		int c = MessageBox(NULL, (LPCSTR)"iTunes is currently running or its helper process is running.\n\n"
-						 "You will need to close iTunes to use opensn0w, would you like to kill it?", (LPCSTR)"Kill iTunes?", MB_YESNO | MB_ICONWARNING);
-		switch(c) {
-			case IDNO:
-				MessageBox(NULL, (LPCSTR)"Please kill iTunes before using opensn0w!\n", (LPCSTR)"Fatal Error", 0 | MB_ICONSTOP);
-				exit(-1);
-				break;
-			case IDYES:
-				system("taskkill /f /im iTunes.exe");
-				system("taskkill /f /im iTunesHelper.exe");
-			default:
-				system("taskkill /f /im iTunes.exe");
-				system("taskkill /f /im iTunesHelper.exe");
+	if (is_process_running(L"iTunes.exe") == TRUE
+	    || is_process_running(L"iTunesHelper.exe") == TRUE) {
+		int c =
+		    MessageBox(NULL,
+			       (LPCSTR)
+			       "iTunes is currently running or its helper process is running.\n\n"
+			       "You will need to close iTunes to use opensn0w, would you like to kill it?",
+			       (LPCSTR) "Kill iTunes?",
+			       MB_YESNO | MB_ICONWARNING);
+		switch (c) {
+		case IDNO:
+			MessageBox(NULL,
+				   (LPCSTR)
+				   "Please kill iTunes before using opensn0w!\n",
+				   (LPCSTR) "Fatal Error", 0 | MB_ICONSTOP);
+			exit(-1);
+			break;
+		case IDYES:
+			system("taskkill /f /im iTunes.exe");
+			system("taskkill /f /im iTunesHelper.exe");
+		default:
+			system("taskkill /f /im iTunes.exe");
+			system("taskkill /f /im iTunesHelper.exe");
 		}
 	}
 #endif
@@ -1191,10 +1353,11 @@ void jailbreak() {
 		while (poll_device(RECOVERYMODE)) {
 			sleep(1);
 		}
-	
+
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		irecv_event_subscribe(client, IRECV_PROGRESS, irecv_event_cb_t_callback, NULL);
+		irecv_event_subscribe(client, IRECV_PROGRESS,
+				      irecv_event_cb_t_callback, NULL);
 #endif
 #endif
 
@@ -1202,7 +1365,8 @@ void jailbreak() {
 		err = irecv_get_device(client, &device);
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
 #ifdef _WIN32
-			STATUS("[!] Make sure your device is in the appropriate mode, and that iTunes is installed and closed!\n");
+			STATUS
+			    ("[!] Make sure your device is in the appropriate mode, and that iTunes is installed and closed!\n");
 #endif
 			FATAL("Bad device. errno %d\n", err);
 		}
@@ -1244,7 +1408,7 @@ void jailbreak() {
 		usage();
 		FATAL("plist must be specified in this mode!\n\n");
 	}
-	
+
 	/* Initialize Firmware structure */
 	memset(&Firmware, 0, sizeof(firmware));
 	Firmware.items = sizeof(image_names) / sizeof(char *);
@@ -1259,9 +1423,9 @@ void jailbreak() {
 	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
 	if (bundle != NULL) {
 		for (i = 0; i < Firmware.items; i++) {
-			Dictionary *entry =
-			    (Dictionary *) getValueByKey(bundle,
-							 image_names[i]);
+			Dictionary *entry = (Dictionary *) getValueByKey(bundle,
+									 image_names
+									 [i]);
 			if (entry != NULL) {
 				StringValue *key = NULL, *iv = NULL, *name =
 				    NULL, *vfkey = NULL;
@@ -1303,7 +1467,7 @@ void jailbreak() {
 	/* to be done */
 	DPRINT("Initializing libirecovery\n");
 	irecv_init();
-	
+
 #ifndef __APPLE__
 	irecv_set_debug_level(3);
 #endif
@@ -1315,16 +1479,18 @@ void jailbreak() {
 
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-	irecv_event_subscribe(client, IRECV_PROGRESS, irecv_event_cb_t_callback, NULL);
+	irecv_event_subscribe(client, IRECV_PROGRESS, irecv_event_cb_t_callback,
+			      NULL);
 #endif
 #endif
-	
+
 	/* Check the device */
 	if (strcmp(client->serial, "89000000000001")) {
 		err = irecv_get_device(client, &device);
 		if (device == NULL || device->index == DEVICE_UNKNOWN) {
 #ifdef _WIN32
-			STATUS("[!] Make sure your device is in DFU mode, and that iTunes is installed and closed!\n");
+			STATUS
+			    ("[!] Make sure your device is in DFU mode, and that iTunes is installed and closed!\n");
 #endif
 			FATAL("Bad device. errno %d\n", err);
 		}
@@ -1361,25 +1527,26 @@ void jailbreak() {
 
 		device->url = urlKey->value;
 		if (temporaryDict != NULL)
-			urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
+			urlKey =
+			    (StringValue *) getValueByKey(temporaryDict, "URL");
 		if (urlKey != NULL)
 			p = urlKey->value;
-		if(!p)
+		if (!p)
 			goto out;
 
 		p = strstr(p, device->product);
-		if(!p)
+		if (!p)
 			goto out;
 
 		len = strlen(p);
-		if(len <= 0)
+		if (len <= 0)
 			goto out;
 
 		strncpy(dup, p, len - sizeof("Restore.ipsw"));
 		version = strdup(dup);
-		
+
 	}
-out:
+ out:
 
 	if (url) {
 		processedname = malloc(strlen(url) + sizeof("file://"));
@@ -1393,7 +1560,7 @@ out:
 		device->url = processedname;
 	}
 
-	if(download) {
+	if (download) {
 		download_all_the_files(Firmware);
 		exit(0);
 	}
@@ -1451,10 +1618,9 @@ out:
 
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading iBSS..."));
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading iBSS..."));
 #endif
 
-		
 	STATUS("[*] Uploading stage zero (iBSS)...\n");
 	upload_image(Firmware.item[IBSS], 0, 1, 0);
 #ifndef _WIN32
@@ -1465,7 +1631,7 @@ out:
 
 #ifdef _GUI_ENABLE
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading iBEC..."));
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading iBEC..."));
 #endif
 
 	STATUS("[*] Uploading stage one (iBEC)...\n");
@@ -1478,7 +1644,8 @@ out:
 
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Waiting for reset..."));
+	SendMessage(enter, WM_SETTEXT, 0,
+		    (LPARAM) TEXT("Waiting for reset..."));
 #endif
 
 	STATUS("[*] Waiting for reset...\n");
@@ -1499,7 +1666,8 @@ out:
 	/* upload logo */
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading boot logo..."));
+	SendMessage(enter, WM_SETTEXT, 0,
+		    (LPARAM) TEXT("Uploading boot logo..."));
 #endif
 	STATUS("[*] Uploading boot logo...\n");
 	if (bootlogo) {
@@ -1521,7 +1689,8 @@ out:
 	if (ramdisk) {
 #ifdef _GUI_ENABLE_
 		SendMessage(progress, PBM_SETPOS, 0, 0);
-		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading ramdisk..."));
+		SendMessage(enter, WM_SETTEXT, 0,
+			    (LPARAM) TEXT("Uploading ramdisk..."));
 #endif
 
 		STATUS("[*] Uploading ramdisk...\n");
@@ -1534,7 +1703,8 @@ out:
 
 		DPRINT("Reinitializing libirecovery.\n");
 
-		STATUS("[!] HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
+		STATUS
+		    ("[!] HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
 		sleep(5);
 		irecv_init();
 
@@ -1551,7 +1721,8 @@ out:
 	/* upload devicetree */
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading DeviceTree..."));
+	SendMessage(enter, WM_SETTEXT, 0,
+		    (LPARAM) TEXT("Uploading DeviceTree..."));
 #endif
 
 	STATUS("[*] Uploading device tree...\n");
@@ -1572,7 +1743,8 @@ out:
 	/* upload kernel */
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading kernelcache..."));
+	SendMessage(enter, WM_SETTEXT, 0,
+		    (LPARAM) TEXT("Uploading kernelcache..."));
 #endif
 	STATUS("[*] Uploading kernel...\n");
 	if (kernelcache) {
@@ -1590,20 +1762,19 @@ out:
 	/* BootX */
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Booting kernel..."));
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM) TEXT("Booting kernel..."));
 #endif
 
 	STATUS("[*] Booting.\n");
 	DPRINT("Booting kernel.\n");
 	irecv_send_command(client, "bootx");
-	
+
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("DONE!"));
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM) TEXT("DONE!"));
 #endif
 
 }
-
 
 #ifndef _GUI_ENABLE_
 
@@ -1619,15 +1790,15 @@ int main(int argc, char **argv)
 {
 	int c;
 	/* configure xpwn endian */
-	switch(endian()) {
-		case ENDIAN_BIG:
-			endianness = IS_BIG_ENDIAN;
-			break;
-		case ENDIAN_LITTLE:
-			endianness = IS_LITTLE_ENDIAN;
-			break;
-		default:
-			break;
+	switch (endian()) {
+	case ENDIAN_BIG:
+		endianness = IS_BIG_ENDIAN;
+		break;
+	case ENDIAN_LITTLE:
+		endianness = IS_LITTLE_ENDIAN;
+		break;
+	default:
+		break;
 	}
 
 	/* set up signals */
@@ -1637,7 +1808,8 @@ int main(int argc, char **argv)
 	sigact.sa_sigaction = critical_error_handler;
 	sigact.sa_flags = SA_RESTART | SA_SIGINFO;
 	if (sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL) != 0) {
-		FATAL("Error setting signal handler for %d (%s)\n", SIGSEGV, strsignal(SIGSEGV));
+		FATAL("Error setting signal handler for %d (%s)\n", SIGSEGV,
+		      strsignal(SIGSEGV));
 	}
 #endif
 
@@ -1735,7 +1907,7 @@ int main(int argc, char **argv)
 	}
 
 	jailbreak();
-	
+
 	return 0;
 }
 
