@@ -11,5 +11,3 @@
 #define VER_LANGNEUTRAL
 
 #include "common.ver"
-
-2 RT_MANIFEST opensn0w.exe.manifest

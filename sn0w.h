@@ -112,6 +112,7 @@ void hex_dump(void *data, int size);
 int patch_file(char *filename);
 int irecovery_shell_initialize();
 bool file_exists(const char *fileName);
+int poll_device(int mode);
 Dictionary *get_key_dictionary_from_bundle(char *member);
 int bsdiff(char *oldfile, char *newfile, char *patchfile);
 
@@ -127,6 +128,10 @@ char *strndup (const char *s, size_t n);
 
 #ifndef HAVE_WCSCASECMP
 int wcscasecmp(const wchar_t *s1, const wchar_t *s2);
+#endif
+
+#ifdef _WIN32
+bool is_process_running(WCHAR* process_name);
 #endif
 
 typedef enum _image_magic {
@@ -177,5 +182,8 @@ typedef struct _firmware {
 	firmware_item *item;
 	uint8_t items;
 } firmware, *firmware_t;
+
+int upload_image(firmware_item item, int mode, int patch, int userprovided);
+
 
 #endif

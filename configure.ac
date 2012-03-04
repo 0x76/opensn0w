@@ -52,7 +52,7 @@ case "$target" in
     AC_DEFINE_UNQUOTED(MINGW,1,[This is a MinGW system])
     AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
     CFLAGS="-I/mingw/include $CFLAGS"
-    LIBS="$LIBS -lsetupapi -lpsapi"
+    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32"
         ;;
 esac
 
