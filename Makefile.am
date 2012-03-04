@@ -21,10 +21,9 @@ man1_MANS = opensn0w.1
 nodist_opensn0w_SOURCES = date.h
 CLEANFILES = date.h
 
-date.h: Makefile
+date.h: opensn0w.rc
 	@date "+#define __BUILDDATE__ %g%m%d-%H%M" > date.h
 	@echo \#define __BUILDMACHINE__ ${USERDOMAIN}\(${USERNAME}\) >> date.h
-	@touch Makefile
 
 opensn0w_SOURCES = 8900.c \
 	abstractfile.c \
@@ -52,6 +51,7 @@ opensn0w_SOURCES = 8900.c \
 .rc.o:
 	@echo "  WRES  " $<
 	@windres -I/mingw/include $(RCFLAGS) -o $@ $<
+	@rm date.h
 
 if WINDOWS
 
