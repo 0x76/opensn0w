@@ -156,6 +156,9 @@ char *version = "UNKNOWN";
 irecv_device_t device = NULL;
 irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
+char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist = NULL, *ramdisk = NULL;
+int pwndfu = false, pwnrecovery = false, autoboot = false, download = false;
+volatile bool jailbreaking = false;
 
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
@@ -163,7 +166,7 @@ Dictionary *firmwarePatches, *patchDict, *info;
 int is_compatible(void) {
 	irecv_get_device(client, &device);
 	if (device == NULL) {
-		DPRINT("Sorry device is not compatible with this jailbreak\n");
+		DPRINT("Null device, continuing to probe.\n");
 		return FALSE;
 	}
 	DPRINT("Identified device as %s\n", device->product);
@@ -182,17 +185,6 @@ irecv_event_cb_t_callback(
 
 DWORD win32_jailbreak(LPVOID lpThreadParameter)
 {
-	int i;
-	char *kernelcache = NULL, *bootlogo = NULL, *url =
-	    NULL, *plist = NULL, *ramdisk = NULL;
-	char *processedname;
-	int pwndfu = false, pwnrecovery = false, autoboot = false;
-	int userprovided = 0;
-	irecv_error_t err = IRECV_E_SUCCESS;
-	AbstractFile *plistFile;
-	Dictionary *bundle;
-	firmware Firmware;
-
 	OPENFILENAME ofn;
 	char szFile[260];
 	HWND hwnd = window;
@@ -214,366 +206,8 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 		GetOpenFileName(&ofn);
 		plist = szFile;
 	}
-
-	/* Do stuff */
-	if (autoboot) {
-		DPRINT("Initializing libirecovery\n");
-		irecv_init();
-
-#ifndef _NDEBUG_
-		irecv_set_debug_level(3);
-#endif
-
-		/* Poll for DFU mode */
-		while (poll_device(RECOVERYMODE)) {
-			sleep(1);
-		}
-
-		/* Check the device */
-		err = irecv_get_device(client, &device);
-		if (device == NULL || device->index == DEVICE_UNKNOWN) {
-			FATAL("Bad device. errno %d\n", err);
-		}
-		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Device found."));
-
-		DPRINT("Device found: name: %s, processor s5l%dxsi\n",
-		       device->product, device->chip_id);
-		DPRINT("iBoot information: %s\n", client->serial);
-
-		STATUS("[*] Fixing recovery loop...\n");
-		irecv_send_command(client, "setenv auto-boot true");
-		irecv_send_command(client, "saveenv");
-#ifndef _WIN32
-		client = irecv_reconnect(client, 2);
-#else
-		client = irecv_reconnect(client, 5);
-#endif
-		irecv_send_command(client, "reboot");
-
-		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Done!"));
-		exit(0);
-	}
-
-	if (dump_bootrom || raw_load_exit) {
-		/* i know, hacky */
-		goto actually_do_stuff;
-	}
-
-	if ((plistFile =
-	     createAbstractFileFromFile(fopen(plist, "rb"))) != NULL) {
-		plist = (char *)malloc(plistFile->getLength(plistFile));
-		plistFile->read(plistFile, plist,
-				plistFile->getLength(plistFile));
-		plistFile->close(plistFile);
-		info = createRoot(plist);
-	} else if ((pwndfu == false) &&
-		   (plistFile =
-		    createAbstractFileFromFile(fopen(plist, "rb"))) == NULL) {
-		FATAL("plist must be specified in this mode!\n\n");
-	}
 	
-	/* Initialize Firmware structure */
-	memset(&Firmware, 0, sizeof(firmware));
-	Firmware.items = sizeof(image_names) / sizeof(char *);
-	Firmware.item = malloc(Firmware.items * sizeof(firmware_item));
-
-	if (Firmware.item == NULL) {
-		FATAL("Unable to allocate memory for decryption keys!\n");
-	}
-
-	memset(Firmware.item, 0, Firmware.items * sizeof(firmware_item));
-
-	bundle = (Dictionary *) getValueByKey(info, "FirmwareKeys");
-	if (bundle != NULL) {
-		for (i = 0; i < Firmware.items; i++) {
-			Dictionary *entry =
-			    (Dictionary *) getValueByKey(bundle,
-							 image_names[i]);
-			if (entry != NULL) {
-				StringValue *key = NULL, *iv = NULL, *name =
-				    NULL, *vfkey = NULL;
-
-				key =
-				    (StringValue *) getValueByKey(entry, "Key");
-				iv = (StringValue *) getValueByKey(entry, "IV");
-				name =
-				    (StringValue *) getValueByKey(entry,
-								  "FileName");
-				vfkey =
-				    (StringValue *) getValueByKey(entry,
-								  "VFDecryptKey");
-
-				if (key)
-					Firmware.item[i].key = key->value;
-
-				if (iv)
-					Firmware.item[i].iv = iv->value;
-
-				if (name)
-					Firmware.item[i].name = name->value;
-
-				if (vfkey)
-					Firmware.item[i].vfkey = vfkey->value;
-
-				DPRINT("[plist] (%s %s %s %s) [%s %d]\n",
-				       Firmware.item[i].key,
-				       Firmware.item[i].iv,
-				       Firmware.item[i].name,
-				       Firmware.item[i].vfkey,
-				       image_names[i], i);
-
-			}
-		}
-	}
-
- actually_do_stuff:
-	/* to be done */
-	DPRINT("Initializing libirecovery\n");
-	irecv_init();
-
-#ifndef __APPLE__
-	irecv_set_debug_level(3);
-#endif
-
-	/* Poll for DFU mode */
-	while (poll_device(DFU)) {
-		sleep(1);
-	}
-	
-	irecv_event_subscribe(client, IRECV_PROGRESS, irecv_event_cb_t_callback, NULL);
-	
-	/* Check the device */
-	if (strcmp(client->serial, "89000000000001")) {
-		err = irecv_get_device(client, &device);
-		if (device == NULL || device->index == DEVICE_UNKNOWN) {
-			FATAL("Bad device. errno %d\n", err);
-		}
-		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Device found."));
-		DPRINT("Device found: name: %s, processor s5l%dxsi\n",
-		       device->product, device->chip_id);
-		DPRINT("iBoot information: %s\n", client->serial);
-
-		if (device->chip_id == 8900) {
-			FATAL
-			    ("It looks like your device is in WTF mode already! Get into DFU mode.\n");
-		}
-
-	} else {
-		DPRINT("Using 8900 device descriptor.\n");
-		STATUS("[*] S5L8900XRB device found.\n");
-
-		device = malloc(sizeof(irecv_device));
-		memset(device, 0, sizeof(irecv_device));
-		device->chip_id = 8900;
-		device->product = "s5l8900xall";
-	}
-
-	Dictionary *temporaryDict =
-	    (Dictionary *) getValueByKey(info, "FirmwareInfo");
-	StringValue *urlKey = NULL;
-	if (temporaryDict != NULL)
-		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
-	if (urlKey != NULL) {
-		char *p = NULL, dup[256];
-		int len;
-
-		memset(dup, 0, 256);
-
-		device->url = urlKey->value;
-		if (temporaryDict != NULL)
-			urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
-		if (urlKey != NULL)
-			p = urlKey->value;
-		if(!p)
-			goto out;
-
-		p = strstr(p, device->product);
-		if(!p)
-			goto out;
-
-		len = strlen(p);
-		if(len <= 0)
-			goto out;
-
-		strncpy(dup, p, len - sizeof("Restore.ipsw"));
-		version = strdup(dup);
-		
-	}
-out:
-
-	if (url) {
-		processedname = malloc(strlen(url) + sizeof("file://"));
-		if (!processedname) {
-			printf("Could not allocate memory\n");
-			exit(-1);
-		}
-		memset(processedname, 0, strlen(url) + sizeof("file://"));
-		snprintf(processedname, strlen(url) + sizeof("file://"),
-			 "file://%s", url);
-		device->url = processedname;
-	}
-
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Exploiting bootrom."));
-	/* What jailbreak exploit is this thing capable of? */
-	if (device->chip_id == 8930 || device->chip_id == 8922
-	    || device->chip_id == 8920) {
-		DPRINT
-		    ("This device is compatible with the limera1n exploit. Sending.\n");
-		err = limera1n();
-		if (err) {
-			FATAL("Error during limera1ning.\n");
-		}
-		if (pwndfu == true) {
-			printf
-			    ("bootrom is owned. feel free to restore custom ipsws.\n");
-			exit(0);
-		}
-	} else if (device->chip_id == 8720) {
-		DPRINT
-		    ("This device is compatible with the steaks4uce exploit. Sending.\n");
-		err = steaks4uce();
-		if (err) {
-			FATAL("Error during steaks4uceing.\n");
-		}
-		if (pwndfu == true) {
-			printf
-			    ("bootrom is owned. feel free to restore custom ipsws.\n");
-			exit(0);
-		}
-	} else if (device->chip_id == 8900) {
-		DPRINT
-		    ("This device is compatible with the pwnage2 exploit. Sending.\n");
-		err = pwnage2();
-		if (err) {
-			ERR("Error during pwnage2ing.\n");
-		}
-		if (pwndfu == true) {
-			printf
-			    ("bootrom is owned. feel free to restore custom ipsws.\n");
-			exit(0);
-		}
-	} else {
-		FATAL("Support for the S5L%dX isn't done yet.\n",
-		      device->chip_id);
-	}
-
-	/* We are owned now! */
-	DPRINT("Bootrom is pwned now! :D\n");
-
-	/* upload iBSS */
-	if (ramdisk)
-		UsingRamdisk = TRUE;
-
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading iBSS..."));
-	upload_image(Firmware.item[IBSS], 0, 1, 0);
-#ifndef _WIN32
-	client = irecv_reconnect(client, 30);
-#else
-	client = irecv_reconnect(client, 5);
-#endif
-
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading iBEC..."));
-	upload_image(Firmware.item[IBEC], 0, 1, 0);
-#ifndef _WIN32
-	client = irecv_reconnect(client, 45);
-#else
-	client = irecv_reconnect(client, 10);
-#endif
-
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Waiting for reset..."));
-#ifndef _WIN32
-	client = irecv_reconnect(client, 5);
-#else
-	client = irecv_reconnect(client, 2);
-#endif
-	irecv_reset(client);
-	irecv_set_interface(client, 0, 0);
-	irecv_set_interface(client, 1, 1);
-
-	if (pwnrecovery) {
-		FATAL
-		    ("Device has a pwned iBEC uploaded. Do whatever you want \n");
-	}
-
-	/* upload logo */
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading logo..."));
-	if (bootlogo) {
-		userprovided = 1;
-		Firmware.item[APPLELOGO].name = bootlogo;
-	}
-
-	upload_image(Firmware.item[APPLELOGO], 2, 0, userprovided);
-	userprovided = 0;
-	irecv_send_command(client, "setpicture 0");
-	irecv_send_command(client, "bgcolor 0 0 0");
-#ifndef _WIN32
-	client = irecv_reconnect(client, 5);
-#else
-	client = irecv_reconnect(client, 2);
-#endif
-
-	/* upload ramdisk */
-	if (ramdisk) {
-		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading ramdisk..."));
-		Firmware.item[RESTORERAMDISK].name = ramdisk;
-		upload_image(Firmware.item[RESTORERAMDISK], 4, 0, 1);
-		irecv_reset(client);
-		sleep(5);
-		irecv_close(client);
-		irecv_exit();
-
-		DPRINT("Reinitializing libirecovery.\n");
-
-		STATUS("[!] HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
-		sleep(5);
-		irecv_init();
-
-		while (poll_device(RECOVERYMODE)) {
-			sleep(1);
-		}
-
-		DPRINT("sending ramdisk command\n");
-		irecv_send_command(client, "ramdisk");
-
-		irecv_reset_counters(client);
-	}
-
-	/* upload devicetree */
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading DeviceTree..."));
-	upload_image(Firmware.item[DEVICETREE], 1, 1, 0);
-#ifndef _WIN32
-	client = irecv_reconnect(client, 5);
-#else
-	client = irecv_reconnect(client, 2);
-#endif
-
-	irecv_send_command(client, "devicetree");
-#ifndef _WIN32
-	client = irecv_reconnect(client, 5);
-#else
-	client = irecv_reconnect(client, 2);
-#endif
-
-	/* upload kernel */
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading kernel..."));
-	if (kernelcache) {
-		Firmware.item[KERNELCACHE].name = kernelcache;
-		userprovided = 1;
-	}
-	upload_image(Firmware.item[KERNELCACHE], 3, 1, 0);
-	userprovided = 0;
-#ifndef _WIN32
-	client = irecv_reconnect(client, 5);
-#else
-	client = irecv_reconnect(client, 2);
-#endif
-
-	/* BootX */
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Booting..."));
-	DPRINT("Booting kernel.\n");
-	irecv_send_command(client, "bootx");
-	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Done!"));
-
+	jailbreak();
 	return 0;
 }
 
@@ -801,6 +435,12 @@ PerformJailbreak(
 	EnableWindow(progress, TRUE);
 	EnableWindow(nButton, FALSE);
 	EnableWindow(enter, FALSE);
+
+	ShowWindow(counter, SW_HIDE);
+	ShowWindow(reset, SW_HIDE);
+	ShowWindow(seconds, SW_HIDE);
+	ShowWindow(enter, SW_SHOW);
+
 	SendMessage(nButton, WM_SETTEXT, 0, (LPARAM)TEXT("Jailbreaking..."));
 	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Jailbreaking..."));
 
@@ -863,10 +503,11 @@ Return Value:
 					"This program is free software and is licensed under the GNU GPLv3, if you have paid for this program, you have been fooled!\n", "Credits", 64);
 			}
 		case WM_TIMER:
-			ShowWindow(counter, SW_SHOW);
-			ShowWindow(seconds, SW_SHOW);
-			ShowWindow(reset, SW_SHOW);
-		
+			if(jailbreaking == FALSE) {
+				ShowWindow(counter, SW_SHOW);
+				ShowWindow(seconds, SW_SHOW);
+				ShowWindow(reset, SW_SHOW);
+			}
 			if (wParam == DFU_TIMER_ID) {
 				DfuCountdown -= 1;
 				
@@ -1605,147 +1246,26 @@ bool is_process_running(WCHAR* process_name) {
 
 #endif
 
-#ifndef _GUI_ENABLE_
-
-/*!
- * \fn int main(int argc, char **argv)
- * \brief Main opensn0w routine!
- *
- * \param argc Argument count.
- * \param argv Argument variables.      
- */
-
-int main(int argc, char **argv)
-{
-	int c, i;
-	char *kernelcache = NULL, *bootlogo = NULL, *url =
-	    NULL, *plist = NULL, *ramdisk = NULL;
+void jailbreak() {
+	int i;
 	char *processedname;
-	int pwndfu = false, pwnrecovery = false, autoboot = false, download = false;
 	int userprovided = 0;
 	irecv_error_t err = IRECV_E_SUCCESS;
 	AbstractFile *plistFile;
 	Dictionary *bundle;
 	firmware Firmware;
 
-	/* configure xpwn endian */
-	switch(endian()) {
-		case ENDIAN_BIG:
-			endianness = IS_BIG_ENDIAN;
-			break;
-		case ENDIAN_LITTLE:
-			endianness = IS_LITTLE_ENDIAN;
-			break;
-		default:
-			break;
-	}
-
-	/* set up signals */
-#ifndef _WIN32
-	struct sigaction sigact;
-
-	sigact.sa_sigaction = critical_error_handler;
-	sigact.sa_flags = SA_RESTART | SA_SIGINFO;
-	if (sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL) != 0) {
-		FATAL("Error setting signal handler for %d (%s)\n", SIGSEGV, strsignal(SIGSEGV));
-	}
+	jailbreaking = true;
+	
+#ifdef _GUI_ENABLE_
+	ShowWindow(counter, SW_HIDE);
+	ShowWindow(seconds, SW_HIDE);
+	ShowWindow(reset, SW_HIDE);
 #endif
-
-	printf("opensn0w, an open source jailbreaking program.\n"
-	       "version: " __SN0W_VERSION__ "\n\n"
-	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
-
-	print_configuration();
-
-	opterr = 0;
-
-	while ((c = getopt(argc, argv, "vZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
-		switch (c) {
-		case 'Z':
-			raw_load_exit = true;
-			break;
-		case 'B':
-			dump_bootrom = true;
-			break;
-		case 'A':
-			autoboot = true;
-			break;
-		case 'v':
-			opensn0w_debug_level = DBGFLTR_MISC;
-			break;
-		case 'R':
-			pwnrecovery = true;
-			break;
-		case 'z':
-			raw_load = true;
-			break;
-		case 'a':
-			boot_args_process(optarg);
-			break;
-		case 'X':
-			download = true;
-			break;
-		case 'd':
-			pwndfu = true;
-			break;
-		case 'h':
-			usage();
-			break;
-		case 'p':
-			if (!file_exists(optarg)) {
-				printf("Cannot open plist file '%s'\n", optarg);
-				return -1;
-			}
-			plist = optarg;
-			break;
-		case 'k':
-			if (!file_exists(optarg)) {
-				printf("Cannot open kernelcache file '%s'\n",
-				       optarg);
-				return -1;
-			}
-			kernelcache = optarg;
-			break;
-		case 'i':
-			url = optarg;
-			break;
-		case 'b':
-			if (!file_exists(optarg)) {
-				printf("Cannot open bootlogo file '%s'\n",
-				       optarg);
-				return -1;
-			}
-			bootlogo = optarg;
-			break;
-		case 'S':
-			if (!file_exists(optarg)) {
-				printf("Cannot open file '%s'\n", optarg);
-				return -1;
-			}
-			send_file(optarg);
-			break;
-		case 'C':
-			send_command(optarg);
-			break;
-		case 's':
-			irecovery_shell_initialize();
-			break;
-		case 'r':
-			if (!file_exists(optarg)) {
-				printf("Cannot open ramdisk file '%s'\n",
-				       optarg);
-				return -1;
-			}
-			ramdisk = optarg;
-			break;
-		default:
-			usage();
-			break;
-		}
-	}
 
 	/* kill iTunes */
 #ifdef _WIN32
+#ifndef _GUI_ENABLE_
 	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
 		char c;
 		STATUS("[!] iTunes is currently running or its helper process is running.\n");
@@ -1763,6 +1283,24 @@ int main(int argc, char **argv)
 				system("taskkill /f /im iTunesHelper.exe");
 		}
 	}
+#else
+	if(is_process_running(L"iTunes.exe") == TRUE || is_process_running(L"iTunesHelper.exe") == TRUE) {
+		int c = MessageBox(NULL, (LPCSTR)"iTunes is currently running or its helper process is running.\n\n"
+						 "You will need to close iTunes to use opensn0w, would you like to kill it?", (LPCSTR)"Kill iTunes?", MB_YESNO | MB_ICONWARNING);
+		switch(c) {
+			case IDNO:
+				MessageBox(NULL, (LPCSTR)"Please kill iTunes before using opensn0w!\n", (LPCSTR)"Fatal Error", 0 | MB_ICONSTOP);
+				exit(-1);
+				break;
+			case IDYES:
+				system("taskkill /f /im iTunes.exe");
+				system("taskkill /f /im iTunesHelper.exe");
+			default:
+				system("taskkill /f /im iTunes.exe");
+				system("taskkill /f /im iTunesHelper.exe");
+		}
+	}
+#endif
 #endif
 
 	/* Do stuff */
@@ -1778,6 +1316,12 @@ int main(int argc, char **argv)
 		while (poll_device(RECOVERYMODE)) {
 			sleep(1);
 		}
+	
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+		irecv_event_subscribe(client, IRECV_PROGRESS, irecv_event_cb_t_callback, NULL);
+#endif
+#endif
 
 		/* Check the device */
 		err = irecv_get_device(client, &device);
@@ -1884,7 +1428,7 @@ int main(int argc, char **argv)
 	/* to be done */
 	DPRINT("Initializing libirecovery\n");
 	irecv_init();
-
+	
 #ifndef __APPLE__
 	irecv_set_debug_level(3);
 #endif
@@ -1894,6 +1438,12 @@ int main(int argc, char **argv)
 		sleep(1);
 	}
 
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	irecv_event_subscribe(client, IRECV_PROGRESS, irecv_event_cb_t_callback, NULL);
+#endif
+#endif
+	
 	/* Check the device */
 	if (strcmp(client->serial, "89000000000001")) {
 		err = irecv_get_device(client, &device);
@@ -2024,6 +1574,12 @@ out:
 	if (ramdisk)
 		UsingRamdisk = TRUE;
 
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading iBSS..."));
+#endif
+
+		
 	STATUS("[*] Uploading stage zero (iBSS)...\n");
 	upload_image(Firmware.item[IBSS], 0, 1, 0);
 #ifndef _WIN32
@@ -2032,12 +1588,22 @@ out:
 	client = irecv_reconnect(client, 5);
 #endif
 
+#ifdef _GUI_ENABLE
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading iBEC..."));
+#endif
+
 	STATUS("[*] Uploading stage one (iBEC)...\n");
 	upload_image(Firmware.item[IBEC], 0, 1, 0);
 #ifndef _WIN32
 	client = irecv_reconnect(client, 45);
 #else
 	client = irecv_reconnect(client, 10);
+#endif
+
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Waiting for reset..."));
 #endif
 
 	STATUS("[*] Waiting for reset...\n");
@@ -2056,6 +1622,10 @@ out:
 	}
 
 	/* upload logo */
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading boot logo..."));
+#endif
 	STATUS("[*] Uploading boot logo...\n");
 	if (bootlogo) {
 		userprovided = 1;
@@ -2074,6 +1644,11 @@ out:
 
 	/* upload ramdisk */
 	if (ramdisk) {
+#ifdef _GUI_ENABLE_
+		SendMessage(progress, PBM_SETPOS, 0, 0);
+		SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading ramdisk..."));
+#endif
+
 		STATUS("[*] Uploading ramdisk...\n");
 		Firmware.item[RESTORERAMDISK].name = ramdisk;
 		upload_image(Firmware.item[RESTORERAMDISK], 4, 0, 1);
@@ -2099,6 +1674,11 @@ out:
 	}
 
 	/* upload devicetree */
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading DeviceTree..."));
+#endif
+
 	STATUS("[*] Uploading device tree...\n");
 	upload_image(Firmware.item[DEVICETREE], 1, 1, 0);
 #ifndef _WIN32
@@ -2115,6 +1695,10 @@ out:
 #endif
 
 	/* upload kernel */
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Uploading kernelcache..."));
+#endif
 	STATUS("[*] Uploading kernel...\n");
 	if (kernelcache) {
 		Firmware.item[KERNELCACHE].name = kernelcache;
@@ -2129,10 +1713,154 @@ out:
 #endif
 
 	/* BootX */
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("Booting kernel..."));
+#endif
+
 	STATUS("[*] Booting.\n");
 	DPRINT("Booting kernel.\n");
 	irecv_send_command(client, "bootx");
+	
+#ifdef _GUI_ENABLE_
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	SendMessage(enter, WM_SETTEXT, 0, (LPARAM)TEXT("DONE!"));
+#endif
 
+}
+
+
+#ifndef _GUI_ENABLE_
+
+/*!
+ * \fn int main(int argc, char **argv)
+ * \brief Main opensn0w routine!
+ *
+ * \param argc Argument count.
+ * \param argv Argument variables.      
+ */
+
+int main(int argc, char **argv)
+{
+	int c;
+	/* configure xpwn endian */
+	switch(endian()) {
+		case ENDIAN_BIG:
+			endianness = IS_BIG_ENDIAN;
+			break;
+		case ENDIAN_LITTLE:
+			endianness = IS_LITTLE_ENDIAN;
+			break;
+		default:
+			break;
+	}
+
+	/* set up signals */
+#ifndef _WIN32
+	struct sigaction sigact;
+
+	sigact.sa_sigaction = critical_error_handler;
+	sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+	if (sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL) != 0) {
+		FATAL("Error setting signal handler for %d (%s)\n", SIGSEGV, strsignal(SIGSEGV));
+	}
+#endif
+
+	printf("opensn0w, an open source jailbreaking program.\n"
+	       "version: " __SN0W_VERSION__ "\n\n"
+	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+
+	print_configuration();
+
+	opterr = 0;
+
+	while ((c = getopt(argc, argv, "vZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
+		switch (c) {
+		case 'Z':
+			raw_load_exit = true;
+			break;
+		case 'B':
+			dump_bootrom = true;
+			break;
+		case 'A':
+			autoboot = true;
+			break;
+		case 'v':
+			opensn0w_debug_level = DBGFLTR_MISC;
+			break;
+		case 'R':
+			pwnrecovery = true;
+			break;
+		case 'z':
+			raw_load = true;
+			break;
+		case 'a':
+			boot_args_process(optarg);
+			break;
+		case 'X':
+			download = true;
+			break;
+		case 'd':
+			pwndfu = true;
+			break;
+		case 'h':
+			usage();
+			break;
+		case 'p':
+			if (!file_exists(optarg)) {
+				printf("Cannot open plist file '%s'\n", optarg);
+				return -1;
+			}
+			plist = optarg;
+			break;
+		case 'k':
+			if (!file_exists(optarg)) {
+				printf("Cannot open kernelcache file '%s'\n",
+				       optarg);
+				return -1;
+			}
+			kernelcache = optarg;
+			break;
+		case 'i':
+			url = optarg;
+			break;
+		case 'b':
+			if (!file_exists(optarg)) {
+				printf("Cannot open bootlogo file '%s'\n",
+				       optarg);
+				return -1;
+			}
+			bootlogo = optarg;
+			break;
+		case 'S':
+			if (!file_exists(optarg)) {
+				printf("Cannot open file '%s'\n", optarg);
+				return -1;
+			}
+			send_file(optarg);
+			break;
+		case 'C':
+			send_command(optarg);
+			break;
+		case 's':
+			irecovery_shell_initialize();
+			break;
+		case 'r':
+			if (!file_exists(optarg)) {
+				printf("Cannot open ramdisk file '%s'\n",
+				       optarg);
+				return -1;
+			}
+			ramdisk = optarg;
+			break;
+		default:
+			usage();
+			break;
+		}
+	}
+
+	jailbreak();
+	
 	return 0;
 }
 

@@ -115,6 +115,7 @@ bool file_exists(const char *fileName);
 int poll_device(int mode);
 Dictionary *get_key_dictionary_from_bundle(char *member);
 int bsdiff(char *oldfile, char *newfile, char *patchfile);
+void jailbreak();
 
 /* crt supplement */
 
@@ -185,5 +186,8 @@ typedef struct _firmware {
 
 int upload_image(firmware_item item, int mode, int patch, int userprovided);
 
+#if defined(_GUI_ENABLE_) && !defined(_WIN32)
+#error GUI is only supported on Windows for now! Sorry!
+#endif
 
 #endif
