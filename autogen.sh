@@ -71,7 +71,7 @@ run_or_die ()
    return 0
 }
 
-parse_options "$@"
+# parse_options "$@"
 
 cd $TOP_DIR
 

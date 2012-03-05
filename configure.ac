@@ -78,6 +78,22 @@ AC_TYPE_UINT8_T
 AC_C_VOLATILE
 AC_PROG_CC_C99
 
+GUI_ENABLE="no"
+AC_MSG_CHECKING(if you want GUI support)
+AC_ARG_ENABLE(gui,
+AC_HELP_STRING([--enable-gui],[ Enable gui support.]),
+[
+  case "$enableval" in
+  yes)
+    GUI_ENABLE="yes"
+    AC_DEFINE([_GUI_ENABLE_], 1, [Uncomment to enable GUI support.])
+    ;;
+  no)
+    GUI_ENABLE="no"
+    ;;
+  esac
+])
+AC_MSG_RESULT($GUI_ENABLE)
 
 # Checks for library functions.
 AC_FUNC_CHOWN
