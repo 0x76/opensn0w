@@ -104,6 +104,7 @@ int patch_bootloaders(char *buffer, size_t length)
 		PATCH_FILE(candidate, iBSS_BORD, "BORD tag");
 		PATCH_FILE(candidate, iBSS_ECID, "ECID tag");
 		PATCH_FILE(candidate, iBSS_SHSH, "SHSH tag");
+		PATCH_FILE(candidate, iBEC_51_conditional_ba, "iBoot conditional (5.1)");
 		PATCH_FILE(candidate, iBEC_bootargs, "iBoot boot-args");
 		PATCH_FILE(candidate, iBEC_bootargs_jmp, "iBoot boot-args conditional");
 	}

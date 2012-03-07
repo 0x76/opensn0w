@@ -265,3 +265,9 @@ patch kernel_nor3 = {
 patch kernel_nor4 = {
 	kernel_nor4_original, kernel_nor4_patch, sizeof(kernel_nor4_original)
 };
+
+unsigned char iBEC_51_conditional_ba_orig[] = {0x01, 0xf0, 0xe3, 0xf9, 0x96, 0x49, 0x00, 0x2c};
+unsigned char iBEC_51_conditional_ba_patch[] = {0x01, 0xf0, 0xe3, 0xf9, 0x96, 0x49, 0x01, 0x2c};
+
+patch iBEC_51_conditional_ba = {iBEC_51_conditional_ba_orig, iBEC_51_conditional_ba_patch,
+				sizeof(iBEC_51_conditional_ba_orig)};

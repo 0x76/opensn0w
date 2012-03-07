@@ -82,6 +82,7 @@ extern patch iBSS_PROD;
 
 extern patch iBEC_bootargs;
 extern patch iBEC_bootargs_jmp;
+extern patch iBEC_51_conditional_ba;
 
 extern patch kernel_CSED;
 extern patch kernel_AMFI;
