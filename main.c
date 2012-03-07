@@ -1623,7 +1623,7 @@ void jailbreak()
 
 	STATUS("[*] Uploading stage zero (iBSS)...\n");
 	upload_image(Firmware.item[IBSS], 0, 1, 0);
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 30);
 #else
 	client = irecv_reconnect(client, 5);
@@ -1636,7 +1636,7 @@ void jailbreak()
 
 	STATUS("[*] Uploading stage one (iBEC)...\n");
 	upload_image(Firmware.item[IBEC], 0, 1, 0);
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 45);
 #else
 	client = irecv_reconnect(client, 10);
@@ -1649,7 +1649,7 @@ void jailbreak()
 #endif
 
 	STATUS("[*] Waiting for reset...\n");
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 5);
 #else
 	client = irecv_reconnect(client, 2);
@@ -1679,7 +1679,7 @@ void jailbreak()
 	userprovided = 0;
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 5);
 #else
 	client = irecv_reconnect(client, 2);
@@ -1727,14 +1727,14 @@ void jailbreak()
 
 	STATUS("[*] Uploading device tree...\n");
 	upload_image(Firmware.item[DEVICETREE], 1, 1, 0);
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 5);
 #else
 	client = irecv_reconnect(client, 2);
 #endif
 
 	irecv_send_command(client, "devicetree");
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 5);
 #else
 	client = irecv_reconnect(client, 2);
@@ -1753,7 +1753,7 @@ void jailbreak()
 	}
 	upload_image(Firmware.item[KERNELCACHE], 3, 1, 0);
 	userprovided = 0;
-#ifndef _WIN32
+#ifdef _WIN32
 	client = irecv_reconnect(client, 5);
 #else
 	client = irecv_reconnect(client, 2);
