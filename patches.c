@@ -74,9 +74,9 @@ unsigned char iBEC_bootargs_ramdisk[] =
     { "rd=md0 -v debug=0x16E keepsyms=1       " };
 
 unsigned char iBEC_bootargs_jmp_original[] =
-    { 0x01, 0xF0, 0xE1, 0xF9, 0x96, 0x49, 0x00, 0x2C };
+    { 0x00, 0x2c, 0x08, 0xbf, 0x0e, 0x46 };
 unsigned char iBEC_bootargs_jmp_patch[] =
-    { 0x01, 0xF0, 0xE1, 0xF9, 0x96, 0x49, 0x01, 0x2C };
+    { 0x01, 0x2c, 0x08, 0xbf, 0x0e, 0x46 };
 
 patch iBSS_SHSH = { iBSS_SHSH_original, iBSS_SHSH_patch, 10 };
 patch iBSS_ECID = { iBSS_ECID_original, iBSS_ECID_patch, 8 };
@@ -265,9 +265,3 @@ patch kernel_nor3 = {
 patch kernel_nor4 = {
 	kernel_nor4_original, kernel_nor4_patch, sizeof(kernel_nor4_original)
 };
-
-unsigned char iBEC_51_conditional_ba_orig[] = {0x01, 0xf0, 0xe3, 0xf9, 0x96, 0x49, 0x00, 0x2c};
-unsigned char iBEC_51_conditional_ba_patch[] = {0x01, 0xf0, 0xe3, 0xf9, 0x96, 0x49, 0x01, 0x2c};
-
-patch iBEC_51_conditional_ba = {iBEC_51_conditional_ba_orig, iBEC_51_conditional_ba_patch,
-				sizeof(iBEC_51_conditional_ba_orig)};
