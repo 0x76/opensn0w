@@ -68,6 +68,7 @@ typedef enum _DFU_PHASES {
 			"   -s                 Start iRecovery recovery mode shell.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -X                 Download all files from plist.\n" \
+			"   -Y                 Use the SHAtter exploit, but for god's sake its broken.\n" \
 			"   -S [file]          Send file to device.\n" \
 			"   -C [command]       Send command to device.\n" \
 			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
@@ -157,7 +158,7 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
     NULL, *ramdisk = NULL;
-int pwndfu = false, pwnrecovery = false, autoboot = false, download = false;
+int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
 
 #ifdef _WIN32
@@ -1566,9 +1567,10 @@ void jailbreak()
 	}
 
 	STATUS("[*] Exploiting bootrom...\n");
+
 	/* What jailbreak exploit is this thing capable of? */
-	if (device->chip_id == 8930 || device->chip_id == 8922
-	    || device->chip_id == 8920) {
+	if ((device->chip_id == 8930 || device->chip_id == 8922
+	    || device->chip_id == 8920) && !use_shatter) {
 		DPRINT
 		    ("This device is compatible with the limera1n exploit. Sending.\n");
 		err = limera1n();
@@ -1580,7 +1582,7 @@ void jailbreak()
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 			exit(0);
 		}
-	} else if (device->chip_id == 8720) {
+	} else if (device->chip_id == 8720 && !use_shatter) {
 		DPRINT
 		    ("This device is compatible with the steaks4uce exploit. Sending.\n");
 		err = steaks4uce();
@@ -1592,7 +1594,7 @@ void jailbreak()
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 			exit(0);
 		}
-	} else if (device->chip_id == 8900) {
+	} else if (device->chip_id == 8900 && !use_shatter) {
 		DPRINT
 		    ("This device is compatible with the pwnage2 exploit. Sending.\n");
 		err = pwnage2();
@@ -1603,6 +1605,13 @@ void jailbreak()
 			printf
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 			exit(0);
+		}
+	} else if(use_shatter) {
+		DPRINT("Using SHAtter because you told me to.\n");
+		raw_load = true;
+		err = shatter();
+		if (err) {
+			ERR("Error during shattering.\n");
 		}
 	} else {
 		FATAL("Support for the S5L%dX isn't done yet.\n",
@@ -1821,8 +1830,11 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "vZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "YvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
+		case 'Y':
+			use_shatter = true;
+			break;
 		case 'Z':
 			raw_load_exit = true;
 			break;

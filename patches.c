@@ -68,7 +68,7 @@ unsigned char iBSS_SHSH_patch[] =
 unsigned char iBEC_bootargs_original[] =
     { "rd=md0 nand-enable-reformat=1 -progress" };
 unsigned char iBEC_bootargs_patch[] =
-    { "rd=disk0s1s1 debug=0x016E -v keepsyms=1" };
+    { "debug=0x016E -v keepsyms=1             " };
 
 unsigned char iBEC_bootargs_ramdisk[] =
     { "rd=md0 -v debug=0x16E keepsyms=1       " };

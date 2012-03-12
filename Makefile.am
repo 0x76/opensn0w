@@ -43,6 +43,7 @@ opensn0w_SOURCES = 8900.c \
 	patches.c \
 	plist.c \
 	pwnage2.c \
+	shatter.c \
 	shell.c \
 	sighldr.c \
 	steaks4uce.c \
