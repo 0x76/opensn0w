@@ -1117,8 +1117,12 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 		}
 	}
 
+#ifndef _EMBEDDED_ENABLE
 	if (patch && !userprovided)
 		patch_file(buffer);
+#else
+#warning Make sure you have your pre-pwned files before (both .dec and .pwn!)
+#endif
 
 	if (patch && !userprovided) {
 		snprintf(buffer, strlen(filename) + 10 + strlen(version),

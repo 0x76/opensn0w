@@ -95,6 +95,23 @@ AC_HELP_STRING([--enable-gui],[ Enable gui support.]),
 ])
 AC_MSG_RESULT($GUI_ENABLE)
 
+EMBEDDED_ENABLE="no"
+AC_MSG_CHECKING(if you want embededded support)
+AC_ARG_ENABLE(embedded,
+AC_HELP_STRING([--enable-embedded],[ Enable embedded support.]),
+[
+  case "$enableval" in
+  yes)
+    EMBEDDED_ENABLE="yes"
+    AC_DEFINE([_EMBEDDED_ENABLE_], 1, [Uncomment to enable embedded support.])
+    ;;
+  no)
+    EMBEDDED_ENABLE="no"
+    ;;
+  esac
+])
+AC_MSG_RESULT($EMBEDDED_ENABLE)
+
 # Checks for library functions.
 AC_FUNC_CHOWN
 AC_FUNC_CLOSEDIR_VOID
