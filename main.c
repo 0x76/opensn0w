@@ -1117,7 +1117,7 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 		}
 	}
 
-#ifndef _EMBEDDED_ENABLE
+#ifndef _EMBEDDED_ENABLE_
 	if (patch && !userprovided)
 		patch_file(buffer);
 #else
