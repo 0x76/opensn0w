@@ -29,6 +29,19 @@ s5l8930/8922/8920 we use the limera1n exploit made by geohot
 to own DFU signature checks. Support for the s5l8900 has not 
 yet been implemented.
 
+
+But how can I help? I'm not a programmer.
+=========================================
+
+Even though opensn0w is open-source, we still need devices for testing! You don't have to, but donations
+would be greatly appreciated, monetary or device-wise (devices are preferred however!). But don't worry,
+opensn0w will always remain free and open-source, for it is one of the main tenets of this project. ;)
+
+Please contact rms <rms@velocitylimitless.org> for opensn0w donation matters.
+
+We also can't catch all the bugs, so help us squash them!
+
+
 Why not just use redsn0w? It has a graphical user interface!
 ============================================================
 
