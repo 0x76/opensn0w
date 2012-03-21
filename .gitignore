@@ -5,5 +5,7 @@ opensn0w
 iBEC*
 iBSS*
 kernelcache*
+DeviceTree*
+*.dmg
 libirecovery/*.a
 .DS_Store
