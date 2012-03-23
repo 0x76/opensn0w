@@ -54,6 +54,9 @@ case "$target" in
     CFLAGS="-I/mingw/include $CFLAGS"
     LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32"
         ;;
+*-*-linux*)
+    CFLAGS="-rdynamic $CFLAGS"
+        ;;
 esac
 
 # Checks for typedefs, structures, and compiler characteristics.
