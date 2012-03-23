@@ -4,6 +4,15 @@
 <dict>
 	<key>FirmwareKeys</key>
 	<dict>
+		<key>iBoot</key>
+		<dict>
+			<key>FileName</key>
+			<string>Firmware/all_flash/all_flash.k66ap.production/iBoot.k66ap.RELEASE.img3</key>
+			<key>IV</key>
+			<string>388a622cd48a2623696167abecc65c20</string>
+			<key>Key</key>
+			<string>539da2229228062dd1ef92dbd976605a0f0e34340589e60c48c3b00b621b5408</string>
+		</dict>
 		<key>KernelCache</key>
 		<dict>
 			<key>FileName</key>

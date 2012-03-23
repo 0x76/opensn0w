@@ -274,7 +274,7 @@ int patch_file(char *filename)
 	/* pwn it 8) */
 	DPRINT("pwning %s\n", filename);
 
-	if (strcasestr(filename, "iBEC") || strcasestr(filename, "iBSS"))
+	if (strcasestr(filename, "iBEC") || strcasestr(filename, "iBSS") || strcasestr(filename, "iBoot"))
 		patch_bootloaders(inData, inDataSize);
 	else if (strcasestr(filename, "kernelcache"))
 		patch_kernel(inData, inDataSize);

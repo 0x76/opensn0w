@@ -58,6 +58,7 @@ typedef enum _DFU_PHASES {
 			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
 			"   -p plist           Use firmware plist\n" \
 			"   -h                 Help.\n" \
+			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
 			"   -k kernelcache     Boot using specified kernel.\n" \
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
@@ -158,6 +159,7 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
     NULL, *ramdisk = NULL;
+int iboot = false;
 int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
 
@@ -1655,6 +1657,23 @@ void jailbreak()
 	client = irecv_reconnect(client, 10);
 #endif
 
+	if(iboot == true)  {
+#ifdef _GUI_ENABLE_
+		SendMessage(progress, PBM_SETPOS, 0, 0);
+		SendMessage(enter, WM_SETTEXT, 0,
+			    (LPARAM) TEXT("Uploading iBoot..."));
+#endif
+		STATUS("[*] Uploading stage two (iBoot)...\n");
+		upload_image(Firmware.item[IBOOT], 0, 1, 0);
+#ifdef _WIN32
+		client = irecv_reconnect(client, 45);
+#else
+		client = irecv_reconnect(client, 10);
+#endif
+		irecv_send_command(client, "go");
+		exit(0);
+	}
+
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
 	SendMessage(enter, WM_SETTEXT, 0,
@@ -1729,6 +1748,7 @@ void jailbreak()
 		irecv_send_command(client, "ramdisk");
 
 		irecv_reset_counters(client);
+
 	}
 
 	/* upload devicetree */
@@ -1834,8 +1854,11 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "YvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "IYvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
+		case 'I':
+			iboot = true;
+			break;
 		case 'Y':
 			use_shatter = true;
 			break;
