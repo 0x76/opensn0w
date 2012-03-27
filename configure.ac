@@ -22,7 +22,7 @@ AC_PROG_MAKE_SET
 AC_CHECK_LIB([crypto], [BN_init])
 AC_CHECK_LIB([ssl], [SSL_accept])
 AC_CHECK_LIB([z], [inflate])
-
+AC_CHECK_LIB([pthread], [pthread_join])
 AC_CHECK_LIB([usb-1.0], [libusb_init])
 AC_CHECK_LIB([bz2], [BZ2_bzRead])
 AC_CHECK_LIB([readline], [readline])
