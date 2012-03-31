@@ -1,10 +1,12 @@
 /****************************************************************************
  *                                                                          *
- *      ntverp.H        -- Version information for internal builds          *
+ *      osverp.H        -- Version information for internal builds          *
  *                                                                          *
  *      This file is only modified by the official builder to update the    *
  *      VERSION, VER_PRODUCTVERSION, VER_PRODUCTVERSION_STR and             *
  *      VER_PRODUCTBETA_STR values.                                         *
+ *                                                                          *
+ *      This file blatantly ripped off from the Windows Driver Kit.         *
  *                                                                          *
  ****************************************************************************
 /*--------------------------------------------------------------*/

@@ -22,7 +22,7 @@
 
 #include "sn0w.h"
 
-#ifndef _WIN32
+#ifdef HAVE_LIBPTHREAD
 #include <pthread.h>
 #endif
 
@@ -119,7 +119,7 @@ void init_shell(irecv_client_t client)
 	irecv_event_subscribe(client, IRECV_RECEIVED, &received_cb, NULL);
 	irecv_event_subscribe(client, IRECV_PRECOMMAND, &precommand_cb, NULL);
 	irecv_event_subscribe(client, IRECV_POSTCOMMAND, &postcommand_cb, NULL);
-#ifndef _WIN32
+#ifdef HAVE_LIBPTHREAD
 	pthread_t thread;
 	pthread_attr_t attr;
 	struct sched_param parm;
@@ -129,11 +129,10 @@ void init_shell(irecv_client_t client)
 	pthread_create(&thread, &attr, recv_thread, (void*)client);
 	parm.sched_priority = 10;
 	pthread_setschedparam(thread, SCHED_FIFO, &parm);
-	
 #endif
-	
+
 	while (!quit) {
-#ifdef _WIN32
+#ifndef HAVE_LIBPTHREAD
 		error = irecv_receive(client);
 		if (error != IRECV_E_SUCCESS) {
 			printf("%s\n", irecv_strerror(error));
