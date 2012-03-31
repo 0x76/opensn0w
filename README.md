@@ -37,7 +37,7 @@ Even though opensn0w is open-source, we still need devices for testing! You don'
 would be greatly appreciated, monetary or device-wise (devices are preferred however!). But don't worry,
 opensn0w will always remain free and open-source, for it is one of the main tenets of this project. ;)
 
-Please contact rms <rms@velocitylimitless.org> for opensn0w donation matters.
+Please contact rms@velocitylimitless.org for opensn0w donation matters.
 
 We also can't catch all the bugs, so help us squash them!
 
@@ -67,6 +67,8 @@ have lives too. :).
 * Just make sure to install development packages for:
   * readline
   * zlib
+  * libpng
+  * libpthread
   * libssl (openssl)
   * libcurl
   * libusb-1.0
@@ -77,5 +79,6 @@ And punch in make, and you're done!
 Version Log
 ===========
 
+  * 2012/Mar/31 - Version 0.0.0.2.
   * 2012/Mar/03 - Version 0.0.0.2-pre!
   * 2012/Feb/03 - Version 0.0.0.1-pre!

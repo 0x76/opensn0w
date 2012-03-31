@@ -1,5 +1,5 @@
-/* OpenSn0w 
- * Open source equivalent of redsn0w
+/* opensn0w 
+ * An oen-source jailbreaking utility.
  * Brought to you by rms, acfrazier & Maximus
  * Special thanks to iH8sn0w & MuscleNerd
  * 
@@ -40,6 +40,8 @@
 #include <ctype.h>
 #include "debug.h"
 #include "config.h"
+
+#define __SN0W_VERSION__ PACKAGE_VERSION
 
 #ifdef __APPLE__
 #define _SVID_SOURCE

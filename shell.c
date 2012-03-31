@@ -22,6 +22,10 @@
 
 #include "sn0w.h"
 
+#ifdef HAVE_LIBPTHREAD
+#include <pthread.h>
+#endif
+
 #ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -94,6 +98,19 @@ void append_command_to_history(char *cmd)
 #endif
 }
 
+void *recv_thread(void* c) {
+	irecv_error_t error = 0;
+	irecv_client_t client = c;
+	for(;;) {
+		error = irecv_receive(client);
+		if (error != IRECV_E_SUCCESS) {
+			printf("%s\n", irecv_strerror(error));
+			return NULL;
+		}
+	}
+	return NULL;
+}
+
 void init_shell(irecv_client_t client)
 {
 	irecv_error_t error = 0;
@@ -102,15 +119,30 @@ void init_shell(irecv_client_t client)
 	irecv_event_subscribe(client, IRECV_RECEIVED, &received_cb, NULL);
 	irecv_event_subscribe(client, IRECV_PRECOMMAND, &precommand_cb, NULL);
 	irecv_event_subscribe(client, IRECV_POSTCOMMAND, &postcommand_cb, NULL);
+#ifdef HAVE_LIBPTHREAD
+	pthread_t thread;
+	pthread_attr_t attr;
+	struct sched_param parm;
+
+	pthread_attr_init(&attr);
+	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+	pthread_create(&thread, &attr, recv_thread, (void*)client);
+	parm.sched_priority = 10;
+	pthread_setschedparam(thread, SCHED_FIFO, &parm);
+#endif
+
 	while (!quit) {
+#ifndef HAVE_LIBPTHREAD
 		error = irecv_receive(client);
 		if (error != IRECV_E_SUCCESS) {
 			printf("%s\n", irecv_strerror(error));
 			break;
 		}
+#endif
 #ifdef HAVE_LIBREADLINE
 		char *cmd = readline("> ");
 #else
+		printf("> ");
 		char *cmd = malloc(512);
 		if(!cmd) {
 			abort();

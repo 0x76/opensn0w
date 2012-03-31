@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([opensn0w], [0.1], [rms@velocitylimitless.org])
+AC_INIT([opensn0w], [0.0.0.2], [rms@velocitylimitless.org])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -22,7 +22,7 @@ AC_PROG_MAKE_SET
 AC_CHECK_LIB([crypto], [BN_init])
 AC_CHECK_LIB([ssl], [SSL_accept])
 AC_CHECK_LIB([z], [inflate])
-
+AC_CHECK_LIB([pthread], [pthread_join])
 AC_CHECK_LIB([usb-1.0], [libusb_init])
 AC_CHECK_LIB([bz2], [BZ2_bzRead])
 AC_CHECK_LIB([readline], [readline])
@@ -53,6 +53,9 @@ case "$target" in
     AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
     CFLAGS="-I/mingw/include $CFLAGS"
     LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32"
+        ;;
+*-*-linux*)
+    CFLAGS="-rdynamic $CFLAGS"
         ;;
 esac
 

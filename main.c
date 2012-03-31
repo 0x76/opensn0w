@@ -1,5 +1,5 @@
-/* OpenSn0w
- * Open source equivalent of redsn0w
+/* opensn0w
+ * An oen-source jailbreaking utility.
  * Brought to you by rms, acfrazier & Maximus
  * Special thanks to iH8sn0w & MuscleNerd
  *
@@ -52,27 +52,29 @@ typedef enum _DFU_PHASES {
 			"Jailbreak an iOS device, this includes the iPhone, iPad, iPod touch and\n" \
 			"Apple TV 2G.\n\n" \
 			"Currently supported devices are: %s\n" \
+			"Not really supported devices are: %s\n" \
 			"\n" \
 			"Options:\n" \
-			"   -v                 Verbose mode. Useful for debugging.\n" \
-			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
-			"   -p plist           Use firmware plist\n" \
-			"   -h                 Help.\n" \
-			"   -k kernelcache     Boot using specified kernel.\n" \
+			"   -a [boot-args]     Set device boot-args for boot.\n" \
+			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
 			"   -b bootlogo.img3   Use specified bootlogo img3 file during startup.\n" \
-			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
-			"   -R                 Just boot into pwned recovery mode.\n" \
-			"   -Z                 Use raw image load payload only.\n" \
-			"   -z                 Use raw image load payload and boot device. (Use on devices with corrupted Chip ID)\n" \
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
-			"   -s                 Start iRecovery recovery mode shell.\n" \
+			"   -C [command]       Send command to device.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
+			"   -h                 Help.\n" \
+			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
+			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
+			"   -k kernelcache     Boot using specified kernel.\n" \
+			"   -p plist           Use firmware plist\n" \
+			"   -R                 Just boot into pwned recovery mode.\n" \
+			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
+			"   -S [file]          Send file to device.\n" \
+			"   -s                 Start iRecovery recovery mode shell.\n" \
+			"   -v                 Verbose mode. Useful for debugging.\n" \
 			"   -X                 Download all files from plist.\n" \
 			"   -Y                 Use the SHAtter exploit, but for god's sake its broken.\n" \
-			"   -S [file]          Send file to device.\n" \
-			"   -C [command]       Send command to device.\n" \
-			"   -A                 Set auto-boot. (Kick out of recovery.)\n" \
-			"   -a [boot-args]     Set device boot-args for boot.\n" \
+			"   -z                 Use raw image load payload and boot device. (Use on devices with corrupted Chip ID)\n" \
+			"   -Z                 Use raw image load payload only.\n" \
 			"\n" \
 			"Exit status:\n" \
 			"  0  if OK,\n" \
@@ -82,7 +84,7 @@ typedef enum _DFU_PHASES {
 			"%s homepage: <http://www.opensn0w.com>\n" \
 			"For complete documentation, see the UNIX manual.\n", \
 			"opensn0w", \
-			"s5l8930x, s5l8920x, s5l8922x, s5l8720x, s5l8900x", "opensn0w", "opensn0w"); \
+			"s5l8930x, s5l8920x, s5l8922x", "s5l8720x, s5l8900x", "opensn0w", "opensn0w"); \
 			exit(-1);
 
 /* image names */
@@ -143,7 +145,6 @@ LPCSTR DfuText[] = {
 #endif
 #endif
 
-#define __SN0W_VERSION__ "0.0.0.1-pre2"
 
 /* globals */
 
@@ -158,6 +159,7 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
     NULL, *ramdisk = NULL;
+int iboot = false;
 int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
 
@@ -1010,10 +1012,10 @@ size_t writeData(void *ptr, size_t size, size_t mem, FILE * stream)
 }
 
 /*!
- * \fn int download_all_the_files()
+ * \fn int download_ALL_the_files()
  * \brief Download ALL the files
  */
-int download_all_the_files(firmware Firmware)
+int download_ALL_the_files(firmware Firmware)
 {
 	char path[255];
 	struct stat buf;
@@ -1566,7 +1568,7 @@ void jailbreak()
 	}
 
 	if (download) {
-		download_all_the_files(Firmware);
+		download_ALL_the_files(Firmware);
 		exit(0);
 	}
 
@@ -1655,6 +1657,23 @@ void jailbreak()
 	client = irecv_reconnect(client, 10);
 #endif
 
+	if(iboot == true)  {
+#ifdef _GUI_ENABLE_
+		SendMessage(progress, PBM_SETPOS, 0, 0);
+		SendMessage(enter, WM_SETTEXT, 0,
+			    (LPARAM) TEXT("Uploading iBoot..."));
+#endif
+		STATUS("[*] Uploading stage two (iBoot)...\n");
+		upload_image(Firmware.item[IBOOT], 0, 1, 0);
+#ifdef _WIN32
+		client = irecv_reconnect(client, 45);
+#else
+		client = irecv_reconnect(client, 10);
+#endif
+		irecv_send_command(client, "go");
+		exit(0);
+	}
+
 #ifdef _GUI_ENABLE_
 	SendMessage(progress, PBM_SETPOS, 0, 0);
 	SendMessage(enter, WM_SETTEXT, 0,
@@ -1729,6 +1748,7 @@ void jailbreak()
 		irecv_send_command(client, "ramdisk");
 
 		irecv_reset_counters(client);
+
 	}
 
 	/* upload devicetree */
@@ -1834,8 +1854,11 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "YvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "IYvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
+		case 'I':
+			iboot = true;
+			break;
 		case 'Y':
 			use_shatter = true;
 			break;

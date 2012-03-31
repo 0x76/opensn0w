@@ -24,7 +24,7 @@ void debug_printf(int dbglevel, char *fmt, ...);
 #define DBGFLTR_FATAL		0x2
 #define DBGFLTR_RELEASE		0x1
 
-#define UNIMPLEMENTED    debug_printf(DBGFLTR_MISC, "WARNING:  %s at %s:%d is UNIMPLEMENTED!\n",__FUNCTION__,__FILE__,__LINE__);
+#define UNIMPLEMENTED    debug_printf(DBGFLTR_RELEASE, "WARNING:  %s at %s:%d is UNIMPLEMENTED!\n",__FUNCTION__,__FILE__,__LINE__);
 #define FATAL(fmt, ...)  debug_printf(DBGFLTR_RELEASE, "(%s:%d) FATAL ERROR (Aborting): " fmt, __FILE__, __LINE__, ##__VA_ARGS__), exit(-1);
 #define ERR(fmt, ...)    debug_printf(DBGFLTR_ERR, "(%s:%d) ERROR: " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 #define WARN(fmt, ...)   debug_printf(DBGFLTR_WARN, "(%s:%d) WARNING: " fmt, __FILE__, __LINE__, ##__VA_ARGS__)

@@ -1,5 +1,5 @@
-/* OpenSn0w 
- * Open source equivalent of redsn0w
+/* opensn0w 
+ * An oen-source jailbreaking utility.
  * Brought to you by rms, acfrazier & Maximus
  * Special thanks to iH8sn0w & MuscleNerd
  * 
@@ -274,7 +274,7 @@ int patch_file(char *filename)
 	/* pwn it 8) */
 	DPRINT("pwning %s\n", filename);
 
-	if (strcasestr(filename, "iBEC") || strcasestr(filename, "iBSS"))
+	if (strcasestr(filename, "iBEC") || strcasestr(filename, "iBSS") || strcasestr(filename, "iBoot"))
 		patch_bootloaders(inData, inDataSize);
 	else if (strcasestr(filename, "kernelcache"))
 		patch_kernel(inData, inDataSize);
