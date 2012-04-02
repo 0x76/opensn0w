@@ -72,7 +72,6 @@ have lives too. :).
   * libssl (openssl)
   * libcurl
   * libusb-1.0
-  * libpng
 
 And punch in make, and you're done!
 
