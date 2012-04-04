@@ -1711,6 +1711,7 @@ void jailbreak()
 	userprovided = 0;
 	irecv_send_command(client, "setpicture 0");
 	irecv_send_command(client, "bgcolor 0 0 0");
+	irecv_send_command(client, "bgcolor 192 192 192");
 #ifdef _WIN32
 	client = irecv_reconnect(client, 5);
 #else
