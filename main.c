@@ -61,6 +61,7 @@ typedef enum _DFU_PHASES {
 			"   -B                 Dump SecureROM to bootrom.bin (works on limera1n devices only.)\n" \
 			"   -C [command]       Send command to device.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
+			"   -D                 Dry run, still requires DFU mode.\n" \
 			"   -h                 Help.\n" \
 			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
 			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
@@ -159,7 +160,7 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
     NULL, *ramdisk = NULL;
-int iboot = false;
+int iboot = false, dry_run = false;
 int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
 
@@ -1138,10 +1139,12 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 
 	DPRINT("Uploading %s to device\n", buffer);
 
-	if (client->mode != kDfuMode)
-		error = irecv_send_file(client, buffer, 0);
-	else
-		error = irecv_send_file(client, buffer, 1);
+	if(!dry_run) {
+		if (client->mode != kDfuMode)
+			error = irecv_send_file(client, buffer, 0);
+		else
+			error = irecv_send_file(client, buffer, 1);
+	}
 
 	if (error != IRECV_E_SUCCESS) {
 		ERR("%s\n", irecv_strerror(error));
@@ -1573,7 +1576,7 @@ void jailbreak()
 	}
 
 	STATUS("[*] Exploiting bootrom...\n");
-
+	if(!dry_run) {
 	/* What jailbreak exploit is this thing capable of? */
 	if ((device->chip_id == 8930 || device->chip_id == 8922
 	    || device->chip_id == 8920) && !use_shatter) {
@@ -1623,7 +1626,7 @@ void jailbreak()
 		FATAL("Support for the S5L%dX isn't done yet.\n",
 		      device->chip_id);
 	}
-
+	}
 	/* We are owned now! */
 	DPRINT("Bootrom is pwned now! :D\n");
 
@@ -1855,10 +1858,13 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "IYvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "DIYvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'I':
 			iboot = true;
+			break;
+		case 'D':
+			dry_run = true;
 			break;
 		case 'Y':
 			use_shatter = true;

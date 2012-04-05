@@ -99,7 +99,7 @@ AC_HELP_STRING([--enable-gui],[ Enable gui support.]),
 AC_MSG_RESULT($GUI_ENABLE)
 
 EMBEDDED_ENABLE="no"
-AC_MSG_CHECKING(if you want embededded support)
+AC_MSG_CHECKING(if you want embedded support)
 AC_ARG_ENABLE(embedded,
 AC_HELP_STRING([--enable-embedded],[ Enable embedded support.]),
 [
