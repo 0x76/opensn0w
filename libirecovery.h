@@ -32,6 +32,8 @@ extern "C" {
 #endif
 #include <windows.h>
 #define sleep(n) Sleep(1000 * n)
+#include <stdint.h>
+#undef interface
 #endif
 
 #define APPLE_VENDOR_ID 0x05AC
