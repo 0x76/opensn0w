@@ -592,6 +592,13 @@ LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam,
 		return DefWindowProc(hWnd, uMessage, wParam, lParam);
 	case WM_CTLCOLORSTATIC: {
 		HDC hdcStatic = (HDC) wParam;  
+		
+		if(GetDlgCtrlID((HWND)lParam) == 1337) {
+			SetTextColor(hdcStatic, RGB(52,111,0));     
+			SetBkMode (hdcStatic, TRANSPARENT); 
+			return (LRESULT)GetStockObject(NULL_BRUSH); 
+		}
+		
 		SetTextColor(hdcStatic, RGB(0,0,0));     
 		SetBkMode (hdcStatic, TRANSPARENT); 
  
@@ -822,7 +829,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	title =
 	    CreateWindowEx(0, TEXT("STATIC"), TEXT("what would you like to do?"),
 			   WS_VISIBLE | WS_CHILD | WS_EX_TRANSPARENT, 20, 30, 480, 60,
-			   window, NULL, NULL, NULL);
+			   window, (HMENU)1337, NULL, NULL);
 	
 	SendMessage(title, WM_SETFONT,
 		    (WPARAM) CreateFont(48, 0, 0, 0, FW_DONTCARE, FALSE,
