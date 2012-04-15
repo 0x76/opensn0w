@@ -545,6 +545,45 @@ LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam,
 			hdcMem = CreateCompatibleDC(hDC);
 			return 0;
 		}
+	case WM_DRAWITEM:{
+			TCHAR Buffer[512];
+			LPDRAWITEMSTRUCT lpDIS = (LPDRAWITEMSTRUCT)lParam;
+			HFONT hFont;
+			
+			ZeroMemory(Buffer, 512);
+
+			if(LOWORD(wParam) != 7)
+				SetDCBrushColor(lpDIS->hDC, RGB(0,143,255));
+			else
+				SetDCBrushColor(lpDIS->hDC, RGB(52,111,0));
+				
+			SelectObject(lpDIS->hDC, GetStockObject(DC_BRUSH));
+			RoundRect(lpDIS->hDC, lpDIS->rcItem.left, lpDIS->rcItem.top,
+				lpDIS->rcItem.right, lpDIS->rcItem.bottom, 0, 0);
+			
+			if(lpDIS->itemState & ODS_SELECTED)
+				DrawEdge(lpDIS->hDC, &lpDIS->rcItem,EDGE_RAISED,BF_ADJUST|BF_RECT|BF_FLAT); 
+			else
+				DrawEdge(lpDIS->hDC, &lpDIS->rcItem,EDGE_RAISED,BF_ADJUST|BF_RECT|BF_FLAT|BF_MONO); 
+				
+			GetWindowText(lpDIS->hwndItem, Buffer, 512);
+			
+			hFont = CreateFont(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE,
+					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
+					CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+					DEFAULT_PITCH | FF_DONTCARE,
+					TEXT("Segoe UI"));
+			
+			SelectObject(lpDIS->hDC, hFont);
+
+			SetBkMode(lpDIS->hDC, TRANSPARENT);
+			SetTextColor(lpDIS->hDC, RGB(255,255,255));
+			
+			DrawTextEx(lpDIS->hDC, Buffer, -1, &lpDIS->rcItem, DT_SINGLELINE | DT_VCENTER | DT_WORDBREAK | DT_CENTER, NULL);
+			
+			return TRUE;
+		}
+		break;
 	case WM_ERASEBKGND:
 		GuiSetGradient();
 		return 0;
@@ -852,7 +891,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	hPwnDfu =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Pwn DFU"),
-			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 130, 150,
+			   BS_OWNERDRAW | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 130, 150,
 			   40, window, (HMENU)1000, NULL, NULL);
 	SendMessage(hPwnDfu, WM_SETFONT,
 				(WPARAM) CreateFont(24, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
@@ -874,7 +913,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	hExitRecovery =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Exit Recovery"),
-			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 190, 150,
+			   BS_OWNERDRAW | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 190, 150,
 			   40, window, (HMENU)1001, NULL, NULL);
 	SendMessage(hExitRecovery, WM_SETFONT,
 				(WPARAM) CreateFont(24, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
@@ -896,7 +935,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		
 	hBootTethered =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Boot Tethered"),
-			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 250, 150,
+			   BS_OWNERDRAW | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 250, 150,
 			   40, window, (HMENU)1002, NULL, NULL);
 	SendMessage(hBootTethered, WM_SETFONT,
 				(WPARAM) CreateFont(24, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
@@ -918,7 +957,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	hLeetHaxorMode =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("1337 h4x0r mode"),
-			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 310, 150,
+			   BS_OWNERDRAW | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 310, 150,
 			   40, window, (HMENU)1003, NULL, NULL);
 	SendMessage(hLeetHaxorMode, WM_SETFONT,
 				(WPARAM) CreateFont(24, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
@@ -940,7 +979,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	hMainMenu =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Main Menu"),
-			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 370 - GetSystemMetrics(SM_CXFIXEDFRAME), 375, 150,
+			   BS_OWNERDRAW | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 370 - GetSystemMetrics(SM_CXFIXEDFRAME), 375, 150,
 			   40, window, (HMENU)6, NULL, NULL);
 	SendMessage(hMainMenu, WM_SETFONT,
 				(WPARAM) CreateFont(24, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
@@ -952,7 +991,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	hTryAgain =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Reset Timer"),
-			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 370 - GetSystemMetrics(SM_CXFIXEDFRAME), 375, 150,
+			   BS_OWNERDRAW | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 370 - GetSystemMetrics(SM_CXFIXEDFRAME), 375, 150,
 			   40, window, (HMENU)7, NULL, NULL);
 	SendMessage(hTryAgain, WM_SETFONT,
 				(WPARAM) CreateFont(24, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,

@@ -52,7 +52,7 @@ case "$target" in
 *-*-mingw32)
     AC_DEFINE_UNQUOTED(MINGW,1,[This is a MinGW system])
     AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
-    CFLAGS="-I/mingw/include $CFLAGS"
+    CFLAGS="-I/mingw/include $CFLAGS -D_WIN32_WINNT=0x500 -DWINVER=0x500"
     LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32 -lmsimg32 -lgdiplus"
         ;;
 *-*-linux*)
