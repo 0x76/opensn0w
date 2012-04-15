@@ -13,3 +13,5 @@
 #include "common.ver"
 
 1 RT_MANIFEST opensn0w.exe.manifest
+
+1 ICON opensn0w.ico

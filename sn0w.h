@@ -137,6 +137,17 @@ int wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 
 #ifdef _WIN32
 bool is_process_running(WCHAR* process_name);
+BOOL GuiUpdateJailbreakStatus(VOID);
+
+BOOL WINAPI GradientFill(
+    HDC hdc,
+    PTRIVERTEX pVertex,
+    ULONG nVertex,
+    PVOID pMesh,
+    ULONG nMesh,
+    ULONG ulMode
+);
+
 #endif
 
 typedef enum _image_magic {

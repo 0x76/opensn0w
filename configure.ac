@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([opensn0w], [0.0.0.2], [rms@velocitylimitless.org])
+AC_INIT([opensn0w], [0.0.0.3-pre], [rms@velocitylimitless.org])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -52,7 +52,7 @@ case "$target" in
     AC_DEFINE_UNQUOTED(MINGW,1,[This is a MinGW system])
     AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
     CFLAGS="-I/mingw/include $CFLAGS"
-    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32"
+    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32 -lmsimg32"
         ;;
 *-*-linux*)
     CFLAGS="-rdynamic $CFLAGS"
