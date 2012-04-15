@@ -18,6 +18,13 @@
  **/
 
 #include "sn0w.h"
+#ifdef _WIN32
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+
+extern HWND hStatus2, progress, window;
+#endif
 
 extern bool dump_bootrom, raw_load, raw_load_exit;
 
@@ -183,6 +190,13 @@ int limera1n()
 	}
 
 	DPRINT("Sending chunk headers\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Sending chunk headers..."));
+	SendMessage(progress, PBM_SETPOS, 20, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	irecv_control_transfer(client, 0x21, 1, 0, 0, buf, 0x800, 1000);
 
 	memset(buf, 0xCC, 0x800);
@@ -192,18 +206,46 @@ int limera1n()
 
 	DPRINT("Sending exploit payload\n");
 	irecv_control_transfer(client, 0x21, 1, 0, 0, shellcode, 0x800, 1000);
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Sending exploit payload..."));
+	SendMessage(progress, PBM_SETPOS, 40, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 
 	DPRINT("Sending fake data\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Sending fake data..."));
+	SendMessage(progress, PBM_SETPOS, 60, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	memset(buf, 0xBB, 0x800);
 	irecv_control_transfer(client, 0xA1, 1, 0, 0, buf, 0x800, 1000);
 	irecv_control_transfer(client, 0x21, 1, 0, 0, buf, 0x800, 10);
 
 	DPRINT("Executing exploit\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Executing payload..."));
+	SendMessage(progress, PBM_SETPOS, 80, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	irecv_control_transfer(client, 0x21, 2, 0, 0, buf, 0, 1000);
 	irecv_reset(client);
 	irecv_finish_transfer(client);
 
 	DPRINT("Exploit sent\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
+	SendMessage(progress, PBM_SETPOS, 100, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 
 	DPRINT("Reconnecting to device\n");
 	client = irecv_reconnect(client, 2);

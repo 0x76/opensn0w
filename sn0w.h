@@ -21,6 +21,10 @@
 #define _SN0W_H_
 #define _GNU_SOURCE		/* for strcasestr */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "keys.h"
 #include <curl/curl.h>
 #include "libirecovery.h"
@@ -138,6 +142,10 @@ int wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 #ifdef _WIN32
 bool is_process_running(WCHAR* process_name);
 BOOL GuiUpdateJailbreakStatus(VOID);
+void GuiGdiPlusConstructor(void);
+void GuiGdiPlusDeconstructor(void);
+HICON GuiGetIconForPng(const WCHAR *filename);
+HICON GuiGetIconForResource(const WCHAR *bitmapName);
 
 BOOL WINAPI GradientFill(
     HDC hdc,
@@ -207,6 +215,10 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided);
 
 #ifdef _GUI_ENABLE_
 VOID GuiToggleDFUTimers(BOOL show);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

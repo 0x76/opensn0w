@@ -32,6 +32,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <commctrl.h>
 #include <setupapi.h>
 #endif
 
@@ -1380,6 +1381,12 @@ irecv_error_t irecv_get_device(irecv_client_t client, irecv_device_t * device)
 	return IRECV_E_SUCCESS;
 }
 
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+extern HWND window, progress, hStatus3;
+#endif
+#endif
+
 irecv_client_t irecv_reconnect(irecv_client_t client, int initial_pause)
 {
 	irecv_error_t error = 0;
@@ -1390,11 +1397,25 @@ irecv_client_t irecv_reconnect(irecv_client_t client, int initial_pause)
 		irecv_close(client);
 	}
 
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	char buffer[256];
+	snprintf(buffer, 256, "Waiting %d seconds for the device...\n", initial_pause);
+	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM)buffer);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	if (initial_pause > 0) {
 		DPRINT("Waiting %d seconds for the device to pop up...\n",
 		       initial_pause);
 		sleep(initial_pause);
 	}
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 
 	error = irecv_open_attempts(&new_client, 10);
 	if (error != IRECV_E_SUCCESS) {

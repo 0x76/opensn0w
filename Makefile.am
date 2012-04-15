@@ -10,6 +10,15 @@ ERROR_CFLAGS = \
 	-I./include \
 	-Ilibusb-1.0
 
+AM_CXXFLAGS = \
+	$(OPENSN0W_CFLAGS) \
+	-Wall \
+	-I. \
+	-Ixpwntool \
+	-I./include \
+	-Ilibusb-1.0 \
+	$(CFLAGS)
+
 AM_CFLAGS = \
 	$(ERROR_CFLAGS) \
 	$(ZLIB_CFLAGS) 
@@ -58,7 +67,7 @@ if WINDOWS
 
 opensn0w.$(OBJEXT): date.h
 
-        opensn0w_SOURCES += opensn0w.rc
+        opensn0w_SOURCES += opensn0w.rc win32.cpp
 endif
 
 

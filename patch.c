@@ -28,7 +28,7 @@ extern HWND window, hStatus2;
 #define PATCH_FILE(candidate, original_data, name) \
 	if(!memcmp(candidate, original_data.original, original_data.length)) { \
 		char buffer[256]; \
-		sprintf(buffer, "patching check at 0x%08x\n", i); \
+		sprintf(buffer, "Patching check at 0x%x...\n", i); \
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) buffer); \
 		InvalidateRect(window, NULL, TRUE); \
 		DPRINT("Patching " name " check at 0x%08x\n", i); \

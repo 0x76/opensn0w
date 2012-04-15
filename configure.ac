@@ -14,6 +14,7 @@ AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([-Wall])
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
@@ -52,7 +53,7 @@ case "$target" in
     AC_DEFINE_UNQUOTED(MINGW,1,[This is a MinGW system])
     AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
     CFLAGS="-I/mingw/include $CFLAGS"
-    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32 -lmsimg32"
+    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32 -lmsimg32 -lgdiplus"
         ;;
 *-*-linux*)
     CFLAGS="-rdynamic $CFLAGS"

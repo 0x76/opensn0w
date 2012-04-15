@@ -143,13 +143,14 @@ BOOL jbcomplete = FALSE;
 INT DfuTimer = 0;
 INT DfuPhase = 0;
 INT DfuCountdown = 0;
+HINSTANCE currentInstance;
 
 LPCSTR DfuText[] = {
-	"turn off the device",
-	"hold sleep (2s)",
-	"hold sleep and home (10s)",
-	"release sleep, hold home (15s)",
-	"game over"
+	"Let's start by turning off the device.",
+	"Hold the sleep button.",
+	"Hold the sleep and home buttons.",
+	"Release sleep and hold the home button.",
+	"Game over."
 };
 
 #endif
@@ -288,11 +289,11 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 	KillTimer(window, DfuTimer);
 	
 	if(!autoboot) {
-		SendMessage(title, WM_SETTEXT, 0, (LPARAM) TEXT("jailbreaking"));
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("identified device as"));
+		SendMessage(title, WM_SETTEXT, 0, (LPARAM) TEXT("let's jailbreak iOS"));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("We identified your device as a:"));
 		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) device->colloquial_name);
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
-		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT("please select a firmware plist."));
+		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT("Please select a firmware bundle."));
 		ShowWindow(hTryAgain, SW_HIDE);
 		ShowWindow(hStatus0, SW_SHOW);
 		ShowWindow(hStatus1, SW_SHOW);
@@ -301,7 +302,7 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 		InvalidateRect(window, NULL, TRUE);
 	} else {
 		SendMessage(title, WM_SETTEXT, 0, (LPARAM) TEXT("fixing recovery loop"));
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("please wait..."));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Please wait..."));
 		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
@@ -400,9 +401,9 @@ VOID GuiUpdateDFUStatusText(VOID)
 	char text[255];
 	
 	if(DfuCountdown == 1) {
-		snprintf(text, 255, "%d second remaining", DfuCountdown);
+		snprintf(text, 255, "%d second remaining.", DfuCountdown);
 	} else {
-		snprintf(text, 255, "%d seconds remaining", DfuCountdown);
+		snprintf(text, 255, "%d seconds remaining.", DfuCountdown);
 	}
 	
 	ShowWindow(hTryAgain, SW_SHOW);
@@ -693,6 +694,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	WNDCLASSEX wc;
 	INITCOMMONCONTROLSEX icex;
 
+	currentInstance = hInstance;
+
 	/* configure xpwn endian */
 
 	switch (endian()) {
@@ -707,6 +710,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	opensn0w_debug_level = DBGFLTR_MISC;
+	
+	/* construct gdiplus */
+	GuiGdiPlusConstructor();
 
 	/* initialize window class */
 
@@ -820,8 +826,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	/* jailbreak */
 	nButton =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("jailbreak"),
-			   BS_BOTTOM | BS_RIGHT | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 165, 230,
+			   BS_ICON | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 165, 230,
 			   150, window, (HMENU) 1, NULL, NULL);
+	SendMessage(nButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)GuiGetIconForPng(L"artwork/jailbreak.png"));
 	SendMessage(nButton, WM_SETFONT,
 				(WPARAM) CreateFont(48, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
 					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
@@ -831,8 +838,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			
 	eButton =
 	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("extras"),
-			    BS_BOTTOM | BS_RIGHT | BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 290 - GetSystemMetrics(SM_CXFIXEDFRAME), 165, 230,
+			   BS_ICON | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 290 - GetSystemMetrics(SM_CXFIXEDFRAME), 165, 230,
 			   150, window, (HMENU)5, NULL, NULL);
+	SendMessage(eButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)GuiGetIconForPng(L"artwork/extras.png"));
 	SendMessage(eButton, WM_SETFONT,
 				(WPARAM) CreateFont(48, 0, 0, 0, FW_DONTCARE, FALSE, FALSE,
 					FALSE, ANSI_CHARSET, OUT_TT_PRECIS,
@@ -843,7 +851,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	/* advanced options pane */
 
 	hPwnDfu =
-	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("pwn dfu"),
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Pwn DFU"),
 			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 130, 150,
 			   40, window, (HMENU)1000, NULL, NULL);
 	SendMessage(hPwnDfu, WM_SETFONT,
@@ -854,7 +862,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), FALSE);
 
 	hPwnDfuDescription =
-		CreateWindowEx(0, TEXT("STATIC"), TEXT("Prepare the device for pwned DFU."),
+		CreateWindowEx(0, TEXT("STATIC"), TEXT("Prepare for restoring custom IPSWs."),
 			   WS_VISIBLE | WS_CHILD | WS_EX_TRANSPARENT, 30 + 170 - GetSystemMetrics(SM_CXFIXEDFRAME), 137, 350,
 			   40, window, NULL, NULL, NULL);
 	SendMessage(hPwnDfuDescription, WM_SETFONT,
@@ -865,7 +873,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), FALSE);	
 
 	hExitRecovery =
-	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("exit recovery"),
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Exit Recovery"),
 			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 190, 150,
 			   40, window, (HMENU)1001, NULL, NULL);
 	SendMessage(hExitRecovery, WM_SETFONT,
@@ -876,7 +884,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), FALSE);
 		
 	hExitRecoveryDescription =
-		CreateWindowEx(0, TEXT("STATIC"), TEXT("Exit \"Connect to iTunes\" screen."),
+		CreateWindowEx(0, TEXT("STATIC"), TEXT("Force device to exit Recovery Mode."),
 			   WS_VISIBLE | WS_CHILD | WS_EX_TRANSPARENT, 30 + 170 - GetSystemMetrics(SM_CXFIXEDFRAME), 197, 350,
 			   40, window, NULL, NULL, NULL);
 	SendMessage(hExitRecoveryDescription, WM_SETFONT,
@@ -887,7 +895,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), FALSE);	
 		
 	hBootTethered =
-	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("boot tethered"),
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Boot Tethered"),
 			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 250, 150,
 			   40, window, (HMENU)1002, NULL, NULL);
 	SendMessage(hBootTethered, WM_SETFONT,
@@ -909,7 +917,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), FALSE);	
 
 	hLeetHaxorMode =
-	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("leet h4x0r mode"),
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("1337 h4x0r mode"),
 			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 30 - GetSystemMetrics(SM_CXFIXEDFRAME), 310, 150,
 			   40, window, (HMENU)1003, NULL, NULL);
 	SendMessage(hLeetHaxorMode, WM_SETFONT,
@@ -931,7 +939,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), FALSE);	
 
 	hMainMenu =
-	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("main menu"),
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Main Menu"),
 			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 370 - GetSystemMetrics(SM_CXFIXEDFRAME), 375, 150,
 			   40, window, (HMENU)6, NULL, NULL);
 	SendMessage(hMainMenu, WM_SETFONT,
@@ -943,7 +951,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	hTryAgain =
-	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("reset timer"),
+	    CreateWindowEx(0, TEXT("BUTTON"), TEXT("Reset Timer"),
 			   BS_FLAT | BS_FLAT | BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 370 - GetSystemMetrics(SM_CXFIXEDFRAME), 375, 150,
 			   40, window, (HMENU)7, NULL, NULL);
 	SendMessage(hTryAgain, WM_SETFONT,
@@ -1028,6 +1036,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	while (MessageLoop(TRUE)) ;
 
+	GuiGdiPlusDeconstructor();
 	return 0;
 }
 
@@ -1359,7 +1368,7 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	if (stat(buffer, &buf) != 0) {
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("downloading..."));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Downloading from Apple..."));
 		SendMessage(progress, PBM_SETPOS, 0, 0);
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) " ");
 		InvalidateRect(window, NULL, TRUE);
@@ -1380,7 +1389,7 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("patching..."));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Patching..."));
 		SendMessage(progress, PBM_SETPOS, 0, 0);
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) " ");
 		InvalidateRect(window, NULL, TRUE);
@@ -1401,7 +1410,7 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading..."));
 		SendMessage(progress, PBM_SETPOS, 0, 0);
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) " ");
 		InvalidateRect(window, NULL, TRUE);
@@ -1656,7 +1665,7 @@ void jailbreak()
 		DPRINT("iBoot information: %s\n", client->serial);
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("setting environment variables..."));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Setting environment variables..."));
 		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
@@ -1675,7 +1684,7 @@ void jailbreak()
 #endif
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("rebooting..."));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Rebooting..."));
 		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
@@ -1686,9 +1695,9 @@ void jailbreak()
 		irecv_send_command(client, "reboot");
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("done!"));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Done!"));
 		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
-		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("your device has now left recovery mode."));
+		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Your device has now left recovery mode."));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(progress, PBM_SETPOS, 0, 0);
 		InvalidateRect(window, NULL, TRUE);
@@ -1797,7 +1806,7 @@ void jailbreak()
 #endif
 
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("preparing..."));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Preparing..."));
 	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
@@ -1886,13 +1895,15 @@ void jailbreak()
 	}
 
 	STATUS("[*] Exploiting bootrom...\n");
+#ifdef _WIN32
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("exploiting bootrom..."));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Exploiting boot ROM..."));
 	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
 	InvalidateRect(window, NULL, TRUE);
+#endif
 #endif
 	if(!dry_run) {
 	/* What jailbreak exploit is this thing capable of? */
@@ -1909,9 +1920,9 @@ void jailbreak()
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 #ifdef _GUI_ENABLE_
 #ifdef _WIN32
-			SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("done!"));
+			SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Done!"));
 			SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
-			SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("feel free to restore custom ipsws in iTunes."));
+			SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Feel free to restore custom IPSWs in iTunes."));
 			SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 			SendMessage(progress, PBM_SETPOS, 0, 0);
 			InvalidateRect(window, NULL, TRUE);
@@ -1933,9 +1944,9 @@ void jailbreak()
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 #ifdef _GUI_ENABLE_
 #ifdef _WIN32
-			SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("done!"));
+			SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Done!"));
 			SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
-			SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("feel free to restore custom ipsws in iTunes."));
+			SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Feel free to restore custom IPSWs in iTunes."));
 			SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 			SendMessage(progress, PBM_SETPOS, 0, 0);
 			InvalidateRect(window, NULL, TRUE);
@@ -1957,9 +1968,9 @@ void jailbreak()
 			    ("bootrom is owned. feel free to restore custom ipsws.\n");
 #ifdef _GUI_ENABLE_
 #ifdef _WIN32
-			SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("done!"));
+			SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Done!"));
 			SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
-			SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("feel free to restore custom ipsws in iTunes."));
+			SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Feel free to restore custom IPSWs in iTunes."));
 			SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 			SendMessage(progress, PBM_SETPOS, 0, 0);
 			InvalidateRect(window, NULL, TRUE);
@@ -1989,8 +2000,8 @@ void jailbreak()
 		UsingRamdisk = TRUE;
 
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("iBSS"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading stage zero..."));
+	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(iBSS)"));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2006,9 +2017,8 @@ void jailbreak()
 #endif
 
 #ifdef _GUI_ENABLE
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("iBEC"));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("iBEC"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading stage one..."));
+	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(iBEC)"));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2025,8 +2035,8 @@ void jailbreak()
 
 	if(iboot == true)  {
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("iBoot"));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading stage two..."));
+		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(iBoot)"));
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2044,8 +2054,8 @@ void jailbreak()
 	}
 
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("waiting..."));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("waiting for usb reset"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Waiting..."));
+	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("Waiting for USB reset."));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2069,8 +2079,8 @@ void jailbreak()
 
 	/* upload logo */
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("boot logo"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading image..."));
+	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(boot logo)"));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2096,8 +2106,8 @@ void jailbreak()
 	/* upload ramdisk */
 	if (ramdisk) {
 #ifdef _GUI_ENABLE_
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("ramdisk"));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading image..."));
+		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(RAM disk)"));
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2132,8 +2142,8 @@ void jailbreak()
 
 	/* upload devicetree */
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("DeviceTree"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading image..."));
+	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(Device Tree)"));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2157,8 +2167,8 @@ void jailbreak()
 
 	/* upload kernel */
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("uploading..."));
-	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("kernelcache"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading Image..."));
+	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(kernelcache)"));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
@@ -2179,7 +2189,7 @@ void jailbreak()
 
 	/* BootX */
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("booting!"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Booting device!"));
 	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
@@ -2192,10 +2202,10 @@ void jailbreak()
 	irecv_send_command(client, "bootx");
 
 #ifdef _GUI_ENABLE_
-	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("complete! :)"));
+	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Congratulations!"));
 	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
-	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("you are now done."));
-	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT("feel free to remove the device."));
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("You are finished with the boot process."));
+	SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT("Feel free to remove the device now."));
 	SendMessage(progress, PBM_SETPOS, 0, 0);
 	InvalidateRect(window, NULL, TRUE);
 #endif
