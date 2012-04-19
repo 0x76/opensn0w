@@ -744,17 +744,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	currentInstance = hInstance;
 
 	/* configure xpwn endian */
-
-	switch (endian()) {
-	case ENDIAN_BIG:
-		endianness = IS_BIG_ENDIAN;
-		break;
-	case ENDIAN_LITTLE:
-		endianness = IS_LITTLE_ENDIAN;
-		break;
-	default:
-		break;
-	}
+	endianness = endian() ? ENDIAN_BIG : ENDIAN_LITTLE; 
+	printf("Running on %s.\n\n", endian_to_string(endian()));
 
 	opensn0w_debug_level = DBGFLTR_MISC;
 	
@@ -2272,16 +2263,7 @@ int main(int argc, char **argv)
 {
 	int c;
 	/* configure xpwn endian */
-	switch (endian()) {
-	case ENDIAN_BIG:
-		endianness = IS_BIG_ENDIAN;
-		break;
-	case ENDIAN_LITTLE:
-		endianness = IS_LITTLE_ENDIAN;
-		break;
-	default:
-		break;
-	}
+	endianness = endian() ? ENDIAN_BIG : ENDIAN_LITTLE; 
 
 	/* set up signals */
 #ifndef _WIN32
