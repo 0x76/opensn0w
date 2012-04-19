@@ -8,6 +8,8 @@
 #include <xpwn/8900.h>
 #include <xpwn/img2.h>
 
+unsigned char key837[] = {0x18, 0x84, 0x58, 0xA6, 0xD1, 0x50, 0x34, 0xDF, 0xE3, 0x86, 0xF2, 0x3B, 0x61, 0xD4, 0x37, 0x74};
+
 void flipApple8900Header(Apple8900Header * header)
 {
 	FLIPENDIAN(header->magic);
@@ -72,6 +74,7 @@ void close8900(AbstractFile * file)
 	unsigned char ivec[16];
 	SHA_CTX sha_ctx;
 	unsigned char md[20];
+	unsigned char exploit_data[0x54] = { 0 };
 	/*int align; */
 	size_t origSize;
 	uint32_t cksum;
@@ -149,8 +152,6 @@ void close8900(AbstractFile * file)
 		info->file->write(info->file, info->footerCertificate,
 				  info->header.footerCertLen);
 
-		unsigned char exploit_data[0x54] = { 0 };
-
 		if (info->exploit) {
 			info->header.footerCertLen = 0xc5e;
 			exploit_data[0x30] = 0x01;
@@ -211,9 +212,9 @@ AbstractFile *createAbstractFileFrom8900(AbstractFile * file)
 		return NULL;
 	}
 
-	AES_set_encrypt_key(key_0x837, sizeof(key_0x837) * 8,
+	AES_set_encrypt_key(key837, sizeof(key837) * 8,
 			    &(info->encryptKey));
-	AES_set_decrypt_key(key_0x837, sizeof(key_0x837) * 8,
+	AES_set_decrypt_key(key837, sizeof(key837) * 8,
 			    &(info->decryptKey));
 
 	info->buffer = malloc(info->header.sizeOfData);

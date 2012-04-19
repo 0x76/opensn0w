@@ -161,7 +161,11 @@ extern "C" {
 		const char *colloquial_name;
 	};
 
+#ifndef MSVC_VER
 	static struct irecv_device irecv_devices[] __attribute__ ((unused)) = {
+#else
+	static struct irecv_device irecv_devices[] = {
+#endif
 		{
 		0, "iPhone1,1", "m68ap", 0, 8900,
 			    "http://appldnld.apple.com.edgesuite.net/content.info.apple.com/iPhone/061-7481.20100202.4orot/iPhone1,1_3.1.3_7E18_Restore.ipsw", "iPhone 2G"},

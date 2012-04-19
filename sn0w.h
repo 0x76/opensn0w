@@ -43,7 +43,12 @@ extern "C" {
 #include <xpwn/plist.h>
 #include <ctype.h>
 #include "debug.h"
+
+#ifndef MSVC_VER
 #include "config.h"
+#else
+#include "config.win32.msvc.h"
+#endif
 
 #define __SN0W_VERSION__ PACKAGE_VERSION
 
@@ -108,6 +113,22 @@ extern patch kernel_nor4;
 
 extern patch devicetree_root_name;
 
+#ifdef MSVC_VER
+#ifndef __cplusplus
+typedef BOOL bool;
+#endif
+#define __builtin_bswap32 _byteswap_ulong	/* msvc bswap variant */
+
+#define snprintf _snprintf	/* ugh */
+#define stat _stat
+#define vsnprintf _vsnprintf
+#define strdup _strdup
+#define unlink _unlink
+
+#endif
+
+
+
 int limera1n();
 int steaks4uce();
 int pwnage2();
@@ -139,6 +160,10 @@ char *strndup (const char *s, size_t n);
 int wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 #endif
 
+#ifndef HAVE_STRCASECMP
+int strcasecmp(const char *s1, const char *s2);
+#endif
+
 #ifdef _WIN32
 bool is_process_running(WCHAR* process_name);
 BOOL GuiUpdateJailbreakStatus(VOID);
@@ -147,6 +172,7 @@ void GuiGdiPlusDeconstructor(void);
 HICON GuiGetIconForPng(const WCHAR *filename);
 HICON GuiGetIconForResource(const WCHAR *bitmapName);
 
+#ifndef MSVC_VER
 BOOL WINAPI GradientFill(
     HDC hdc,
     PTRIVERTEX pVertex,
@@ -154,7 +180,9 @@ BOOL WINAPI GradientFill(
     PVOID pMesh,
     ULONG nMesh,
     ULONG ulMode
-);
+);		
+/* mingw headers suck */
+#endif
 
 #endif
 

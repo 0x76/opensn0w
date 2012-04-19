@@ -739,6 +739,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
 	WNDCLASSEX wc;
 	INITCOMMONCONTROLSEX icex;
+	COLORREF bkColor, fgColor;
 
 	currentInstance = hInstance;
 
@@ -842,9 +843,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	/* subtitle */
 
 	copyright =
-	    CreateWindowEx(0, TEXT("STATIC"),
-			   TEXT
-			   ("opensn0w - " "version "__SN0W_VERSION__ " - by vlo and friends"),
+	    CreateWindowEx(0, TEXT("STATIC"), "opensn0w - " "version "__SN0W_VERSION__ " - by vlo and friends",
 			   WS_VISIBLE | WS_CHILD | SS_NOTIFY, 10, 460, 400, 40,
 			   window, (HMENU) 4, NULL, NULL);
 	SendMessage(copyright, WM_SETFONT,
@@ -855,7 +854,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					TEXT("Segoe UI Light")), TRUE);
 					
 	/* progress */
-	COLORREF bkColor, fgColor;
 	
 	fgColor = RGB(0,143,255);
 	bkColor = RGB(162,214,255);
@@ -1156,14 +1154,14 @@ char *mode_to_string(int mode)
 int poll_device(int mode)
 {
 	irecv_error_t err;
-	static int try;
+	static int ___try;	/* actually a msvc keyword, __try */
 
 	err = irecv_open(&client);
 	if (err != IRECV_E_SUCCESS) {
 		STATUS("Connect the device in %s mode. [%u]\r",
-		       mode_to_string(mode), try);
+		       mode_to_string(mode), ___try);
 		fflush(stdout);
-		try++;
+		___try++;
 		return 1;
 	}
 
@@ -1179,9 +1177,9 @@ int poll_device(int mode)
 		}
 	default:
 		STATUS("Connect the device in %s mode. [%u]\r",
-		       mode_to_string(mode), try);
+		       mode_to_string(mode), ___try);
 		irecv_close(client);
-		try++;
+		___try++;
 		return 1;
 	}
 
@@ -1619,6 +1617,8 @@ void jailbreak()
 	AbstractFile *plistFile;
 	Dictionary *bundle;
 	firmware Firmware;
+	Dictionary *temporaryDict;
+	StringValue *urlKey = NULL;
 
 	jailbreaking = true;
 
@@ -1889,9 +1889,9 @@ void jailbreak()
 		device->product = "s5l8900xall";
 	}
 
-	Dictionary *temporaryDict =
+	temporaryDict =
 	    (Dictionary *) getValueByKey(info, "FirmwareInfo");
-	StringValue *urlKey = NULL;
+
 	if (temporaryDict != NULL)
 		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
 	if (urlKey != NULL) {

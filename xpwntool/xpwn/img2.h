@@ -3,6 +3,9 @@
 
 #define IMG2_SIGNATURE 0x496D6732
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct Img2Header {
 	uint32_t signature;        /* 0x0 */
 	uint32_t imageType;        /* 0x4 */
@@ -18,7 +21,12 @@ typedef struct Img2Header {
 	uint32_t header_checksum;  /* 0x64 */ /* standard crc32 on first 0x64 bytes */
 	uint32_t checksum2;        /* 0x68 */
 	uint8_t  unknown5[0x394]; /* 0x68 */
+#ifndef MSVC_VER
 } __attribute__((__packed__)) Img2Header;
+#else
+} Img2Header;
+#pragma pack(pop)
+#endif
 
 typedef struct InfoImg2 {
 	AbstractFile*		file;

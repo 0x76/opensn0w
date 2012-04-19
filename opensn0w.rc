@@ -1,5 +1,7 @@
-#include "windows.h"
+#include <windows.h>
+#ifndef MSVC_VER
 #include "date.h"
+#endif
 #include <winver.h>
 #include "osverp.h"
 

@@ -244,6 +244,7 @@ off_t getLengthImg3(AbstractFile * file)
 
 void closeImg3(AbstractFile * file)
 {
+	uint8_t ivec[16];
 	Img3Info *info = (Img3Info *) file->data;
 
 	if (info->dirty) {
@@ -252,7 +253,7 @@ void closeImg3(AbstractFile * file)
 			if (info->decryptLast) {
 				sz = info->data->header->size;
 			}
-			uint8_t ivec[16];
+			
 			memcpy(ivec, info->iv, 16);
 			AES_cbc_encrypt(info->data->data, info->data->data,
 					(sz / 16) * 16, &(info->encryptKey),
@@ -290,7 +291,7 @@ setKeyImg3(AbstractFile2 * file, const unsigned int *key,
 	   const unsigned int *iv)
 {
 	Img3Info *info = (Img3Info *) file->super.data;
-
+	uint8_t ivec[16];
 	int i;
 	uint8_t bKey[32];
 	int keyBits = ((AppleImg3KBAGHeader *) info->kbag->data)->key_bits;
@@ -312,7 +313,6 @@ setKeyImg3(AbstractFile2 * file, const unsigned int *key,
 		if (info->decryptLast) {
 			sz = info->data->header->size;
 		}
-		uint8_t ivec[16];
 		memcpy(ivec, info->iv, 16);
 		AES_cbc_encrypt(info->data->data, info->data->data,
 				(sz / 16) * 16, &(info->decryptKey), ivec,
@@ -461,18 +461,22 @@ do24kpwn(Img3Info * info, Img3Element * element, off_t curPos,
 {
 	off_t sizeRequired = (0x24000 + overflow_size) - curPos;
 	off_t dataRequired = sizeRequired - sizeof(AppleImg3Header);
+	uint32_t overflowOffset;
+	uint32_t payloadOffset;
+	uint32_t *i;
+	
 	element->data = realloc(element->data, dataRequired);
 	memset(((uint8_t *) element->data) + element->header->dataSize, 0,
 	       dataRequired - element->header->dataSize);
-	uint32_t overflowOffset = 0x24000 - (curPos + sizeof(AppleImg3Header));
-	uint32_t payloadOffset = 0x23000 - (curPos + sizeof(AppleImg3Header));
+	overflowOffset = 0x24000 - (curPos + sizeof(AppleImg3Header));
+	payloadOffset = 0x23000 - (curPos + sizeof(AppleImg3Header));
 
 	memcpy(((uint8_t *) element->data) + overflowOffset, overflow,
 	       overflow_size);
 	memcpy(((uint8_t *) element->data) + payloadOffset, payload,
 	       payload_size);
 
-	uint32_t *i;
+
 	for (i = (uint32_t *) (((uint8_t *) element->data) + payloadOffset);
 	     i <
 	     (uint32_t *) (((uint8_t *) element->data) + payloadOffset +
@@ -576,6 +580,7 @@ AbstractFile *createAbstractFileFromImg3(AbstractFile * file)
 	AbstractFile *toReturn;
 	Img3Info *info;
 	Img3Element *current;
+	AbstractFile2 *abstractFile2;
 
 	if (!file) {
 		return NULL;
@@ -628,12 +633,16 @@ AbstractFile *createAbstractFileFromImg3(AbstractFile * file)
 	toReturn->close = closeImg3;
 	toReturn->type = AbstractFileTypeImg3;
 
-	AbstractFile2 *abstractFile2 = (AbstractFile2 *) toReturn;
+	abstractFile2 = (AbstractFile2 *) toReturn;
 	abstractFile2->setKey = setKeyImg3;
 
 	if (info->kbag) {
 		uint8_t *keySeed;
 		uint32_t keySeedLen;
+		int i = 0;
+		char outputBuffer[256];
+		char curBuffer[256];
+
 		keySeedLen =
 		    16 +
 		    (((AppleImg3KBAGHeader *) info->kbag->data)->key_bits) / 8;
@@ -682,9 +691,7 @@ AbstractFile *createAbstractFileFromImg3(AbstractFile * file)
 		IOServiceClose(conn);
 		IOObjectRelease(dev);
 #else
-		int i = 0;
-		char outputBuffer[256];
-		char curBuffer[256];
+
 		outputBuffer[0] = '\0';
 		for (i = 0; i < keySeedLen; i++) {
 			sprintf(curBuffer, "%02x", keySeed[i]);

@@ -114,6 +114,8 @@ void *recv_thread(void* c) {
 void init_shell(irecv_client_t client)
 {
 	irecv_error_t error = 0;
+	char *cmd = NULL;
+
 	load_command_history();
 	irecv_event_subscribe(client, IRECV_PROGRESS, &progress_cb, NULL);
 	irecv_event_subscribe(client, IRECV_RECEIVED, &received_cb, NULL);
@@ -143,7 +145,7 @@ void init_shell(irecv_client_t client)
 		char *cmd = readline("> ");
 #else
 		printf("> ");
-		char *cmd = malloc(512);
+		cmd = malloc(512);
 		if(!cmd) {
 			abort();
 		}

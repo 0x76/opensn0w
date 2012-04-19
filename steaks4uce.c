@@ -93,6 +93,7 @@ int steaks4uce()
 {
 	irecv_error_t error = IRECV_E_SUCCESS;
 	int i, ret;
+	int send_size;
 	unsigned char data[0x800];
 	unsigned char payload[] = {
 		/* free'd buffer dlmalloc header: */
@@ -182,7 +183,7 @@ int steaks4uce()
 		return -1;
 	}
 
-	int send_size = 0x100 + sizeof(payload);
+	send_size = 0x100 + sizeof(payload);
 	if(endian() == ENDIAN_BIG) {
 		*((unsigned int *)&payload[0x14]) = send_size;
 		*((unsigned int *)&payload[0x14]) =

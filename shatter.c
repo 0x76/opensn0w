@@ -51,6 +51,8 @@ int shatter()
 		unsigned int shift = 0x80;
 		unsigned int addr_final;
 		uint8_t buf[0x2C000];
+		uint8_t *pbuf;
+
 		memset(buf, 0, 0x2C000);
 
 		DPRINT("_PASS_1_\n");
@@ -79,7 +81,7 @@ int shatter()
 			return 1;
 		}
 
-		uint8_t *pbuf = buf;
+		pbuf = buf;
 		do {
 			ret =
 			    irecv_control_transfer(client, 0x21, 1, 0, 0, pbuf,
@@ -119,6 +121,7 @@ int shatter()
 		unsigned int shift = 0x140;
 		unsigned int addr_final;
 		uint8_t buf[0x2C000];
+		uint8_t *pbuf;
 		memset(buf, 0, 0x2C000);
 
 		DPRINT("_PASS_2_\n");
@@ -150,7 +153,7 @@ int shatter()
 		DPRINT("now uploading exploit.\n");
 		memcpy(buf, shatter_raw, shatter_raw_len);
 
-		uint8_t *pbuf = buf;
+		pbuf = buf;
 		do {
 			ret =
 			    irecv_control_transfer(client, 0x21, 1, 0, 0, pbuf,

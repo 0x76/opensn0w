@@ -412,6 +412,8 @@ void createDictionary(Dictionary * myself, char *xml)
 Dictionary *createDictionaryFromAbstractFile(AbstractFile * file)
 {
 	char *plist = (char *)malloc(file->getLength(file));
+	Dictionary *dict;
+
 	if (plist == NULL) {
 		fprintf(stderr, "Unable to allocate sufficent memory\n");
 		return NULL;
@@ -420,7 +422,7 @@ Dictionary *createDictionaryFromAbstractFile(AbstractFile * file)
 	file->read(file, plist, file->getLength(file));
 	file->close(file);
 
-	Dictionary *dict = createRoot(plist);
+	dict = createRoot(plist);
 	free(plist);
 	return dict;
 }
@@ -683,6 +685,10 @@ void addStringToArray(ArrayValue * array, char *str)
 	array->values[array->size - 1] = curValue;
 }
 
+#ifdef MSVC_VER
+#define strdup _strdup
+#endif
+
 void
 addStringToDictionary(Dictionary * dict, const char *key, const char *value)
 {
@@ -718,10 +724,12 @@ void addIntegerToDictionary(Dictionary * dict, const char *key, int value)
 
 void addValueToDictionary(Dictionary * dict, const char *key, DictValue * value)
 {
+	DictValue *curValue;
+	DictValue *prevValue = NULL;
+
 	value->key = (char *)malloc(sizeof(char) * (strlen(key) + 1));
 	strcpy(value->key, key);
-	DictValue *curValue = dict->values;
-	DictValue *prevValue = NULL;
+	curValue = dict->values;
 
 	while (curValue != NULL) {
 		prevValue = curValue;

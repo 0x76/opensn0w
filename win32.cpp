@@ -18,6 +18,10 @@
  **/
 
 #include "sn0w.h"
+#ifdef MSVC_VER
+#include <objidl.h>		/* damn you Windows Driver Kit! */
+#endif
+
 #include <gdiplus.h>
 
 ULONG_PTR gdiplusToken;

@@ -99,6 +99,8 @@ AbstractFile *openAbstractFile3(AbstractFile * file, const unsigned int *key,
 	uint32_t signatureBE;
 	uint32_t signatureLE;
 
+	AbstractFile *cur;
+
 	if (!file)
 		return NULL;
 
@@ -109,7 +111,6 @@ AbstractFile *openAbstractFile3(AbstractFile * file, const unsigned int *key,
 	FLIPENDIANLE(signatureLE);
 	file->seek(file, 0);
 
-	AbstractFile *cur;
 	if (signatureBE == SIGNATURE_8900) {
 		cur = createAbstractFileFrom8900(file);
 	} else if (signatureLE == IMG2_SIGNATURE) {
@@ -171,12 +172,14 @@ AbstractFile *duplicateAbstractFile2(AbstractFile * file,
 		return duplicateAbstractFile(orig,
 					     duplicateImg2File(orig, backing));
 	} else if (signatureLE == IMG3_SIGNATURE) {
-		AbstractFile2 *img3 =
-		    (AbstractFile2 *) createAbstractFileFromImg3(file);
+		AbstractFile2 *newFile;
+		AbstractFile2 *img3;
+
+		img3 = (AbstractFile2 *) createAbstractFileFromImg3(file);
 		if (key != NULL)
 			img3->setKey(img3, key, iv);
 
-		AbstractFile2 *newFile =
+		newFile =
 		    (AbstractFile2 *) duplicateImg3File((AbstractFile *) img3,
 							backing);
 		if (key != NULL)

@@ -186,6 +186,8 @@ int patch_file(char *filename)
 	char *build_train = strndup(version, 255);
 #endif
 	char *dup = strndup(filename, 255);
+	StringValue *keyValue;
+	StringValue *ivValue;
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -206,8 +208,8 @@ int patch_file(char *filename)
 #endif
 
 	data = get_key_dictionary_from_bundle(tokenizedname);
-	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
-	StringValue *ivValue = (StringValue *) getValueByKey(data, "IV");
+	keyValue = (StringValue *) getValueByKey(data, "Key");
+	ivValue = (StringValue *) getValueByKey(data, "IV");
 
 	if (keyValue) {
 		size_t bytes;
@@ -256,7 +258,7 @@ int patch_file(char *filename)
 	}
 	memset(buffer, 0, strlen(filename) + 8 + strlen(version));
 
-	snprintf(buffer, strlen(filename) + 8 + strlen(version), "%s.pwn", filename);
+	_snprintf(buffer, strlen(filename) + 8 + strlen(version), "%s.pwn", filename);
 	snprintf(buf, strlen(filename) + 8 + strlen(version), "%s.dec", filename);
 	unlink(buf);
 	unlink(buffer);

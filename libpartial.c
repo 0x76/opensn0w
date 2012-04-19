@@ -121,11 +121,15 @@ receiveCentralDirectory(void *data, size_t size, size_t nmemb, ZipInfo * info)
 static size_t
 receiveData(void *data, size_t size, size_t nmemb, void **pFileData)
 {
+	ZipInfo *info;
+	CDFile *file;
+	size_t *progress;
+
 	memcpy(pFileData[0], data, size * nmemb);
 	pFileData[0] = ((char *)pFileData[0]) + (size * nmemb);
-	ZipInfo *info = ((ZipInfo *) pFileData[1]);
-	CDFile *file = ((CDFile *) pFileData[2]);
-	size_t *progress = ((size_t *) pFileData[3]);
+	info = ((ZipInfo *) pFileData[1]);
+	file = ((CDFile *) pFileData[2]);
+	progress = ((size_t *) pFileData[3]);
 
 	if (progress) {
 		count += size * nmemb;
@@ -202,7 +206,12 @@ static CDFile *flipFiles(ZipInfo * info)
 
 ZipInfo *PartialZipInit(const char *url)
 {
+	char sRange[100];
+	char *cur;
+	uint64_t start;
 	ZipInfo *info = (ZipInfo *) malloc(sizeof(ZipInfo));
+	uint64_t end;
+
 	info->url = strdup(url);
 	info->centralDirectoryRecvd = 0;
 	info->centralDirectoryEndRecvd = 0;
@@ -217,11 +226,15 @@ ZipInfo *PartialZipInit(const char *url)
 	curl_easy_setopt(info->hIPSW, CURLOPT_WRITEFUNCTION, dummyReceive);
 
 	if (strncmp(info->url, "file://", 7) == 0) {
-		char path[1024];
+		char path[1024], *filePath;
+		FILE *f;
+		
 		strcpy(path, info->url + 7);
-		char *filePath =
+
+		filePath =
 		    (char *)curl_easy_unescape(info->hIPSW, path, 0, NULL);
-		FILE *f = fopen(filePath, "rb");
+
+		f = fopen(filePath, "rb");
 		if (!f) {
 			curl_free(filePath);
 			curl_easy_cleanup(info->hIPSW);
@@ -237,23 +250,20 @@ ZipInfo *PartialZipInit(const char *url)
 
 		curl_free(filePath);
 	} else {
-		curl_easy_perform(info->hIPSW);
-
 		double dFileLength;
+
+		curl_easy_perform(info->hIPSW);
 		curl_easy_getinfo(info->hIPSW, CURLINFO_CONTENT_LENGTH_DOWNLOAD,
 				  &dFileLength);
 		info->length = dFileLength;
 	}
-
-	char sRange[100];
-	uint64_t start;
 
 	if (info->length > (0xffff + sizeof(EndOfCD)))
 		start = info->length - 0xffff - sizeof(EndOfCD);
 	else
 		start = 0;
 
-	uint64_t end = info->length - 1;
+	end = info->length - 1;
 
 	sprintf(sRange, "%" PRIu64 "-%" PRIu64, start, end);
 
@@ -264,7 +274,6 @@ ZipInfo *PartialZipInit(const char *url)
 	curl_easy_setopt(info->hIPSW, CURLOPT_HTTPGET, 1);
 	curl_easy_perform(info->hIPSW);
 
-	char *cur;
 	for (cur = info->centralDirectoryEnd;
 	     cur < (info->centralDirectoryEnd + (end - start - 1)); cur++) {
 		EndOfCD *candidate = (EndOfCD *) cur;
@@ -361,16 +370,19 @@ CDFile *PartialZipListFiles(ZipInfo * info)
 
 unsigned char *PartialZipGetFile(ZipInfo * info, CDFile * file)
 {
-	count = 0;
 	LocalFile localHeader;
 	LocalFile *pLocalHeader = &localHeader;
-
 	uint64_t start = file->offset;
 	uint64_t end = file->offset + sizeof(LocalFile) - 1;
 	char sRange[100];
-	sprintf(sRange, "%" PRIu64 "-%" PRIu64, start, end);
-
 	void *pFileHeader[] = { pLocalHeader, NULL, NULL, NULL };
+	unsigned char *fileData;
+	size_t progress = 0;
+	void *pFileData[] = { NULL, NULL, NULL, NULL };
+
+	count = 0;
+
+	sprintf(sRange, "%" PRIu64 "-%" PRIu64, start, end);
 
 	curl_easy_setopt(info->hIPSW, CURLOPT_URL, info->url);
 	curl_easy_setopt(info->hIPSW, CURLOPT_FOLLOWLOCATION, 1);
@@ -392,9 +404,12 @@ unsigned char *PartialZipGetFile(ZipInfo * info, CDFile * file)
 	FLIPENDIANLE(localHeader.lenFileName);
 	FLIPENDIANLE(localHeader.lenExtra);
 
-	unsigned char *fileData = (unsigned char *)malloc(file->compressedSize);
-	size_t progress = 0;
-	void *pFileData[] = { fileData, info, file, &progress };
+	fileData = (unsigned char *)malloc(file->compressedSize);
+	
+	pFileData[0] = fileData;
+	pFileData[1] = info;
+	pFileData[2] = file;
+	pFileData[3] = &progress;
 
 	start =
 	    file->offset + sizeof(LocalFile) + localHeader.lenFileName +

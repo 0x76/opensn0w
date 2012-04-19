@@ -16,10 +16,18 @@
 #define WRITE_KEY(a, b, c, d) ((*((a)->keyWrite))(b, c, d))
 #define READ_DATA(a, b, c) ((*((a)->dataRead))(b, c))
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct BTKey {
   uint16_t keyLength;
   unsigned char data[0];
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 
 typedef struct BTKey BTKey;
 
@@ -48,29 +56,59 @@ enum {
     kHFSFirstUserCatalogNodeID  = 16
 };
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSUniStr255 {
     uint16_t  length;
     uint16_t unicode[255];
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct HFSUniStr255 HFSUniStr255;
 typedef const  HFSUniStr255 *ConstHFSUniStr255Param;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusExtentDescriptor {
     uint32_t startBlock;
     uint32_t blockCount;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct HFSPlusExtentDescriptor HFSPlusExtentDescriptor;
 
 typedef HFSPlusExtentDescriptor HFSPlusExtentRecord[8];
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusForkData {
   uint64_t logicalSize;
   uint32_t clumpSize;
   uint32_t totalBlocks;
   HFSPlusExtentRecord extents;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct HFSPlusForkData HFSPlusForkData;
- 
+
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusVolumeHeader {
   uint16_t signature;
   uint16_t version;
@@ -105,7 +143,13 @@ struct HFSPlusVolumeHeader {
   HFSPlusForkData catalogFile;
   HFSPlusForkData attributesFile;
   HFSPlusForkData startupFile;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;
 
 enum {
@@ -115,6 +159,9 @@ enum {
     kBTMapNode        =  2
 };
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct BTNodeDescriptor {
     uint32_t    fLink;
     uint32_t    bLink;
@@ -122,12 +169,21 @@ struct BTNodeDescriptor {
     uint8_t     height;
     uint16_t    numRecords;
     uint16_t    reserved;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct BTNodeDescriptor BTNodeDescriptor;
 
 #define kHFSCaseFolding 0xCF
 #define kHFSBinaryCompare 0xBC
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct BTHeaderRec {
     uint16_t    treeDepth;
     uint32_t    rootNode;
@@ -144,38 +200,79 @@ struct BTHeaderRec {
     uint8_t     keyCompareType;
     uint32_t    attributes;     // long aligned again
     uint32_t    reserved3[16];
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct BTHeaderRec BTHeaderRec;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusExtentKey {
     uint16_t              keyLength;
     uint8_t               forkType;
     uint8_t               pad;
     HFSCatalogNodeID    fileID;
     uint32_t              startBlock;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct HFSPlusExtentKey HFSPlusExtentKey;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusCatalogKey {
     uint16_t              keyLength;
     HFSCatalogNodeID    parentID;
     HFSUniStr255        nodeName;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct HFSPlusCatalogKey HFSPlusCatalogKey;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 #ifndef __MACTYPES__
 struct Point {
   int16_t              v;
   int16_t              h;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
+
 typedef struct Point  Point;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct Rect {
   int16_t              top;
   int16_t              left;
   int16_t              bottom;
   int16_t              right;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct Rect   Rect;
 
 /* OSType is a 32-bit value made by packing four 1-byte characters 
@@ -226,23 +323,42 @@ enum {
     kSymLinkCreator   = 0x72686170  /* 'rhap' */
 };
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct FileInfo {
   OSType    fileType;           /* The type of the file */
   OSType    fileCreator;        /* The file's creator */
   uint16_t    finderFlags;
   Point     location;           /* File's location in the folder. */
   uint16_t    reservedField;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct FileInfo   FileInfo;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct ExtendedFileInfo {
   int16_t    reserved1[4];
   uint16_t    extendedFinderFlags;
   int16_t    reserved2;
   int32_t    putAwayFolderID;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct ExtendedFileInfo   ExtendedFileInfo;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct FolderInfo {
   Rect      windowBounds;       /* The position and dimension of the */
                                 /* folder's window */
@@ -251,16 +367,29 @@ struct FolderInfo {
                                 /* folder. If set to {0, 0}, the Finder */
                                 /* will place the item automatically */
   uint16_t    reservedField;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct FolderInfo   FolderInfo;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct ExtendedFolderInfo {
   Point     scrollPosition;     /* Scroll position (for icon views) */
   int32_t    reserved1;
   uint16_t    extendedFinderFlags;
   int16_t    reserved2;
   int32_t    putAwayFolderID;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
 
 #ifndef _STAT_H_
@@ -298,6 +427,9 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
 
 #define UF_COMPRESSED 040
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusBSDInfo {
     uint32_t  ownerID;
     uint32_t  groupID;
@@ -309,7 +441,12 @@ struct HFSPlusBSDInfo {
         uint32_t  linkCount;
         uint32_t  rawDevice;
     } special;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusBSDInfo HFSPlusBSDInfo;
 
 enum {
@@ -342,6 +479,9 @@ enum {
 	kHFSHasChildLinkMask    = 0x0040
 };
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusCatalogFolder {
     int16_t              recordType;
     uint16_t              flags;
@@ -357,9 +497,17 @@ struct HFSPlusCatalogFolder {
     ExtendedFolderInfo  finderInfo;
     uint32_t              textEncoding;
     uint32_t              folderCount;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusCatalogFolder HFSPlusCatalogFolder;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusCatalogFile {
     int16_t              recordType;
     uint16_t              flags;
@@ -378,15 +526,28 @@ struct HFSPlusCatalogFile {
  
     HFSPlusForkData     dataFork;
     HFSPlusForkData     resourceFork;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusCatalogFile HFSPlusCatalogFile;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusCatalogThread {
     int16_t              recordType;
     int16_t              reserved;
     HFSCatalogNodeID    parentID;
     HFSUniStr255        nodeName;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusCatalogThread HFSPlusCatalogThread;
 
 enum {
@@ -395,11 +556,19 @@ enum {
 	kHFSPlusAttrExtents	= 0x30
 };
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusAttrForkData {
 	uint32_t 	recordType;
 	uint32_t 	reserved;
 	HFSPlusForkData theFork;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusAttrForkData HFSPlusAttrForkData;
 
 struct HFSPlusAttrExtents {
@@ -409,12 +578,20 @@ struct HFSPlusAttrExtents {
 };
 typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusAttrData {
 	uint32_t    recordType;
 	uint32_t    reserved[2];
 	uint32_t    size;
 	uint8_t     data[0];
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusAttrData HFSPlusAttrData;
 
 union HFSPlusAttrRecord {
@@ -425,13 +602,21 @@ union HFSPlusAttrRecord {
 };
 typedef union HFSPlusAttrRecord HFSPlusAttrRecord;
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusAttrKey {
 	uint16_t     keyLength;
 	uint16_t     pad;
 	uint32_t     fileID;
 	uint32_t     startBlock;
 	HFSUniStr255 name;
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusAttrKey HFSPlusAttrKey;
 
 enum {
@@ -441,10 +626,18 @@ enum {
 
 #endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 struct HFSPlusCatalogRecord {
   int16_t recordType;
   unsigned char data[0];
+#ifndef MSVC_VER
 } __attribute__((__packed__));
+#else
+};
+#pragma pack(pop)
+#endif
 typedef struct HFSPlusCatalogRecord HFSPlusCatalogRecord;
 
 struct CatalogRecordList {

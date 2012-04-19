@@ -35,6 +35,21 @@
 extern char endianness;
 
 #ifndef LIBPARTIAL_H
+#ifdef MSVC_VER
+#define inline	__forceinline	/* damn you microsoft */
+#define off64_t size_t 
+#undef fseeko
+#define fseeko fseek
+#undef ftello
+#define ftello ftell
+#pragma warning(disable:4100)	/* unreferenced formal parameter */
+#endif
+#endif
+
+#ifndef LIBPARTIAL_H
+
+
+
 static inline void flipEndian(unsigned char* x, int length) {
   int i;
   unsigned char tmp;
@@ -66,9 +81,9 @@ static inline void flipEndianLE(unsigned char* x, int length) {
 }
 
 static inline void hexToBytes(const char* hex, uint8_t** buffer, size_t* bytes) {
+	size_t i;	/* note: msvc likes things being here */
 	*bytes = strlen(hex) / 2;
 	*buffer = (uint8_t*) malloc(*bytes);
-	size_t i;
 	for(i = 0; i < *bytes; i++) {
 		uint32_t byte;
 		sscanf(hex, "%2x", &byte);
@@ -78,9 +93,9 @@ static inline void hexToBytes(const char* hex, uint8_t** buffer, size_t* bytes) 
 }
 
 static inline void hexToInts(const char* hex, unsigned int** buffer, size_t* bytes) {
+	size_t i;
 	*bytes = strlen(hex) / 2;
 	*buffer = (unsigned int*) malloc((*bytes) * sizeof(int));
-	size_t i;
 	for(i = 0; i < *bytes; i++) {
 		sscanf(hex, "%2x", &((*buffer)[i]));
 		hex += 2;

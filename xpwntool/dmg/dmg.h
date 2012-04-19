@@ -53,19 +53,38 @@ enum {
 	kUDIFPartitionImageType = 2
 };
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t type;
 	uint32_t size;
 	uint32_t data[0x20];
+#ifndef MSVC_VER
 } __attribute__((__packed__)) UDIFChecksum;
+#else
+} UDIFChecksum;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t data1; /* smallest */
 	uint32_t data2;
 	uint32_t data3;
 	uint32_t data4; /* largest */
+#ifndef MSVC_VER
 } __attribute__((__packed__)) UDIFID;
+#else
+} UDIFID;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t fUDIFSignature;
 	uint32_t fUDIFVersion;
@@ -98,8 +117,16 @@ typedef struct {
 	uint32_t reserved3;
 	uint32_t reserved4;
 	
+#ifndef MSVC_VER
 } __attribute__((__packed__)) UDIFResourceFile;
+#else
+} UDIFResourceFile;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t type;
 	uint32_t reserved;
@@ -107,8 +134,16 @@ typedef struct {
 	uint64_t sectorCount;
 	uint64_t compOffset;
 	uint64_t compLength;
+#ifndef MSVC_VER
 } __attribute__((__packed__)) BLKXRun;
+#else
+} BLKXRun;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint16_t version; /* set to 5 */
 	uint32_t isHFS; /* first dword of v53(ImageInfoRec): Set to 1 if it's a HFS or HFS+ partition -- duh. */
@@ -121,14 +156,30 @@ typedef struct {
 	uint32_t unknown4; /* always seems to be 0 for UDIF */
 	uint16_t volumeSignature; /* HX in our case */
 	uint16_t sizePresent; /* always set to 1 */
+#ifndef MSVC_VER
 } __attribute__((__packed__)) SizeResource;
+#else
+} SizeResource;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint16_t version; /* set to 1 */
 	uint32_t type; /* set to 0x2 for MKBlockChecksum */
 	uint32_t checksum;
+#ifndef MSVC_VER
 } __attribute__((__packed__)) CSumResource;
+#else
+} CSumResource;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct NSizResource {
 	char isVolume;
 	unsigned char* sha1Digest;
@@ -139,11 +190,19 @@ typedef struct NSizResource {
 	uint32_t version;
 	uint32_t volumeSignature;
 	struct NSizResource* next;
+#ifndef MSVC_VER
+} __attribute__((__packed__)) NSizResource;
+#else
 } NSizResource;
+#pragma pack(pop)
+#endif
 
 #define DDM_DESCRIPTOR 0xFFFFFFFF
 #define ENTIRE_DEVICE_DESCRIPTOR 0xFFFFFFFE
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t fUDIFBlocksSignature;
 	uint32_t infoVersion;
@@ -165,14 +224,30 @@ typedef struct {
 	
 	uint32_t blocksRunCount;
 	BLKXRun runs[0];
+#ifndef MSVC_VER
 } __attribute__((__packed__)) BLKXTable;
+#else
+} BLKXTable;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t ddBlock;
 	uint16_t ddSize;
 	uint16_t ddType;
+#ifndef MSVC_VER
 } __attribute__((__packed__)) DriverDescriptor;
+#else
+} DriverDescriptor;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint16_t pmSig;
 	uint16_t pmSigPad;
@@ -194,8 +269,16 @@ typedef struct {
 	unsigned char pmProcessor[16];
 	uint32_t bootCode;
 	uint16_t pmPad[186];
+#ifndef MSVC_VER
 } __attribute__((__packed__)) Partition;
+#else
+} Partition;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint16_t sbSig;
 	uint16_t sbBlkSize;
@@ -208,7 +291,13 @@ typedef struct {
 	uint16_t ddSize;
 	uint16_t ddType;
 	DriverDescriptor ddPad[0];
+#ifndef MSVC_VER
 } __attribute__((__packed__)) DriverDescriptorRecord;
+#else
+} DriverDescriptorRecord;
+#pragma pack(pop)
+#endif
+
 
 typedef struct ResourceData {
 	uint32_t attributes;
