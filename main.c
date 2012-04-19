@@ -740,6 +740,21 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	WNDCLASSEX wc;
 	INITCOMMONCONTROLSEX icex;
 	COLORREF bkColor, fgColor;
+#ifdef MSVC_VER
+	int ConsoleHandle;
+	long StdoutHandle;
+	FILE *stdoutNew;
+	
+	AllocConsole();
+	StdoutHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+	ConsoleHandle = _open_osfhandle(StdoutHandle, _O_TEXT);
+	stdoutNew = _fdopen(ConsoleHandle, "w");
+	*stdout = *stdoutNew;
+	*stderr = *stdoutNew;
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
+	
+#endif
 
 	currentInstance = hInstance;
 
