@@ -34,8 +34,9 @@
 #include <inttypes.h>
 #endif
 
-#include "libpartial.h"
 #include "sn0w.h"
+#include "libpartial.h"
+
 
 static size_t count = 0;
 
