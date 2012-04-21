@@ -290,7 +290,7 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 	
 	if(!autoboot) {
 		SendMessage(title, WM_SETTEXT, 0, (LPARAM) TEXT("let's jailbreak iOS"));
-		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("We identified your device as a:"));
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("We identified your device as an:"));
 		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) device->colloquial_name);
 		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
 		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT("Please select a firmware bundle."));
