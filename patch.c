@@ -258,7 +258,7 @@ int patch_file(char *filename)
 	}
 	memset(buffer, 0, strlen(filename) + 8 + strlen(version));
 
-	_snprintf(buffer, strlen(filename) + 8 + strlen(version), "%s.pwn", filename);
+	snprintf(buffer, strlen(filename) + 8 + strlen(version), "%s.pwn", filename);
 	snprintf(buf, strlen(filename) + 8 + strlen(version), "%s.dec", filename);
 	unlink(buf);
 	unlink(buffer);
