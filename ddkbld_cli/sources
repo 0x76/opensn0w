@@ -1,0 +1,58 @@
+TARGETNAME=opensn0w
+TARGETTYPE=PROGRAM
+UMTYPE=windows
+UMENTRY=winmain
+
+USE_MSVCRT=1
+
+MSC_WARNING_LEVEL=/W4
+
+C_DEFINES=$(C_DEFINES) -DMSVC_VER
+INCLUDES=../;../xpwntool
+#C_DEFINES=$(C_DEFINES) -DMBCS -D_MBCS
+
+SOURCES=..\8900.c \
+		..\abstractfile.c \
+		..\base64.c \
+		..\bsdiff.c \
+		..\crtsup.c \
+		..\img2.c \
+		..\img3.c \
+		..\keys.c \
+		..\libirecovery.c \
+		..\libpartial.c \
+		..\limera1n.c \
+		..\lzss.c \
+		..\lzssfile.c \
+		..\main.c \
+		..\nor_files.c \
+		..\patch.c \
+		..\patches.c \
+		..\plist.c \
+		..\pwnage2.c \
+		..\shatter.c \
+		..\shell.c \
+		..\sighldr.c \
+		..\steaks4uce.c \
+		..\win32.cpp \
+		..\opensn0w.rc
+
+TARGETLIBS=\
+        $(SDK_LIB_PATH)\comdlg32.lib  \
+        $(SDK_LIB_PATH)\kernel32.lib  \
+        $(SDK_LIB_PATH)\ntdll.lib     \
+        $(SDK_LIB_PATH)\ole32.lib     \
+        $(SDK_LIB_PATH)\setupapi.lib  \
+        $(SDK_LIB_PATH)\shell32.lib   \
+        $(SDK_LIB_PATH)\gdi32.lib     \
+		$(SDK_LIB_PATH)\msimg32.lib   \
+		$(SDK_LIB_PATH)\comctl32.lib  \
+        $(SDK_LIB_PATH)\user32.lib	  \
+		$(SDK_LIB_PATH)\gdiplus.lib	  \
+		$(SDK_LIB_PATH)\psapi.lib	  \
+		$(MAKEDIR)\zlib.lib \
+		$(MAKEDIR)\libeay32.lib \
+		$(MAKEDIR)\ssleay32.lib \
+		$(MAKEDIR)\zlib.lib \
+		$(MAKEDIR)\curl.lib
+
