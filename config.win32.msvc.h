@@ -292,7 +292,7 @@
 /* #undef _EMBEDDED_ENABLE_ */
 
 /* Uncomment to enable GUI support. */
-#define _GUI_ENABLE_ 1
+/* #define _GUI_ENABLE_ 1 */
 
 /* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
 /* #undef _LARGEFILE_SOURCE */
