@@ -29,7 +29,10 @@ __FBSDID
     ("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:06 cperciva Exp $");
 #endif
 
+#ifndef MSVC_VER
 #include "config.h"
+#endif
+
 #ifdef HAVE_LIBBZ2
 
 #include <bzlib.h>
