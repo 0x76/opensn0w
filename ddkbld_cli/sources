@@ -1,7 +1,7 @@
-TARGETNAME=opensn0w
+TARGETNAME=opensn0w_cli
 TARGETTYPE=PROGRAM
-UMTYPE=windows
-UMENTRY=winmain
+UMTYPE=console
+UMENTRY=main
 
 USE_MSVCRT=1
 

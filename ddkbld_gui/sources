@@ -1,4 +1,4 @@
-TARGETNAME=opensn0w
+TARGETNAME=opensn0w_gui
 TARGETTYPE=PROGRAM
 UMTYPE=windows
 UMENTRY=winmain
