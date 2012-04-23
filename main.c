@@ -2273,8 +2273,11 @@ void jailbreak()
  * \param argc Argument count.
  * \param argv Argument variables.      
  */
-
+#ifdef MSVC_VER
+int __cdecl main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
 	int c;
 	/* configure xpwn endian */
