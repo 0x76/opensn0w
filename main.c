@@ -115,6 +115,9 @@ static const char *image_names[] = {
 PartialZipProgressCallback callback = NULL;
 
 #ifdef _WIN32
+
+HINSTANCE currentInstance;
+
 #ifdef _GUI_ENABLE_
 char *szClassName = TEXT("WindowsApp");
 HWND window = NULL;
@@ -143,7 +146,7 @@ BOOL jbcomplete = FALSE;
 INT DfuTimer = 0;
 INT DfuPhase = 0;
 INT DfuCountdown = 0;
-HINSTANCE currentInstance;
+
 
 LPCSTR DfuText[] = {
 	"Let's start by turning off the device.",
