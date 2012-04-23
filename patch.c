@@ -335,7 +335,12 @@ int patch_file(char *filename)
 
 	newFile->close(newFile);
 
-	free(buffer);
+#ifndef MSVC_VER
+	free(buffer);	/* I know this is strange, and malpractice, not freeing the buffer...
+			   but on MSVC, and my Windows 7 installation, the heap handler tends to 
+			   destroy the program state here. I have no clue why. -- acfrazier */
+			/* addendum: At most, like 1kB will be lost. Does it really matter? */
+#endif
 
 	return 0;
 }
