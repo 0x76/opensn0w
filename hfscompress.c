@@ -41,6 +41,10 @@ static int compressedRead(io_func* io, off_t location, size_t size, void *buffer
 	size_t toRead;
 
 	while(size > 0) {
+		// Try to cache
+		uLongf actualSize;
+		uint32_t block;
+		uint8_t *compressed;
 		if(data->cached && location >= data->cachedStart && location < data->cachedEnd) {
 			if((data->cachedEnd - location) < size)
 				toRead = data->cachedEnd - location;
@@ -57,10 +61,9 @@ static int compressedRead(io_func* io, off_t location, size_t size, void *buffer
 		if(size == 0)
 			break;
 
-		// Try to cache
-		uLongf actualSize;
-		uint32_t block = location / 0x10000;
-		uint8_t* compressed = (uint8_t*) malloc(data->blocks->blocks[block].size);
+
+		block = location / 0x10000;
+		compressed = (uint8_t*) malloc(data->blocks->blocks[block].size);
 		if(!READ(data->io, data->rsrcHead.headerSize + sizeof(uint32_t) + data->blocks->blocks[block].offset, data->blocks->blocks[block].size, compressed)) {
 			hfs_panic("error reading");
 		}
@@ -113,6 +116,9 @@ static void closeHFSPlusCompressed(io_func* io) {
 		CLOSE(data->io);
 
 	if(data->dirty) {
+		uint32_t numBlocks, blocksSize, curFileOffset, i;
+		uint8_t *buffer;
+		
 		if(data->blocks)
 			free(data->blocks);
 
@@ -120,8 +126,8 @@ static void closeHFSPlusCompressed(io_func* io) {
 		data->decmpfs->flags = 0x4;
 		data->decmpfsSize = sizeof(HFSPlusDecmpfs);
 
-		uint32_t numBlocks = (data->decmpfs->size + 0xFFFF) / 0x10000;
-		uint32_t blocksSize = sizeof(HFSPlusCmpfRsrcBlockHead) + (numBlocks * sizeof(HFSPlusCmpfRsrcBlock));
+		numBlocks = (data->decmpfs->size + 0xFFFF) / 0x10000;
+		blocksSize = sizeof(HFSPlusCmpfRsrcBlockHead) + (numBlocks * sizeof(HFSPlusCmpfRsrcBlock));
 		data->blocks = (HFSPlusCmpfRsrcBlockHead*) malloc(sizeof(HFSPlusCmpfRsrcBlockHead) + (numBlocks * sizeof(HFSPlusCmpfRsrcBlock)));
 		data->blocks->numBlocks = numBlocks;
 		data->blocks->dataSize = blocksSize - sizeof(uint32_t); // without the front dataSize in BlockHead.
@@ -131,12 +137,12 @@ static void closeHFSPlusCompressed(io_func* io) {
 		data->rsrcHead.totalSize = data->rsrcHead.headerSize + data->rsrcHead.dataSize;
 		data->rsrcHead.flags = 0x32;
 
-		uint8_t* buffer = (uint8_t*) malloc((0x10000 * 1.1) + 12);
-		uint32_t curFileOffset = data->blocks->dataSize;
-		uint32_t i;
+		buffer = (uint8_t*) malloc((0x10000 * 1.1) + 12);
+		curFileOffset = data->blocks->dataSize;
 		for(i = 0; i < numBlocks; i++) {
+			uLongf actualSize;
 			data->blocks->blocks[i].offset = curFileOffset;
-			uLongf actualSize = (0x10000 * 1.1) + 12;
+			actualSize = (0x10000 * 1.1) + 12;
 			compress(buffer, &actualSize, data->cached + (0x10000 * i),
 					(data->decmpfs->size - (0x10000 * i)) > 0x10000 ? 0x10000 : (data->decmpfs->size - (0x10000 * i))); 
 			data->blocks->blocks[i].size = actualSize;
@@ -169,6 +175,8 @@ static void closeHFSPlusCompressed(io_func* io) {
 		free(buffer);
 		
 		if(data->decmpfs->flags == 0x4) {
+			HFSPlusCmpfEnd end;
+			
 			flipRsrcHead(&data->rsrcHead);
 			WRITE(data->io, 0, sizeof(HFSPlusCmpfRsrcHead), &data->rsrcHead);
 			flipRsrcHead(&data->rsrcHead);
@@ -183,7 +191,7 @@ static void closeHFSPlusCompressed(io_func* io) {
 				flipRsrcBlock(&data->blocks->blocks[i]);
 			}
 
-			HFSPlusCmpfEnd end;
+
 			memset(&end, 0, sizeof(HFSPlusCmpfEnd));
 			end.unk1 = 0x1C;
 			end.unk2 = 0x32;
@@ -258,6 +266,8 @@ io_func* openHFSPlusCompressed(Volume* volume, HFSPlusCatalogFile* file) {
 		data->cachedStart = 0;
 		data->cachedEnd = actualSize;
 	} else {
+		int i;
+		
 		data->io = openRawFile(file->fileID, &file->resourceFork, (HFSPlusCatalogRecord*)file, volume);
 		if(!data->io) {
 			hfs_panic("error opening resource fork");
@@ -281,7 +291,6 @@ io_func* openHFSPlusCompressed(Volume* volume, HFSPlusCatalogFile* file) {
 			hfs_panic("error reading");
 		}
 
-		int i;
 		for(i = 0; i < data->blocks->numBlocks; i++) {
 			flipRsrcBlock(&data->blocks->blocks[i]);
 		}

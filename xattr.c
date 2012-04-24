@@ -251,7 +251,7 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 int setAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t* data, size_t size) {
 	HFSPlusAttrKey key;
 	HFSPlusAttrData* record;
-	int ret, exact;
+	int ret;
 
 	if(!volume->attrTree)
 		return FALSE;
@@ -326,9 +326,10 @@ XAttrList* getAllExtendedAttributes(HFSCatalogNodeID CNID, Volume* volume) {
 			currentKey = (HFSPlusAttrKey*) READ_KEY(tree, recordOffset, tree->io);
 
 			if(currentKey->fileID == CNID) {
+				int i;
 				item = (XAttrList*) malloc(sizeof(XAttrList));
 				item->name = (char*) malloc(currentKey->name.length + 1);
-				int i;
+
 				for(i = 0; i < currentKey->name.length; i++) {
 					item->name[i] = currentKey->name.unicode[i];
 				}

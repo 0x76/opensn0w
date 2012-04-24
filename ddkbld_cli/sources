@@ -35,6 +35,18 @@ SOURCES=..\8900.c \
 		..\sighldr.c \
 		..\steaks4uce.c \
 		..\win32.cpp \
+		..\btree.c \
+		..\catalog.c \
+		..\extents.c \
+		..\fastunicodecompare.c \
+		..\flatfile.c \
+		..\hfs.c \
+		..\hfscompress.c \
+		..\hfslib.c \
+		..\rawfile.c \
+		..\utility.c \
+		..\volume.c \
+		..\xattr.c \
 		..\opensn0w.rc
 
 TARGETLIBS=\

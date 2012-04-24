@@ -6,6 +6,13 @@
 
 #define CMPFS_MAGIC 0x636D7066
 
+#ifdef MSVC_VER
+#define __attribute__(x) 
+#endif
+
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct HFSPlusDecmpfs {
 	uint32_t magic;
 	uint32_t flags;
@@ -41,6 +48,9 @@ typedef struct HFSPlusCmpfEnd {
 	uint64_t size;
 	uint32_t unk4;
 } __attribute__ ((packed)) HFSPlusCmpfEnd;
+#ifdef MSVC_VER
+#pragma pack(pop)
+#endif
 
 typedef struct HFSPlusCompressed {
 	Volume* volume;

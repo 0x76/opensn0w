@@ -12,6 +12,14 @@
 
 #define BUFSIZE 1024*1024
 
+#ifdef MSVC_VER
+#include <direct.h>
+#define getcwd _getcwd
+#define chdir _chdir
+#define stat _stat
+#define mkdir(x,y) _mkdir(x)
+#endif
+
 static int silence = 0;
 
 void hfs_setsilence(int s) {
@@ -581,6 +589,7 @@ void displayFolder(HFSCatalogNodeID folderID, Volume* volume) {
 void displayFileLSLine(Volume* volume, HFSPlusCatalogFile* file, const char* name) {
 	time_t fileTime;
 	struct tm *date;
+	XAttrList* next, *attrs;
 	HFSPlusDecmpfs* compressData;
 	
 	printf("%06o ", file->permissions.fileMode);
@@ -605,8 +614,7 @@ void displayFileLSLine(Volume* volume, HFSPlusCatalogFile* file, const char* nam
 	}
 	printf("%s\n", name);
 
-	XAttrList* next;
-	XAttrList* attrs = getAllExtendedAttributes(file->fileID, volume);
+	attrs = getAllExtendedAttributes(file->fileID, volume);
 	if(attrs != NULL) {
 		printf("Extended attributes\n");
 		while(attrs != NULL) {
@@ -646,9 +654,6 @@ void hfs_untar(Volume* volume, AbstractFile* tarFile) {
 	char block[512];
 
 	while(curRecord < tarSize) {
-		tarFile->seek(tarFile, curRecord);
-		tarFile->read(tarFile, block, 512);
-
 		uint32_t mode = 0;
 		char* fileName = NULL;
 		const char* target = NULL;
@@ -656,6 +661,11 @@ void hfs_untar(Volume* volume, AbstractFile* tarFile) {
 		uint32_t size;
 		uint32_t uid;
 		uint32_t gid;
+		HFSPlusCatalogRecord* record;
+		
+		tarFile->seek(tarFile, curRecord);
+		tarFile->read(tarFile, block, 512);
+
 
 		sscanf(&block[100], "%o", &mode);
 		fileName = &block[0];
@@ -678,7 +688,7 @@ void hfs_untar(Volume* volume, AbstractFile* tarFile) {
 		if(fileName[strlen(fileName) - 1] == '/')
 			fileName[strlen(fileName) - 1] = '\0';
 
-		HFSPlusCatalogRecord* record = getRecordFromPath3(fileName, volume, NULL, NULL, TRUE, FALSE, kHFSRootFolderID);
+		record = getRecordFromPath3(fileName, volume, NULL, NULL, TRUE, FALSE, kHFSRootFolderID);
 		if(record) {
 			if(record->recordType == kHFSPlusFolderRecord || type == 5) {
 				if(!silence)
@@ -693,12 +703,15 @@ void hfs_untar(Volume* volume, AbstractFile* tarFile) {
 		}
 
 		if(type == 0) {
+			AbstractFile* inFile;
+			void* buffer;
+			
 			if(!silence)
 				printf("file: %s (%04o), size = %d\n", fileName, mode, size);
-			void* buffer = malloc(size);
+			buffer = malloc(size);
 			tarFile->seek(tarFile, curRecord + 512);
 			tarFile->read(tarFile, buffer, size);
-			AbstractFile* inFile = createAbstractFileFromMemory(&buffer, size);
+			inFile = createAbstractFileFromMemory(&buffer, size);
 			add_hfs(volume, inFile, fileName);
 			free(buffer);
 		} else if(type == 5) {

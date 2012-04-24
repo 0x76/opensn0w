@@ -3,6 +3,10 @@
 #include <time.h>
 #include <hfs/hfsplus.h>
 
+#ifdef MSVC_VER
+#define strdup _strdup
+#endif
+
 static inline void flipBSDInfo(HFSPlusBSDInfo* info) {
   FLIPENDIAN(info->ownerID);
   FLIPENDIAN(info->groupID);
@@ -795,7 +799,7 @@ int removeFile(const char* fileName, Volume* volume) {
 	HFSPlusCatalogRecord* record;
 	HFSPlusCatalogKey key;
 	io_func* io;
-	HFSPlusCatalogFolder* parentFolder;
+	HFSPlusCatalogFolder* parentFolder = NULL;
 
 	record = getRecordFromPath3(fileName, volume, NULL, &key, TRUE, FALSE, kHFSRootFolderID);
 	if(record != NULL) {
@@ -812,13 +816,14 @@ int removeFile(const char* fileName, Volume* volume) {
 		}
 
 		if(record->recordType == kHFSPlusFileRecord) {
+			XAttrList* next, *attrs;
 			io = openRawFile(((HFSPlusCatalogFile*)record)->fileID, &((HFSPlusCatalogFile*)record)->dataFork, record, volume);
 			allocate((RawFile*)io->data, 0);
 			CLOSE(io);
 
 			removeFromBTree(volume->catalogTree, (BTKey*)(&key));
-			XAttrList* next;
-			XAttrList* attrs = getAllExtendedAttributes(((HFSPlusCatalogFile*)record)->fileID, volume);
+			
+			attrs = getAllExtendedAttributes(((HFSPlusCatalogFile*)record)->fileID, volume);
 			if(attrs != NULL) {
 				while(attrs != NULL) {
 					next = attrs->next;
@@ -843,9 +848,9 @@ int removeFile(const char* fileName, Volume* volume) {
 				ASSERT(FALSE, "folder not empty");
 				return FALSE;
 			} else {
+				XAttrList *next, *attrs;
 				removeFromBTree(volume->catalogTree, (BTKey*)(&key));
-				XAttrList* next;
-				XAttrList* attrs = getAllExtendedAttributes(((HFSPlusCatalogFolder*)record)->folderID, volume);
+				attrs = getAllExtendedAttributes(((HFSPlusCatalogFolder*)record)->folderID, volume);
 				if(attrs != NULL) {
 					while(attrs != NULL) {
 						next = attrs->next;
@@ -874,7 +879,8 @@ int removeFile(const char* fileName, Volume* volume) {
 
 		return TRUE;
 	} else {
-		free(parentFolder);
+		if(parentFolder)
+			free(parentFolder);
 		ASSERT(FALSE, "cannot find record");
 		return FALSE;
 	}

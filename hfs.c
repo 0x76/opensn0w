@@ -10,7 +10,15 @@
 #include "abstractfile.h"
 #include <inttypes.h>
 
-char endianness;
+extern char endianness;
+
+#ifdef MSVC_VER
+#include <direct.h>
+#define getcwd _getcwd
+#define chdir _chdir
+#define stat _stat
+#define mkdir _mkdir
+#endif
 
 
 void cmd_ls(Volume* volume, int argc, const char *argv[]) {
