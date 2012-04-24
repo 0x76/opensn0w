@@ -66,8 +66,9 @@ opensn0w_SOURCES = 8900.c \
 	hfscompress.c \
 	hfslib.c \
 	rawfile.c \
-	utility.c \ 
+	utility.c \
 	volume.c \
+	ramdisk.c \
 	xattr.c
 
 

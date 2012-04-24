@@ -158,6 +158,8 @@ int pwnage2();
 int endian();
 int shatter();
 void dos_cursor();
+int hfs_main(int argc, const char *argv[]);
+int fetch_image(const char *path, const char *output);
 char* endian_to_string(int endian);
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
