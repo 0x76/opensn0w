@@ -56,7 +56,20 @@ opensn0w_SOURCES = 8900.c \
 	shell.c \
 	sighldr.c \
 	steaks4uce.c \
-	bsdiff.c
+	bsdiff.c \
+	btree.c \
+	catalog.c \
+	extents.c \
+	fastunicodecompare.c \
+	flatfile.c \
+	hfs.c \
+	hfscompress.c \
+	hfslib.c \
+	rawfile.c \
+	utility.c \ 
+	volume.c \
+	xattr.c
+
 
 .rc.o:
 	@echo "  WRES  " $<

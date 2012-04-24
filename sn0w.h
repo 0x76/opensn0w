@@ -89,7 +89,7 @@ void critical_error_handler(int sig_num, siginfo_t * info, void *ucontext);
 #endif
 
 typedef enum ____endian_t {
-	ENDIAN_BIG = 1,
+	ENDIAN_BIG = 0,
 	ENDIAN_LITTLE
 } __endian_t;
 

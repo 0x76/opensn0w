@@ -20,6 +20,7 @@
  **/
 
 #include "common.h"
+#include "debug.h"
 #include <xpwn/8900.h>
 #include <xpwn/img2.h>
 #include <xpwn/img3.h>
@@ -40,7 +41,6 @@ AbstractFile *openAbstractFile(AbstractFile * file)
 	FLIPENDIAN(signatureBE);
 	FLIPENDIANLE(signatureLE);
 	file->seek(file, 0);
-
 	if (signatureBE == SIGNATURE_8900) {
 		return openAbstractFile(createAbstractFileFrom8900(file));
 	} else if (signatureLE == IMG2_SIGNATURE) {
@@ -118,6 +118,7 @@ AbstractFile *openAbstractFile3(AbstractFile * file, const unsigned int *key,
 	} else if (signatureLE == IMG3_SIGNATURE) {
 		AbstractFile2 *img3 =
 		    (AbstractFile2 *) createAbstractFileFromImg3(file);
+
 		if (key && iv)
 			img3->setKey(img3, key, iv);
 		cur = (AbstractFile *) img3;
