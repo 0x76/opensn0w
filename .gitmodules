@@ -4,3 +4,6 @@
 [submodule "mythos"]
 	path = mythos
 	url = git://github.com/velocitylimitless/mythos.git
+[submodule "cthulhu"]
+	path = cthulhu
+	url = git://github.com/winocm/cthulhu.git
