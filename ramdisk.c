@@ -42,11 +42,11 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	FILE *fp;
 	int len;
 	char strbuf[255];
-	char *rmall_0[] = {NULL, NULL, "rm", "/usr/local/standalone/firmware/ICE2.Release.bbfw"};
-	char *addall_0[] = {NULL, NULL, "addall", "./mythos/binaries/bin/", "/bin"};
-	char *restored_rm[] = {NULL, NULL, "rm", "/usr/local/bin/restored_external"};
-	char *restored_add[] = {NULL, NULL, "add", "./mythos/binaries/usr/local/bin/restored_external", "/usr/local/bin/"};
-	char *add_libs[] = {NULL, NULL, "addall", "./mythos/binaries/usr/lib", "/usr/lib/"};
+	const char *rmall_0[] = {NULL, NULL, "rm", "/usr/local/standalone/firmware/ICE2.Release.bbfw"};
+	const char *addall_0[] = {NULL, NULL, "addall", "./mythos/binaries/bin/", "/bin"};
+	const char *restored_rm[] = {NULL, NULL, "rm", "/usr/local/bin/restored_external"};
+	const char *restored_add[] = {NULL, NULL, "add", "./mythos/binaries/usr/local/bin/restored_external", "/usr/local/bin/"};
+	const char *add_libs[] = {NULL, NULL, "addall", "./mythos/binaries/usr/lib", "/usr/lib/"};
 
 	snprintf(strbuf, 255, "%s.tmp", filename);
 
@@ -72,7 +72,7 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	len = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	realloc(buffer, len);
+	buffer = realloc(buffer, len);
 	fread(buffer, len, 1, fp);
 	fclose(fp);
 	unlink(buffer);
@@ -95,8 +95,6 @@ int prepare_ramdisk(char* filename) {
 	size_t inDataSize;
 	char *buffer;
 	Dictionary *data;
-	char *tokenizedname;
-	char *dup = strndup(filename, 255);
 	StringValue *keyValue;
 	StringValue *ivValue;
 
@@ -109,8 +107,6 @@ int prepare_ramdisk(char* filename) {
 	}
 
 	DPRINT("getting keys\n");
-
-	tokenizedname = strtok(dup, ".,");
 
 	data = get_key_dictionary_from_bundle("RestoreRamdisk");
 	keyValue = (StringValue *) getValueByKey(data, "Key");
