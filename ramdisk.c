@@ -44,15 +44,13 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	char strbuf[255];
 	const char *rmall_0[] = {NULL, NULL, "rm", "/usr/local/standalone/firmware/ICE2.Release.bbfw"};
 	const char *addall_0[] = {NULL, NULL, "addall", "./mythos/binaries/bin/", "/bin"};
-	const char *restored_rm[] = {NULL, NULL, "rm", "/usr/local/bin/restored_external"};
-	const char *restored_add[] = {NULL, NULL, "add", "./mythos/binaries/usr/local/bin/restored_external", "/usr/local/bin/"};
-	const char *add_libs[] = {NULL, NULL, "addall", "./mythos/binaries/usr/lib", "/usr/lib/"};
+	const char *restored_add[] = {NULL, NULL, "addall", "./mythos/binaries/usr/local/bin", "/usr/local/bin"};
+	const char *add_libs[] = {NULL, NULL, "addall", "./mythos/binaries/usr/lib", "/usr/lib"};
 
 	snprintf(strbuf, 255, "%s.tmp", filename);
 
 	rmall_0[1] = strbuf;
 	addall_0[1] = strbuf;
-	restored_rm[1] = strbuf;
 	restored_add[1] = strbuf;
 	add_libs[1] = strbuf;
 
@@ -63,7 +61,6 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 
 	hfs_main(4, rmall_0);
 	hfs_main(5, addall_0);
-	hfs_main(4, restored_rm);
 	hfs_main(5, restored_add);
 	hfs_main(5, add_libs);
 
