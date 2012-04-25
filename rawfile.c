@@ -230,7 +230,7 @@ static int rawFileWrite(io_func* io,off_t location, size_t size, void *buffer) {
 	blockSize = volume->volumeHeader->blockSize;
 
 	if(rawFile->forkData->logicalSize < (location + size)) {
-		ASSERT(allocate(rawFile, location + size), "allocate");
+		allocate(rawFile, location + size);
 	}
 
 	extent = rawFile->extents;

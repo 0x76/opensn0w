@@ -64,6 +64,7 @@ typedef enum _DFU_PHASES {
 			"   -D                 Dry run, still requires DFU mode.\n" \
 			"   -h                 Help.\n" \
 			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
+			"   -j                 Jailbreak.\n" \
 			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
 			"   -k kernelcache     Boot using specified kernel.\n" \
 			"   -p plist           Use firmware plist\n" \
@@ -176,6 +177,7 @@ char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
 volatile int iboot = false, dry_run = false;
 volatile int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
+int do_jailbreak = false;
 
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
@@ -612,6 +614,7 @@ LRESULT CALLBACK GuiWindowProcedure(HWND hWnd, UINT uMessage, WPARAM wParam,
 		break;
 	case WM_COMMAND:
 		if (LOWORD(wParam) == 1) {
+			do_jailbreak = true;
 			PerformJailbreak();
 		} else if (LOWORD(wParam) == 4) {
 			MessageBox(hWnd,
@@ -2167,6 +2170,9 @@ void jailbreak()
 	client = irecv_reconnect(client, 2);
 #endif
 
+	if(do_jailbreak)
+		make_ramdisk(Firmware.item[RESTORERAMDISK]);
+
 	/* upload ramdisk */
 	if (ramdisk) {
 #ifdef _GUI_ENABLE_
@@ -2323,10 +2329,13 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "DIYvZdAhBzsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "DIYvZdAhBzjsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'I':
 			iboot = true;
+			break;
+		case 'j':
+			do_jailbreak = true;
 			break;
 		case 'D':
 			dry_run = true;

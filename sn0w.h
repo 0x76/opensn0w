@@ -260,6 +260,8 @@ typedef struct _firmware {
 	uint8_t items;
 } firmware, *firmware_t;
 
+int make_ramdisk(firmware_item item);
+
 int upload_image(firmware_item item, int mode, int patch, int userprovided);
 
 #if defined(_GUI_ENABLE_) && !defined(_WIN32)

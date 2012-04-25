@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <hfs/hfsplus.h>
-
+#ifdef _WIN32
+#define exit(x) system("pause"), exit(0)
+#endif
 void hfs_panic(const char* hfs_panicString) {
   fprintf(stderr, "%s\n", hfs_panicString);
   exit(1);

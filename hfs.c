@@ -9,7 +9,7 @@
 #include <hfs/hfslib.h>
 #include "abstractfile.h"
 #include <inttypes.h>
-
+#include "debug.h"
 extern char endianness;
 
 #ifdef MSVC_VER
@@ -314,6 +314,8 @@ int hfs_main(int argc, const char *argv[]) {
 		return 0;
 	}
 	
+	DPRINT("hfs-util: image:%s, command:%s\n", argv[1], argv[2]);
+	
 	io = openFlatFile(argv[1]);
 	if(io == NULL) {
 		fprintf(stderr, "error: Cannot open image-file.\n");
@@ -326,7 +328,7 @@ int hfs_main(int argc, const char *argv[]) {
 		CLOSE(io);
 		return 1;
 	}
-	
+
 	if(argc > 1) {
 		if(strcmp(argv[2], "ls") == 0) {
 			cmd_ls(volume, argc - 2, argv + 2);

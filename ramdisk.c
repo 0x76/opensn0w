@@ -42,8 +42,7 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	FILE *fp;
 	int len;
 	char strbuf[255];
-	char *rmall_0[] = {NULL, NULL, "rmall", "/usr/local/standalone/firmware/"};
-	char *rmall_1[] = {NULL, NULL, "rmall", "/usr/share/progressui"};
+	char *rmall_0[] = {NULL, NULL, "rm", "/usr/local/standalone/firmware/ICE2.Release.bbfw"};
 	char *addall_0[] = {NULL, NULL, "addall", "./mythos/binaries/bin/", "/bin"};
 	char *restored_rm[] = {NULL, NULL, "rm", "/usr/local/bin/restored_external"};
 	char *restored_add[] = {NULL, NULL, "add", "./mythos/binaries/usr/local/bin/restored_external", "/usr/local/bin/"};
@@ -52,7 +51,6 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	snprintf(strbuf, 255, "%s.tmp", filename);
 
 	rmall_0[1] = strbuf;
-	rmall_1[1] = strbuf;
 	addall_0[1] = strbuf;
 	restored_rm[1] = strbuf;
 	restored_add[1] = strbuf;
@@ -63,10 +61,9 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	fwrite(buffer, bufsize, 1, fp);
 	fclose(fp);
 
-	hfs_main(3, rmall_0);
-	hfs_main(3, rmall_1);
+	hfs_main(4, rmall_0);
 	hfs_main(4, addall_0);
-	hfs_main(3, restored_rm);
+	hfs_main(4, restored_rm);
 	hfs_main(4, restored_add);
 	hfs_main(4, add_libs);
 
@@ -266,5 +263,17 @@ int make_ramdisk(firmware_item item) {
 		return -1;
  	}
 
-    return 0;
+#ifdef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
+	client = irecv_reconnect(client, 2);
+#endif
+
+	irecv_send_command(client, "ramdisk");
+#ifdef _WIN32
+	client = irecv_reconnect(client, 5);
+#else
+	client = irecv_reconnect(client, 2);
+#endif
+	return 0;
 }

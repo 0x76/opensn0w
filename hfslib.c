@@ -20,6 +20,10 @@
 #define mkdir(x,y) _mkdir(x)
 #endif
 
+#ifdef _WIN32
+#define exit(x) system("pause"), exit(0)
+#endif
+
 static int silence = 0;
 
 void hfs_setsilence(int s) {
