@@ -62,10 +62,10 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	fclose(fp);
 
 	hfs_main(4, rmall_0);
-	hfs_main(4, addall_0);
+	hfs_main(5, addall_0);
 	hfs_main(4, restored_rm);
-	hfs_main(4, restored_add);
-	hfs_main(4, add_libs);
+	hfs_main(5, restored_add);
+	hfs_main(5, add_libs);
 
 	fp = fopen(strbuf, "rb");
 	fseek(fp, 0, SEEK_END);
