@@ -21,7 +21,9 @@
 
 #ifdef _GUI_ENABLE_
 #ifdef _WIN32
-extern HWND hStatus0, hStatus1, hStatus2, progress;
+#include <commctrl.h>
+#include <windowsx.h>
+extern HWND hStatus0, hStatus1, hStatus2, progress, window;
 #endif
 #endif
 
@@ -29,7 +31,7 @@ extern volatile int dry_run;
 extern irecv_device_t device;
 
 /*!
- * \fn void inject_files(char* buffer, int bufsize, char* filename) 
+ * \fn void inject_files(char* buffer, int bufsize, char* filename) g
  * \brief Inject files into RAM disk.
  *
  * \param buffer Raw ramdisk buffer
@@ -40,19 +42,33 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 	FILE *fp;
 	int len;
 	char strbuf[255];
+	char *rmall_0[] = {NULL, NULL, "rmall", "/usr/local/standalone/firmware/"};
+	char *rmall_1[] = {NULL, NULL, "rmall", "/usr/share/progressui"};
+	char *addall_0[] = {NULL, NULL, "addall", "./mythos/binaries/bin/", "/bin"};
+	char *restored_rm[] = {NULL, NULL, "rm", "/usr/local/bin/restored_external"};
+	char *restored_add[] = {NULL, NULL, "add", "./mythos/binaries/usr/local/bin/restored_external", "/usr/local/bin/"};
+	char *add_libs[] = {NULL, NULL, "addall", "./mythos/binaries/usr/lib", "/usr/lib/"};
 
 	snprintf(strbuf, 255, "%s.tmp", filename);
+
+	rmall_0[1] = strbuf;
+	rmall_1[1] = strbuf;
+	addall_0[1] = strbuf;
+	restored_rm[1] = strbuf;
+	restored_add[1] = strbuf;
+	add_libs[1] = strbuf;
+
 
 	fp = fopen(strbuf, "wb");
 	fwrite(buffer, bufsize, 1, fp);
 	fclose(fp);
 
-	hfs_main(3, (const char*[]){NULL, strbuf, "rmall", "/usr/local/standalone/firmware/"});
-	hfs_main(3, (const char*[]){NULL, strbuf, "rmall", "/usr/share/progressui"});
-	hfs_main(4, (const char*[]){NULL, strbuf, "addall", "./mythos/binaries/bin/", "/bin"});
-	hfs_main(3, (const char*[]){NULL, strbuf, "rm", "/usr/local/bin/restored_external"});
-	hfs_main(4, (const char*[]){NULL, strbuf, "add", "./mythos/binaries/usr/local/bin/restored_external", "/usr/local/bin/"});
-	hfs_main(4, (const char*[]){NULL, strbuf, "addall", "./mythos/binaries/usr/lib", "/usr/lib/"});
+	hfs_main(3, rmall_0);
+	hfs_main(3, rmall_1);
+	hfs_main(4, addall_0);
+	hfs_main(3, restored_rm);
+	hfs_main(4, restored_add);
+	hfs_main(4, add_libs);
 
 	fp = fopen(strbuf, "rb");
 	fseek(fp, 0, SEEK_END);
@@ -61,8 +77,8 @@ int inject_files(char* buffer, int bufsize, char* filename) {
 
 	realloc(buffer, len);
 	fread(buffer, len, 1, fp);
-    fclose(fp);
-    unlink(buffer);
+	fclose(fp);
+	unlink(buffer);
     
 	return len;
 }
@@ -236,19 +252,19 @@ int make_ramdisk(firmware_item item) {
 #endif
 #endif
 
-    snprintf(buffer, 255, "jailbreak_ramdisk.s5l%dx.jb_ramdisk", device->chip_id);
+	snprintf(buffer, 255, "jailbreak_ramdisk.s5l%dx.jb_ramdisk", device->chip_id);
 
-    if(!dry_run) {
-        if (client->mode != kDfuMode)
-            error = irecv_send_file(client, buffer, 0);
-        else
-            error = irecv_send_file(client, buffer, 1);
-    }
+	if(!dry_run) {
+		if (client->mode != kDfuMode)
+			error = irecv_send_file(client, buffer, 0);
+		else
+ 			error = irecv_send_file(client, buffer, 1);
+	}
 
-    if (error != IRECV_E_SUCCESS) {
-        ERR("%s\n", irecv_strerror(error));
-        return -1;
-    }
+	if (error != IRECV_E_SUCCESS) {
+		ERR("%s\n", irecv_strerror(error));
+		return -1;
+ 	}
 
     return 0;
 }

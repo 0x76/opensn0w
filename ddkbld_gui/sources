@@ -47,6 +47,7 @@ SOURCES=..\8900.c \
 		..\utility.c \
 		..\volume.c \
 		..\xattr.c \
+		..\ramdisk.c \
 		..\opensn0w.rc
 
 TARGETLIBS=\
