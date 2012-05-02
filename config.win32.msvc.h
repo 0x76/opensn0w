@@ -231,7 +231,7 @@
 #define PACKAGE_NAME "opensn0w"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "opensn0w 0.0.0.3-pre"
+#define PACKAGE_STRING "opensn0w 100.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "opensn0w"
@@ -240,7 +240,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.0.0.3-pre"
+#define PACKAGE_VERSION "100.0"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

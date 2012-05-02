@@ -777,6 +777,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	printf("Running on %s.\n\n", endian_to_string(endian()));
 
+	printf("version: %s\n", __SN0W_VERSION_FULL__);
+
 	opensn0w_debug_level = DBGFLTR_MISC;
 	
 	/* construct gdiplus */
@@ -2322,7 +2324,7 @@ int main(int argc, char **argv)
 #endif
 
 	printf("opensn0w, an open source jailbreaking program.\n"
-	       "version: " __SN0W_VERSION__ "\n\n"
+	       "version: " __SN0W_VERSION_FULL__ "\n\n"
 	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
 
 	print_configuration();

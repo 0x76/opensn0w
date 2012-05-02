@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([opensn0w], [0.0.0.3-pre], [rms@velocitylimitless.org])
+AC_INIT([opensn0w], [100.0], [rms@velocitylimitless.org])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
