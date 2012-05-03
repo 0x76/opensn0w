@@ -780,7 +780,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	printf("version: %s\n", __SN0W_VERSION_FULL__);
 
 	opensn0w_debug_level = DBGFLTR_MISC;
-	DPRINT("Debug level set.\n");
 	
 	/* construct gdiplus */
 	GuiGdiPlusConstructor();
