@@ -64,10 +64,12 @@ extern "C" {
 #include <ctype.h>
 #include "debug.h"
 
-#ifndef MSVC_VER
-#include "config.h"
-#else
+#ifdef MSVC_VER
 #include "config.win32.msvc.h"
+#elif defined(__APPLE__) && defined(__XCODE_BUILD__)
+#include "config.apple.llvm.h"
+#else
+#include "config.h"
 #endif
 
 #define __SN0W_VERSION__ "opensn0w-" PACKAGE_VERSION
@@ -93,6 +95,36 @@ extern "C" {
 #else
 #define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_GENERIC(msvc)"
 #endif	/* end msvc */
+#elif defined __clang__
+#ifdef __alpha__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ALPHA(clang)"
+#elif defined __x86_64__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_X86_64(clang)"
+#elif defined __arm__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ARM(clang)"
+#elif defined __thumb__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_THUMB(clang)"
+#elif defined __convex__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_CONVEX(clang)"
+#elif defined __hppa__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_HPPA(clang)"
+#elif defined __i386__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_I386(clang)"
+#elif defined __ia64__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_IA64(clang)"
+#elif defined __m68k__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_M68K(clang)"
+#elif defined __mips__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_MIPS(clang)"
+#elif defined __powerpc__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_POWERPC(clang)"
+#elif defined __sparc__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_SPARC(clang)"
+#elif defined __sh__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_SUPERH(clang)"
+#elif defined __s390__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_S390(clang)"
+#endif
 #elif defined __GNUC__
 #ifdef __alpha__
 #define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ALPHA(gcc)"
