@@ -18,6 +18,18 @@
  **/
 
 #include "sn0w.h"
+
+/*
+ * this file should be deprecated and removed.
+ *
+ * but no one has done it yet.
+ * consider filing a radar.
+ *
+ * (the code here is never used and is broken.)
+ *
+ * -- rms
+ */
+
 /*
 char iphoneWikiURLForInfo(char *bName, char *bNumber, char *deviceId) {
 	char *buffer = calloc(3,32);
