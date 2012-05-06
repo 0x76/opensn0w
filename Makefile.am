@@ -40,7 +40,6 @@ opensn0w_SOURCES = 8900.c \
 	crtsup.c \
 	img2.c \
 	img3.c \
-	keys.c \
 	libirecovery.c \
 	libpartial.c \
 	limera1n.c \

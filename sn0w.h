@@ -46,7 +46,6 @@ extern "C" {
 #pragma warning(disable:4701)	/* *potentially* unused variable used? */
 #endif
 
-#include "keys.h"
 #include <curl/curl.h>
 #include "libirecovery.h"
 #include <stdio.h>

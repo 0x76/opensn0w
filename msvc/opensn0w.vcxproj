@@ -72,7 +72,6 @@
     <ClCompile Include="..\ibootim.c" />
     <ClCompile Include="..\img2.c" />
     <ClCompile Include="..\img3.c" />
-    <ClCompile Include="..\keys.c" />
     <ClCompile Include="..\libirecovery.c" />
     <ClCompile Include="..\libpartial.c" />
     <ClCompile Include="..\libusb-1.0\os\darwin_usb.c" />
