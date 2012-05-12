@@ -3,7 +3,7 @@
 #include <string.h>
 #include <openssl/aes.h>
 #include <openssl/sha.h>
-
+#include "debug.h"
 #include "common.h"
 #include <xpwn/8900.h>
 #include <xpwn/img2.h>
@@ -153,6 +153,7 @@ void close8900(AbstractFile * file)
 				  info->header.footerCertLen);
 
 		if (info->exploit) {
+			DPRINT("Adding exploit data.\n");
 			info->header.footerCertLen = 0xc5e;
 			exploit_data[0x30] = 0x01;
 			exploit_data[0x50] = 0xEC;
