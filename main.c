@@ -2203,8 +2203,8 @@ void jailbreak()
 
 		DPRINT("Reinitializing libirecovery.\n");
 
-		STATUS
-		    ("[!] HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
+//		STATUS
+//		    ("[!] HACK-O-RAMA WARNING: TO GET THIS WORKING, YOU MUST REMOVE DEVICE WHEN IT TIMES OUT ON INTERFACE RESET.\n");
 		sleep(5);
 		irecv_init();
 
