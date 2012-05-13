@@ -1408,6 +1408,13 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided)
 	irecv_error_t error = IRECV_E_SUCCESS;
 	char *buffer;
 	char *filename = strrchr(item.name, '/');
+	
+	if(!item.name) {
+		DPRINT("Failing upload of image as filename is NULL.\n");
+		return -1;
+	}
+
+	filename = strrchr(item.name, '/');
 
 	if (filename == NULL)
 		filename = item.name;
