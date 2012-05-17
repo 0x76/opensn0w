@@ -56,7 +56,11 @@ case "$target" in
     LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32 -lmsimg32 -lgdiplus"
         ;;
 *-*-linux*)
+    AC_DEFINE_UNQUOTED(LINUX,1,[This is a Linux system])
     CFLAGS="-rdynamic $CFLAGS"
+        ;;
+*-*-darwin*)
+    AC_DEFINE_UNQUOTED(DARWIN,1,[This is a Darwin system])
         ;;
 esac
 
