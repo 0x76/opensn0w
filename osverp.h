@@ -24,9 +24,9 @@
 #pragma once
 #endif
 
-#define VER_PRODUCTBUILD            /* NT */   1000
+#define VER_PRODUCTBUILD            /* NT */   2000
 
-#define VER_PRODUCTBUILD_QFE        1
+#define VER_PRODUCTBUILD_QFE        0
 
 #define VER_PRODUCTMAJORVERSION     1
 #define VER_PRODUCTMINORVERSION     0
