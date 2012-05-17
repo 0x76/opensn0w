@@ -64,7 +64,7 @@ typedef enum _DFU_PHASES {
 			"   -C [command]       Send command to device.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -D                 Dry run, still requires DFU mode.\n" \
-			"   -g                 Use greenpois0n payload.\n"
+			"   -g                 Use greenpois0n payload.\n" \
 			"   -h                 Help.\n" \
 			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
 			"   -j                 Jailbreak.\n" \
