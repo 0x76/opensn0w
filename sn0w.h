@@ -259,6 +259,7 @@ int poll_device(int mode);
 Dictionary *get_key_dictionary_from_bundle(char *member);
 int bsdiff(char *oldfile, char *newfile, char *patchfile);
 void jailbreak();
+void greenpois0n_inject(void);
 
 /* crt supplement */
 

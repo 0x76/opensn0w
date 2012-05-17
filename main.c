@@ -19,6 +19,8 @@
 
 #include "sn0w.h"
 
+#include "greenpois0n.h"
+
 #ifdef _WIN32
 #ifdef _GUI_ENABLE_
 #include <windows.h>
@@ -62,6 +64,7 @@ typedef enum _DFU_PHASES {
 			"   -C [command]       Send command to device.\n" \
 			"   -d                 Just pwn dfu mode.\n" \
 			"   -D                 Dry run, still requires DFU mode.\n" \
+			"   -g                 Use greenpois0n payload.\n"
 			"   -h                 Help.\n" \
 			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
 			"   -j                 Jailbreak.\n" \
@@ -174,7 +177,7 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
     NULL, *ramdisk = NULL;
-volatile int iboot = false, dry_run = false;
+volatile int iboot = false, dry_run = false, gp_payload = false;
 volatile int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
 int do_jailbreak = false;
@@ -1930,7 +1933,8 @@ void jailbreak()
 
 		memset(dup, 0, 256);
 
-		device->url = urlKey->value;
+		if(!gp_payload)
+			device->url = urlKey->value;
 		if (temporaryDict != NULL)
 			urlKey =
 			    (StringValue *) getValueByKey(temporaryDict, "URL");
@@ -2074,6 +2078,9 @@ void jailbreak()
 	/* upload iBSS */
 	if (ramdisk)
 		UsingRamdisk = TRUE;
+
+	if (gp_payload)
+		greenpois0n_inject();
 
 #ifdef _GUI_ENABLE_
 	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading stage zero..."));
@@ -2258,7 +2265,7 @@ void jailbreak()
 		Firmware.item[KERNELCACHE].name = kernelcache;
 		userprovided = 1;
 	}
-	upload_image(Firmware.item[KERNELCACHE], 3, 1, 0);
+	upload_image(Firmware.item[KERNELCACHE], 3, 1, userprovided);
 	userprovided = 0;
 #ifdef _WIN32
 	client = irecv_reconnect(client, 5);
@@ -2290,6 +2297,156 @@ void jailbreak()
 #endif
 
 }
+
+int fetch_dfu_image(const char* type, const char* output) {
+	char name[64];
+	char path[255];
+
+	memset(name, '\0', 64);
+	memset(path, '\0', 255);
+	snprintf(name, 63, "%s.%s.RELEASE.dfu", type, device->model);
+	snprintf(path, 254, "Firmware/dfu/%s", name);
+
+	DPRINT("Preparing to fetch DFU image from Apple's servers\n");
+	if (fetch_image(path, output) < 0) {
+		DPRINT("Unable to fetch DFU image from Apple's servers\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+/*!
+ * \fn void greenpois0n_inject(void)
+ * \brief gp injection
+ */
+
+
+int upload_firmware_payload(const char* type) {
+	int size = 0;
+	const unsigned char* payload = NULL;
+	irecv_error_t error = IRECV_E_SUCCESS;
+
+	switch (device->index) {
+	case DEVICE_APPLETV2:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_k66ap;
+			size = sizeof(iBSS_k66ap);
+			DPRINT("Loaded payload for iBSS on k66ap\n0");
+		}
+		break;
+
+	case DEVICE_IPAD1G:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_k48ap;
+			size = sizeof(iBSS_k48ap);
+			DPRINT("Loaded payload for iBSS on k48ap\n0");
+		}
+		break;
+
+	case DEVICE_IPHONE3GS:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_n88ap;
+			size = sizeof(iBSS_n88ap);
+			DPRINT("Loaded payload for iBSS on n88ap\n");
+		}
+		break;
+
+	case DEVICE_IPHONE4:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_n90ap;
+			size = sizeof(iBSS_n90ap);
+			DPRINT("Loaded payload for iBSS on n90ap\n");
+		}
+		break;
+
+	case DEVICE_IPOD2G:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_n72ap;
+			size = sizeof(iBSS_n72ap);
+			DPRINT("Loaded payload for iBSS on n72ap\n");
+		}
+		break;
+
+	case DEVICE_IPOD3G:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_n18ap;
+			size = sizeof(iBSS_n18ap);
+			DPRINT("Loaded payload for iBSS on n18ap\n");
+		}
+		break;
+
+	case DEVICE_IPOD4G:
+		if (!strcmp(type, "iBSS")) {
+			payload = iBSS_n81ap;
+			size = sizeof(iBSS_n81ap);
+			DPRINT("Loaded payload for iBSS on n81ap\n");
+		}
+		break;
+	}
+
+	if (payload == NULL) {
+		ERR("Unable to upload firmware payload\n");
+		return -1;
+	}
+
+	DPRINT("Resetting device counters\n");
+	error = irecv_reset_counters(client);
+	if (error != IRECV_E_SUCCESS) {
+		ERR("Unable to upload firmware payload\n");
+		DPRINT("%s\n", irecv_strerror(error));
+		return -1;
+	}
+
+	DPRINT("Uploading %s payload\n", type);
+	error = irecv_send_buffer(client, (unsigned char*) payload, size, 1);
+	if (error != IRECV_E_SUCCESS) {
+		ERR("Unable to upload %s payload\n", type);
+		return -1;
+	}
+
+	return 0;
+}
+
+void greenpois0n_inject(void) {
+	char image[255];
+	struct stat buf;
+	irecv_error_t error = IRECV_E_SUCCESS;
+
+	char type[] = "iBSS";
+
+	memset(image, '\0', 255);
+	snprintf(image, 254, "%s.%s", type, device->model);
+
+	DPRINT("Checking if %s already exists\n", image);
+	if (stat(image, &buf) != 0) {
+		if (fetch_dfu_image(type, image) < 0) {
+			ERR("Unable to upload DFU image\n");
+			return;
+		}
+	}
+
+	if (client->mode != kDfuMode) {
+		DPRINT("Resetting device counters\n");
+		error = irecv_reset_counters(client);
+		if (error != IRECV_E_SUCCESS) {
+			ERR("%s\n", irecv_strerror(error));
+			return;
+		}
+	}
+
+	DPRINT("Uploading %s to device\n", image);
+	error = irecv_send_file(client, image, 1);
+	if (error != IRECV_E_SUCCESS) {
+		ERR("%s\n", irecv_strerror(error));
+		return;
+	}
+
+	upload_firmware_payload("iBSS");
+
+	return;
+}
+
 
 #ifndef _GUI_ENABLE_
 
@@ -2338,10 +2495,13 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "DIYvZdAhBzjsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "DIYvZdAghBzjsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'I':
 			iboot = true;
+			break;
+		case 'g':
+			gp_payload = true;
 			break;
 		case 'j':
 			do_jailbreak = true;
