@@ -324,7 +324,7 @@ DWORD win32_jailbreak(LPVOID lpThreadParameter)
 	
 	ZeroMemory(&ofn, sizeof(ofn));
 	
-	if (!autoboot || !pwndfu) {
+	if (!autoboot || !pwndfu || !gp_payload) {
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hwnd;
 		ofn.lpstrFile = szFile;
@@ -1790,7 +1790,7 @@ void jailbreak()
 #endif
 	}
 
-	if (dump_bootrom || raw_load_exit) {
+	if (dump_bootrom || raw_load_exit || gp_payload) {
 		/* i know, hacky */
 		goto actually_do_stuff;
 	}
