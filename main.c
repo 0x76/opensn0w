@@ -2442,7 +2442,20 @@ void greenpois0n_inject(void) {
 		return;
 	}
 
+#ifdef _WIN32
+	client = irecv_reconnect(client, 45);
+#else
+	client = irecv_reconnect(client, 10);
+#endif
+
 	upload_firmware_payload("iBSS");
+
+#ifdef _WIN32
+	client = irecv_reconnect(client, 45);
+#else
+	client = irecv_reconnect(client, 10);
+#endif
+	irecv_send_command(client, "go");
 
 	return;
 }
