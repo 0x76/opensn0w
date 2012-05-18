@@ -2079,9 +2079,19 @@ void jailbreak()
 	if (ramdisk)
 		UsingRamdisk = TRUE;
 
-	if (gp_payload)
+	if (gp_payload) {
+#ifdef _GUI_ENABLE_
+		SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading stage zero..."));
+		SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(iBSS-greenpois0n)"));
+		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
+		SendMessage(hStatus3, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
+		SendMessage(progress, PBM_SETPOS, 0, 0);
+		InvalidateRect(window, NULL, TRUE);
+#endif
+		STATUS("[*] Uploading stage zero - greenpois0n payload (iBSS)...\n");
 		greenpois0n_inject();
-
+		exit(-1);
+	}
 #ifdef _GUI_ENABLE_
 	SendMessage(hStatus0, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading stage zero..."));
 	SendMessage(hStatus1, WM_SETTEXT, 0, (LPARAM) TEXT("(iBSS)"));
