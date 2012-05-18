@@ -66,13 +66,13 @@ typedef enum _DFU_PHASES {
 			"   -D                 Dry run, still requires DFU mode.\n" \
 			"   -g                 Use greenpois0n payload.\n" \
 			"   -h                 Help.\n" \
+			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
 			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
 			"   -j                 Jailbreak.\n" \
-			"   -i ipsw            Get necessary files from a remote IPSW.\n" \
 			"   -k kernelcache     Boot using specified kernel.\n" \
 			"   -p plist           Use firmware plist\n" \
-			"   -R                 Just boot into pwned recovery mode.\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
+			"   -R                 Just boot into pwned recovery mode.\n" \
 			"   -S [file]          Send file to device.\n" \
 			"   -s                 Start iRecovery recovery mode shell.\n" \
 			"   -v                 Verbose mode. Useful for debugging.\n" \
