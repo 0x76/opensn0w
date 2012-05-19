@@ -70,6 +70,7 @@ typedef enum _DFU_PHASES {
 			"   -I                 Apple TV 2G users, boot kernelcache on disk using iBoot with boot-args injected.\n" \
 			"   -j                 Jailbreak.\n" \
 			"   -k kernelcache     Boot using specified kernel.\n" \
+			"   -n                 Do not display intro banner.\n" \
 			"   -p plist           Use firmware plist\n" \
 			"   -r ramdisk.dmg     Boot specified ramdisk.\n" \
 			"   -R                 Just boot into pwned recovery mode.\n" \
@@ -177,7 +178,7 @@ irecv_client_t client = NULL;
 Dictionary *firmwarePatches, *patchDict, *info;
 char *kernelcache = NULL, *bootlogo = NULL, *url = NULL, *plist =
     NULL, *ramdisk = NULL;
-volatile int iboot = false, dry_run = false, gp_payload = false;
+volatile int iboot = false, dry_run = false, gp_payload = false, nologo = false;
 volatile int pwndfu = false, pwnrecovery = false, autoboot = false, download = false, use_shatter = false;
 volatile bool jailbreaking = false;
 int do_jailbreak = false;
@@ -1223,6 +1224,13 @@ int send_command(char *name)
 {
 	irecv_error_t err;
 
+	if(nologo == false) {
+		printf("opensn0w, an open source jailbreaking program.\n"
+		       "version: " __SN0W_VERSION_FULL__ "\n\n"
+		       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+		print_configuration();
+	}
+
 	DPRINT("Initializing libirecovery...\n");
 	irecv_init();
 
@@ -1261,6 +1269,14 @@ int send_command(char *name)
 int send_file(char *name)
 {
 	irecv_error_t err;
+
+	if(nologo == false) {
+		printf("opensn0w, an open source jailbreaking program.\n"
+		       "version: " __SN0W_VERSION_FULL__ "\n\n"
+		       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+		print_configuration();
+	}
+
 
 	DPRINT("Initializing libirecovery...\n");
 	irecv_init();
@@ -2510,18 +2526,15 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	printf("opensn0w, an open source jailbreaking program.\n"
-	       "version: " __SN0W_VERSION_FULL__ "\n\n"
-	       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
-
-	print_configuration();
-
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "DIYvZdAghBzjsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "DIYvZndAghBzjsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'I':
 			iboot = true;
+			break;
+		case 'n':
+			nologo = true;
 			break;
 		case 'g':
 			gp_payload = true;
@@ -2616,6 +2629,13 @@ int main(int argc, char **argv)
 			usage();
 			break;
 		}
+	}
+
+	if(nologo == false) {
+		printf("opensn0w, an open source jailbreaking program.\n"
+		       "version: " __SN0W_VERSION_FULL__ "\n\n"
+		       "Compiled on: " __DATE__ " " __TIME__ "\n\n");
+		print_configuration();
 	}
 
 	jailbreak();

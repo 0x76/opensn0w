@@ -46,6 +46,9 @@ int irecovery_shell_initialize()
 {
 	irecv_error_t err;
 
+	printf("opensn0w recovery shell\n"
+               "=======================\n");
+
 	printf("Initializing libirecovery...\n");
 	irecv_init();
 
