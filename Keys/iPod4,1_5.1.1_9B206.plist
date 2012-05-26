@@ -47,15 +47,6 @@
 			<key>Key</key>
 			<string>d302a0ba7253453bce4431dd5a2a04fbf4da9868c340eae633a0202fe0995155</string>
 		</dict>
-		<key>RestoreRamdisk</key>
-		<dict>
-			<key>FileName</key>
-			<string>038-4361-061.dmg</string>
-			<key>IV</key>
-			<string>ce6b50a8351823e0f21857d58bfc1dd1</string>
-			<key>Key</key>
-			<string>da5438ed6938b3eeaca8a3b543bcf2e461e9d9cb4f327722b5f8c3c55b197ea1</string>
-		</dict>
 		<key>UpdateRamdisk</key>
 		<dict>
 			<key>FileName</key>
@@ -64,6 +55,15 @@
 			<string>9fde5b4fc310e68990f6d0c71edd385c</string>
 			<key>Key</key>
 			<string>26e2dde1867652e5ced6c6642b28b8405353441c909312148d4d019e6a0d0b15</string>
+		</dict>
+		<key>RestoreRamdisk</key>
+		<dict>
+			<key>FileName</key>
+			<string>038-4361-021.dmg</string>
+			<key>IV</key>
+			<string>ce6b50a8351823e0f21857d58bfc1dd1</string>
+			<key>Key</key>
+			<string>da5438ed6938b3eeaca8a3b543bcf2e461e9d9cb4f327722b5f8c3c55b197ea1</string>
 		</dict>
 		<key>LLB</key>
 		<dict>
