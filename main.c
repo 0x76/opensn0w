@@ -1943,6 +1943,8 @@ void jailbreak()
 
 	if (temporaryDict != NULL)
 		urlKey = (StringValue *) getValueByKey(temporaryDict, "URL");
+		
+		
 	if (urlKey != NULL) {
 		char *p = NULL, dup[256];
 		int len;
@@ -1972,8 +1974,11 @@ void jailbreak()
 
 	}
  out:
-
 	if (url) {
+		char *p = NULL, dup[256];
+		int len;
+
+		memset(dup, 0, 256);
 		processedname = malloc(strlen(url) + sizeof("file://"));
 		if (!processedname) {
 			printf("Could not allocate memory\n");
@@ -1983,6 +1988,18 @@ void jailbreak()
 		snprintf(processedname, strlen(url) + sizeof("file://"),
 			 "file://%s", url);
 		device->url = processedname;
+		p = processedname;
+		
+		p = strstr(p, device->product);
+		if (!p)
+			goto out;
+
+		len = strlen(p);
+		if (len <= 0)
+			goto out;
+
+		strncpy(dup, p, len - sizeof("Restore.ipsw"));
+		version = strdup(dup);
 	}
 
 	if (download) {
@@ -2154,7 +2171,7 @@ void jailbreak()
 		STATUS("[*] Uploading stage two (iBoot)...\n");
 		upload_image(Firmware.item[IBOOT], 0, 1, 0);
 #ifdef _WIN32
-		client = irecv_reconnect(client, 45);
+		client = irecv_reconnect(client, 10);
 #else
 		client = irecv_reconnect(client, 10);
 #endif
@@ -2469,7 +2486,7 @@ void greenpois0n_inject(void) {
 	}
 
 #ifdef _WIN32
-	client = irecv_reconnect(client, 45);
+	client = irecv_reconnect(client, 10);
 #else
 	client = irecv_reconnect(client, 10);
 #endif
@@ -2477,7 +2494,7 @@ void greenpois0n_inject(void) {
 	upload_firmware_payload("iBSS");
 
 #ifdef _WIN32
-	client = irecv_reconnect(client, 45);
+	client = irecv_reconnect(client, 10);
 #else
 	client = irecv_reconnect(client, 10);
 #endif
