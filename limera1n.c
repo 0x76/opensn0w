@@ -26,9 +26,10 @@
 extern HWND hStatus2, progress, window;
 #endif
 
-extern bool dump_bootrom, raw_load, raw_load_exit;
+extern bool dump_bootrom;
 
 /* The following is from Chronic-Dev's syringe */
+/* revised limera1n payload by iH8sn0w */
 
 unsigned char limera1n_payload[] = {
   0x7f, 0x46, 0x07, 0xe0, 0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46, 0xc0, 0x46,
@@ -226,11 +227,6 @@ int limera1n()
 
 		DPRINT("dumped.\n");
 		exit(0);
-	} else if (raw_load == true || raw_load_exit == true) {
-		DPRINT("RAW LOAD COMPLETE.\n");
-		if(raw_load_exit == true)
-			exit(0);
 	}
-
 	return 0;
 }
