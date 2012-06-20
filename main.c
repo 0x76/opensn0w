@@ -79,8 +79,6 @@ typedef enum _DFU_PHASES {
 			"   -v                 Verbose mode. Useful for debugging.\n" \
 			"   -X                 Download all files from plist.\n" \
 			"   -Y                 Use the SHAtter exploit, but for god's sake its broken.\n" \
-			"   -z                 Use raw image load payload and boot device. (Use on devices with corrupted Chip ID)\n" \
-			"   -Z                 Use raw image load payload only.\n" \
 			"\n" \
 			"Exit status:\n" \
 			"  0  if OK,\n" \
@@ -2545,7 +2543,7 @@ int main(int argc, char **argv)
 
 	opterr = 0;
 
-	while ((c = getopt(argc, argv, "DIYvZndAghBzjsXp:Rb:i:k:S:C:r:a:")) != -1) {
+	while ((c = getopt(argc, argv, "DIYvndAghBjsXp:Rb:i:k:S:C:r:a:")) != -1) {
 		switch (c) {
 		case 'I':
 			iboot = true;
@@ -2565,9 +2563,6 @@ int main(int argc, char **argv)
 		case 'Y':
 			use_shatter = true;
 			break;
-		case 'Z':
-			raw_load_exit = true;
-			break;
 		case 'B':
 			dump_bootrom = true;
 			break;
@@ -2579,9 +2574,6 @@ int main(int argc, char **argv)
 			break;
 		case 'R':
 			pwnrecovery = true;
-			break;
-		case 'z':
-			raw_load = true;
 			break;
 		case 'a':
 			boot_args_process(optarg);
