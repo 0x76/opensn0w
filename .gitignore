@@ -24,4 +24,10 @@ stamp-h1
 help
 install-sh
 missing
-opensn0w.xcodeproj/xcuserdata
+xcuserdata/
+project.xcworkspace/
+*.pbxuser
+*.perspective
+*.perspectivev3
+*.mode1v3
+*.mode2v3
