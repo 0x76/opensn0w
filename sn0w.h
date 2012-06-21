@@ -21,7 +21,31 @@
 #define _SN0W_H_
 #define _GNU_SOURCE		/* for strcasestr */
 
-#include "keys.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef MSVC_VER
+/*
+ * evil hacks 
+ */
+#pragma warning(disable:4131)	/* k&r c style used */
+#pragma warning(disable:4003)	/* not enough actual parameters for macro */
+#pragma warning(disable:4127)	/* conditional expression is always constant */
+#pragma warning(disable:4214)	/* unknown nonstandard extension */
+#pragma warning(disable:4200)	/* unknown nonstandard extension */
+#pragma warning(disable:4201)	/* unknown nonstandard extension */
+#pragma warning(disable:4204)	/* unknown nonstandard extension */
+#pragma warning(disable:4018)	/* signed/unsigned mismatch */
+#pragma warning(disable:4245)	/* signed/unsigned mismatch */
+#pragma warning(disable:4242)	/* integer conversion */
+#pragma warning(disable:4244)	/* integer conversion */
+#pragma warning(disable:4005)	/* macro redefinition */
+#pragma warning(disable:4706)	/* assignment within cond expression */
+#pragma warning(disable:4702)	/* unreachable code */
+#pragma warning(disable:4701)	/* *potentially* unused variable used? */
+#endif
+
 #include <curl/curl.h>
 #include "libirecovery.h"
 #include <stdio.h>
@@ -39,9 +63,104 @@
 #include <xpwn/plist.h>
 #include <ctype.h>
 #include "debug.h"
-#include "config.h"
 
-#define __SN0W_VERSION__ PACKAGE_VERSION
+#ifdef MSVC_VER
+#include "config.win32.msvc.h"
+#elif defined(__APPLE__) && defined(__XCODE_BUILD__)
+#include "config.apple.llvm.h"
+#else
+#include "config.h"
+#endif
+
+#define __SN0W_VERSION__ "opensn0w-" PACKAGE_VERSION
+
+#ifndef RELEASE
+#define __SN0W_CONFIG__ "DEVELOPMENT"
+#else
+#define __SN0W_CONFIG__ "RELEASE"
+#endif
+
+
+/* fun here */
+#ifdef MSVC_VER
+#ifdef _M_X64
+#elif defined _M_IX86
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_I386(msvc)"
+#elif defined _M_IA64
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_IA64(msvc)"
+#elif defined _M_MPPC
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_PPC(msvc)"
+#elif defined _M_MRX000
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_MIPS(msvc)"
+#else
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_GENERIC(msvc)"
+#endif	/* end msvc */
+#elif defined __clang__
+#ifdef __alpha__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ALPHA(clang)"
+#elif defined __x86_64__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_X86_64(clang)"
+#elif defined __arm__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ARM(clang)"
+#elif defined __thumb__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_THUMB(clang)"
+#elif defined __convex__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_CONVEX(clang)"
+#elif defined __hppa__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_HPPA(clang)"
+#elif defined __i386__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_I386(clang)"
+#elif defined __ia64__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_IA64(clang)"
+#elif defined __m68k__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_M68K(clang)"
+#elif defined __mips__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_MIPS(clang)"
+#elif defined __powerpc__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_POWERPC(clang)"
+#elif defined __sparc__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_SPARC(clang)"
+#elif defined __sh__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_SUPERH(clang)"
+#elif defined __s390__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_S390(clang)"
+#endif
+#elif defined __GNUC__
+#ifdef __alpha__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ALPHA(gcc)"
+#elif defined __x86_64__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_X86_64(gcc)"
+#elif defined __arm__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_ARM(gcc)"
+#elif defined __thumb__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_THUMB(gcc)"
+#elif defined __convex__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_CONVEX(gcc)"
+#elif defined __hppa__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_HPPA(gcc)"
+#elif defined __i386__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_I386(gcc)"
+#elif defined __ia64__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_IA64(gcc)"
+#elif defined __m68k__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_M68K(gcc)"
+#elif defined __mips__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_MIPS(gcc)"
+#elif defined __powerpc__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_POWERPC(gcc)"
+#elif defined __sparc__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_SPARC(gcc)"
+#elif defined __sh__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_SUPERH(gcc)"
+#elif defined __s390__
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_S390(gcc)"
+#endif
+#else	/* end supported compilers */
+#define __SN0W_VERSION_FULL__ __SN0W_VERSION__ "/" __SN0W_CONFIG__ "_GENERIC(unknown)"
+#endif
+
+
+
 
 #ifdef __APPLE__
 #define _SVID_SOURCE
@@ -59,7 +178,7 @@ void critical_error_handler(int sig_num, siginfo_t * info, void *ucontext);
 #endif
 
 typedef enum ____endian_t {
-	ENDIAN_BIG = 1,
+	ENDIAN_BIG = 0,
 	ENDIAN_LITTLE
 } __endian_t;
 
@@ -104,12 +223,32 @@ extern patch kernel_nor4;
 
 extern patch devicetree_root_name;
 
+#ifdef MSVC_VER
+#ifndef __cplusplus
+typedef BOOL bool;
+#endif
+#define __builtin_bswap32 _byteswap_ulong	/* msvc bswap variant */
+
+#define snprintf _snprintf	/* ugh */
+#define stat _stat
+#define vsnprintf _vsnprintf
+#define strdup _strdup
+#define unlink _unlink
+
+
+
+#endif
+
+
+
 int limera1n();
 int steaks4uce();
 int pwnage2();
 int endian();
 int shatter();
 void dos_cursor();
+int hfs_main(int argc, const char *argv[]);
+int fetch_image(const char *path, const char *output);
 char* endian_to_string(int endian);
 void *our_memmem(const void *l, size_t l_len, const void *s, size_t s_len);
 void hex_dump(void *data, int size);
@@ -120,6 +259,8 @@ int poll_device(int mode);
 Dictionary *get_key_dictionary_from_bundle(char *member);
 int bsdiff(char *oldfile, char *newfile, char *patchfile);
 void jailbreak();
+void greenpois0n_inject(void);
+void print_configuration(void);
 
 /* crt supplement */
 
@@ -135,8 +276,30 @@ char *strndup (const char *s, size_t n);
 int wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 #endif
 
+#ifndef HAVE_STRCASECMP
+int strcasecmp(const char *s1, const char *s2);
+#endif
+
 #ifdef _WIN32
 bool is_process_running(WCHAR* process_name);
+BOOL GuiUpdateJailbreakStatus(VOID);
+void GuiGdiPlusConstructor(void);
+void GuiGdiPlusDeconstructor(void);
+HICON GuiGetIconForPng(const WCHAR *filename);
+HICON GuiGetIconForResource(const WCHAR *bitmapName);
+
+#ifndef MSVC_VER
+BOOL WINAPI GradientFill(
+    HDC hdc,
+    PTRIVERTEX pVertex,
+    ULONG nVertex,
+    PVOID pMesh,
+    ULONG nMesh,
+    ULONG ulMode
+);		
+/* mingw headers suck */
+#endif
+
 #endif
 
 typedef enum _image_magic {
@@ -188,6 +351,8 @@ typedef struct _firmware {
 	uint8_t items;
 } firmware, *firmware_t;
 
+int make_ramdisk(firmware_item item);
+
 int upload_image(firmware_item item, int mode, int patch, int userprovided);
 
 #if defined(_GUI_ENABLE_) && !defined(_WIN32)
@@ -196,6 +361,10 @@ int upload_image(firmware_item item, int mode, int patch, int userprovided);
 
 #ifdef _GUI_ENABLE_
 VOID GuiToggleDFUTimers(BOOL show);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

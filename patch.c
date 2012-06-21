@@ -21,12 +21,32 @@
 
 #undef HAVE_LIBBZ2
 /* preprocessor macros */
+
+#ifdef _GUI_ENABLE_
+#ifdef _WIN32
+extern HWND window, hStatus2;
+#define PATCH_FILE(candidate, original_data, name) \
+	if(!memcmp(candidate, original_data.original, original_data.length)) { \
+		char buffer[256]; \
+		sprintf(buffer, "Patching check at 0x%x...\n", i); \
+		SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) buffer); \
+		InvalidateRect(window, NULL, TRUE); \
+		DPRINT("Patching " name " check at 0x%08x\n", i); \
+		memcpy(candidate, original_data.patched, original_data.length); \
+		continue; \
+	}
+
+#endif
+#else 
 #define PATCH_FILE(candidate, original_data, name) \
 	if(!memcmp(candidate, original_data.original, original_data.length)) { \
 		DPRINT("Patching " name " check at 0x%08x\n", i); \
 		memcpy(candidate, original_data.patched, original_data.length); \
 		continue; \
 	}
+#endif
+
+
 
 /* globals */
 extern Dictionary *firmwarePatches, *patchDict, *info;
@@ -166,6 +186,8 @@ int patch_file(char *filename)
 	char *build_train = strndup(version, 255);
 #endif
 	char *dup = strndup(filename, 255);
+	StringValue *keyValue;
+	StringValue *ivValue;
 
 	template = createAbstractFileFromFile(fopen(filename, "rb"));
 
@@ -186,8 +208,8 @@ int patch_file(char *filename)
 #endif
 
 	data = get_key_dictionary_from_bundle(tokenizedname);
-	StringValue *keyValue = (StringValue *) getValueByKey(data, "Key");
-	StringValue *ivValue = (StringValue *) getValueByKey(data, "IV");
+	keyValue = (StringValue *) getValueByKey(data, "Key");
+	ivValue = (StringValue *) getValueByKey(data, "IV");
 
 	if (keyValue) {
 		size_t bytes;
@@ -313,7 +335,12 @@ int patch_file(char *filename)
 
 	newFile->close(newFile);
 
-	free(buffer);
+#ifndef MSVC_VER
+	free(buffer);	/* I know this is strange, and malpractice, not freeing the buffer...
+			   but on MSVC, and my Windows 7 installation, the heap handler tends to 
+			   destroy the program state here. I have no clue why. -- acfrazier */
+			/* addendum: At most, like 1kB will be lost. Does it really matter? */
+#endif
 
 	return 0;
 }

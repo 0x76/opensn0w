@@ -35,6 +35,41 @@
 extern char endianness;
 
 #ifndef LIBPARTIAL_H
+#ifdef MSVC_VER
+#define inline	__forceinline	/* damn you microsoft */
+#define off64_t size_t 
+#undef fseeko
+#define fseeko fseek
+#undef ftello
+#define ftello ftell
+#ifdef MSVC_VER
+/*
+ * evil hacks 
+ */
+#pragma warning(disable:4131)	/* k&r c style used */
+#pragma warning(disable:4003)	/* not enough actual parameters for macro */
+#pragma warning(disable:4127)	/* conditional expression is always constant */
+#pragma warning(disable:4214)	/* unknown nonstandard extension */
+#pragma warning(disable:4200)	/* unknown nonstandard extension */
+#pragma warning(disable:4201)	/* unknown nonstandard extension */
+#pragma warning(disable:4204)	/* unknown nonstandard extension */
+#pragma warning(disable:4018)	/* signed/unsigned mismatch */
+#pragma warning(disable:4245)	/* signed/unsigned mismatch */
+#pragma warning(disable:4242)	/* integer conversion */
+#pragma warning(disable:4244)	/* integer conversion */
+#pragma warning(disable:4005)	/* macro redefinition */
+#pragma warning(disable:4702)	/* unreachable code */
+#pragma warning(disable:4706)	/* assignment within cond expression */
+#pragma warning(disable:4701)	/* *potentially* unused variable used? */
+#endif
+#pragma warning(disable:4100)	/* unreferenced formal parameter */
+#endif
+#endif
+
+#ifndef LIBPARTIAL_H
+
+
+
 static inline void flipEndian(unsigned char* x, int length) {
   int i;
   unsigned char tmp;
@@ -66,9 +101,9 @@ static inline void flipEndianLE(unsigned char* x, int length) {
 }
 
 static inline void hexToBytes(const char* hex, uint8_t** buffer, size_t* bytes) {
+	size_t i;	/* note: msvc likes things being here */
 	*bytes = strlen(hex) / 2;
 	*buffer = (uint8_t*) malloc(*bytes);
-	size_t i;
 	for(i = 0; i < *bytes; i++) {
 		uint32_t byte;
 		sscanf(hex, "%2x", &byte);
@@ -78,9 +113,9 @@ static inline void hexToBytes(const char* hex, uint8_t** buffer, size_t* bytes) 
 }
 
 static inline void hexToInts(const char* hex, unsigned int** buffer, size_t* bytes) {
+	size_t i;
 	*bytes = strlen(hex) / 2;
 	*buffer = (unsigned int*) malloc((*bytes) * sizeof(int));
-	size_t i;
 	for(i = 0; i < *bytes; i++) {
 		sscanf(hex, "%2x", &((*buffer)[i]));
 		hex += 2;

@@ -31,6 +31,10 @@ extern "C" {
 #include <inttypes.h>
 #include <curl/curl.h>
 
+#ifdef MSVC_VER
+#include <stdint.h>
+#endif
+
 #ifdef _MSC_VER
 #define STATIC_INLINE static __inline
 #else
@@ -46,6 +50,18 @@ extern "C" {
 #define sleep(n) Sleep(1000 * n)
 #else
 #define PATH_SEPARATOR "/"
+#endif
+
+#ifndef COMMON_H
+#ifdef MSVC_VER
+#define inline	__forceinline	/* damn you microsoft */
+#define off64_t size_t 
+#undef fseeko
+#define fseeko fseek
+#undef ftello
+#define ftello ftell
+#pragma warning(disable:4100)	/* unreferenced formal parameter */
+#endif
 #endif
 
 #define TRUE 1

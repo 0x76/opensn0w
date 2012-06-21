@@ -126,6 +126,7 @@ AbstractFile *createAbstractFileFromComp(AbstractFile * file)
 	InfoComp *info;
 	AbstractFile *toReturn;
 	uint8_t *compressed;
+	uint32_t real_uncompressed;
 
 	if (!file) {
 		return NULL;
@@ -150,7 +151,7 @@ AbstractFile *createAbstractFileFromComp(AbstractFile * file)
 	compressed = malloc(info->header.length_compressed);
 	file->read(file, compressed, info->header.length_compressed);
 
-	uint32_t real_uncompressed = decompress_lzss(info->buffer, compressed,
+	real_uncompressed = decompress_lzss(info->buffer, compressed,
 						     info->header.
 						     length_compressed);
 	real_uncompressed = info->header.length_uncompressed;

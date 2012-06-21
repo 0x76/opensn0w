@@ -10,6 +10,15 @@ ERROR_CFLAGS = \
 	-I./include \
 	-Ilibusb-1.0
 
+AM_CXXFLAGS = \
+	$(OPENSN0W_CFLAGS) \
+	-Wall \
+	-I. \
+	-Ixpwntool \
+	-I./include \
+	-Ilibusb-1.0 \
+	$(CFLAGS)
+
 AM_CFLAGS = \
 	$(ERROR_CFLAGS) \
 	$(ZLIB_CFLAGS) 
@@ -31,7 +40,6 @@ opensn0w_SOURCES = 8900.c \
 	crtsup.c \
 	img2.c \
 	img3.c \
-	keys.c \
 	libirecovery.c \
 	libpartial.c \
 	limera1n.c \
@@ -47,7 +55,21 @@ opensn0w_SOURCES = 8900.c \
 	shell.c \
 	sighldr.c \
 	steaks4uce.c \
-	bsdiff.c
+	bsdiff.c \
+	btree.c \
+	catalog.c \
+	extents.c \
+	fastunicodecompare.c \
+	flatfile.c \
+	hfs.c \
+	hfscompress.c \
+	hfslib.c \
+	rawfile.c \
+	utility.c \
+	volume.c \
+	ramdisk.c \
+	xattr.c
+
 
 .rc.o:
 	@echo "  WRES  " $<
@@ -58,7 +80,7 @@ if WINDOWS
 
 opensn0w.$(OBJEXT): date.h
 
-        opensn0w_SOURCES += opensn0w.rc
+        opensn0w_SOURCES += opensn0w.rc win32.cpp
 endif
 
 

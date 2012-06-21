@@ -24,6 +24,4 @@ stamp-h1
 help
 install-sh
 missing
-.deps
-autom4te.cache
-
+opensn0w.xcodeproj/xcuserdata

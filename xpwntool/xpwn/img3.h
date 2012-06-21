@@ -26,21 +26,45 @@ typedef struct Img3Info Img3Info;
 typedef void (*WriteImg3)(AbstractFile* file, Img3Element* element, Img3Info* info);
 typedef void (*FreeImg3)(Img3Element* element);
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct AppleImg3Header {
 	uint32_t magic;
 	uint32_t size;
 	uint32_t dataSize;
-}__attribute__((__packed__)) AppleImg3Header;
+#ifndef MSVC_VER
+} __attribute__((__packed__)) AppleImg3Header;
+#else
+} AppleImg3Header;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct AppleImg3RootExtra {
 	uint32_t shshOffset;
 	uint32_t name;
-}__attribute__((__packed__)) AppleImg3RootExtra;
+#ifndef MSVC_VER
+} __attribute__((__packed__)) AppleImg3RootExtra;
+#else
+} AppleImg3RootExtra;
+#pragma pack(pop)
+#endif
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct AppleImg3RootHeader {
 	AppleImg3Header base;
 	AppleImg3RootExtra extra;
-}__attribute__((__packed__)) AppleImg3RootHeader;
+#ifndef MSVC_VER
+} __attribute__((__packed__)) AppleImg3RootHeader;
+#else
+} AppleImg3RootHeader;
+#pragma pack(pop)
+#endif
 
 typedef struct AppleImg3KBAGHeader {
  

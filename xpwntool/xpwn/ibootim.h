@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <abstractfile.h>
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct IBootIMHeader {
 	char    signature[8];
 	uint32_t unknown;
@@ -12,7 +15,12 @@ typedef struct IBootIMHeader {
 	uint16_t width;
 	uint16_t height;
 	uint8_t  padding[0x28];
+#ifndef MSVC_VER
 } __attribute__((__packed__)) IBootIMHeader;
+#else
+} IBootIMHeader;
+#pragma pack(pop)
+#endif
 
 #define IBOOTIM_SIG_UINT 0x69426F6F
 #define IBOOTIM_SIGNATURE "iBootIm"

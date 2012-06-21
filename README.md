@@ -78,6 +78,7 @@ And punch in make, and you're done!
 Version Log
 ===========
 
+  * 2012/Apr/14 - Version 0.0.0.3-pre!
   * 2012/Mar/31 - Version 0.0.0.2.
   * 2012/Mar/03 - Version 0.0.0.2-pre!
   * 2012/Feb/03 - Version 0.0.0.1-pre!

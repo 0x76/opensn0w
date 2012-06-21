@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([opensn0w], [0.0.0.2], [rms@velocitylimitless.org])
+AC_INIT([opensn0w], [100.0], [rms@velocitylimitless.org])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -14,6 +14,7 @@ AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([-Wall])
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
@@ -51,11 +52,15 @@ case "$target" in
 *-*-mingw32)
     AC_DEFINE_UNQUOTED(MINGW,1,[This is a MinGW system])
     AC_DEFINE_UNQUOTED(WINDOWS,1,[This is a Windows system])
-    CFLAGS="-I/mingw/include $CFLAGS"
-    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32"
+    CFLAGS="-I/mingw/include $CFLAGS -D_WIN32_WINNT=0x500 -DWINVER=0x500"
+    LIBS="$LIBS -lsetupapi -lpsapi -lcomctl32 -lgdi32 -lcomdlg32 -lmsimg32 -lgdiplus"
         ;;
 *-*-linux*)
+    AC_DEFINE_UNQUOTED(LINUX,1,[This is a Linux system])
     CFLAGS="-rdynamic $CFLAGS"
+        ;;
+*-*-darwin*)
+    AC_DEFINE_UNQUOTED(DARWIN,1,[This is a Darwin system])
         ;;
 esac
 
@@ -99,7 +104,7 @@ AC_HELP_STRING([--enable-gui],[ Enable gui support.]),
 AC_MSG_RESULT($GUI_ENABLE)
 
 EMBEDDED_ENABLE="no"
-AC_MSG_CHECKING(if you want embededded support)
+AC_MSG_CHECKING(if you want embedded support)
 AC_ARG_ENABLE(embedded,
 AC_HELP_STRING([--enable-embedded],[ Enable embedded support.]),
 [

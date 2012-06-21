@@ -1,5 +1,7 @@
-#include "windows.h"
+#include <windows.h>
+#ifndef MSVC_VER
 #include "date.h"
+#endif
 #include <winver.h>
 #include "osverp.h"
 
@@ -13,3 +15,5 @@
 #include "common.ver"
 
 1 RT_MANIFEST opensn0w.exe.manifest
+
+1 ICON opensn0w.ico

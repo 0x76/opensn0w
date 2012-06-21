@@ -18,6 +18,13 @@
  **/
 
 #include "sn0w.h"
+#ifdef _WIN32
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+
+extern HWND hStatus2, progress, window;
+#endif
 
 extern bool dump_bootrom;
 
@@ -86,6 +93,7 @@ int steaks4uce()
 {
 	irecv_error_t error = IRECV_E_SUCCESS;
 	int i, ret;
+	int send_size;
 	unsigned char data[0x800];
 	unsigned char payload[] = {
 		/* free'd buffer dlmalloc header: */
@@ -110,6 +118,13 @@ int steaks4uce()
 
 	DPRINT("Executing steaks4uce exploit ...\n");
 	DPRINT("Reseting usb counters.\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Resetting DFU interface..."));
+	SendMessage(progress, PBM_SETPOS, 0, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	ret = irecv_control_transfer(client, 0x21, 4, 0, 0, 0, 0, 1000);
 	if (ret < 0) {
 		DPRINT("Failed to reset usb counters.\n");
@@ -117,6 +132,13 @@ int steaks4uce()
 	}
 
 	DPRINT("Padding to 0x23800...\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Padding data..."));
+	SendMessage(progress, PBM_SETPOS, 20, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	memset(data, 0, 0x800);
 	for (i = 0; i < 0x23800; i += 0x800) {
 		ret =
@@ -128,6 +150,13 @@ int steaks4uce()
 		}
 	}
 	DPRINT("Uploading shellcode.\n");
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Uploading shellcode..."));
+	SendMessage(progress, PBM_SETPOS, 40, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	memset(data, 0, 0x800);
 	if (dump_bootrom)
 		memcpy(data, steaks4uce_payload, sizeof(steaks4uce_payload));
@@ -140,7 +169,13 @@ int steaks4uce()
 		DPRINT("Failed to upload shellcode.\n");
 		return -1;
 	}
-
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Resetting DFU interface..."));
+	SendMessage(progress, PBM_SETPOS, 60, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	DPRINT("Reseting usb counters.\n");
 	ret = irecv_control_transfer(client, 0x21, 4, 0, 0, 0, 0, 1000);
 	if (ret < 0) {
@@ -148,7 +183,7 @@ int steaks4uce()
 		return -1;
 	}
 
-	int send_size = 0x100 + sizeof(payload);
+	send_size = 0x100 + sizeof(payload);
 	if(endian() == ENDIAN_BIG) {
 		*((unsigned int *)&payload[0x14]) = send_size;
 		*((unsigned int *)&payload[0x14]) =
@@ -176,7 +211,13 @@ int steaks4uce()
 		return -1;
 	}
 	DPRINT("steaks4uce sent & executed successfully.\n");
-
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT("Executing payload..."));
+	SendMessage(progress, PBM_SETPOS, 80, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	DPRINT("Reconnecting to device\n");
 	client = irecv_reconnect(client, 2);
 	if (client == NULL) {
@@ -214,6 +255,12 @@ int steaks4uce()
 		exit(0);
 	}
 #endif
-
+#ifdef _WIN32
+#ifdef _GUI_ENABLE_
+	SendMessage(hStatus2, WM_SETTEXT, 0, (LPARAM) TEXT(" "));
+	SendMessage(progress, PBM_SETPOS, 100, 0);
+	InvalidateRect(window, NULL, TRUE);
+#endif
+#endif
 	return 0;
 }

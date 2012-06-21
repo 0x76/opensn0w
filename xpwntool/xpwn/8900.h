@@ -5,6 +5,9 @@
 #ifndef INC_8900_H
 #define INC_8900_H
 
+#ifdef MSVC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
 	uint32_t        magic;              /* string "8900" */
 	unsigned char  version[3];            /* string "1.0" */
@@ -19,7 +22,13 @@ typedef struct {
 	uint16_t        epoch;                 /* the security epoch of the file */
 	unsigned char  headerSignature[0x10]; /* encrypt(sha1(header[0:0x40])[0:0x10], key_0x837, zero_iv) */
 	unsigned char  padding[0x7B0];
+#ifndef MSVC_VER
 } __attribute__((__packed__)) Apple8900Header;
+#else
+} Apple8900Header;
+#pragma pack(pop)
+#endif
+
 
 #define SIGNATURE_8900 0x38393030
 

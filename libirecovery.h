@@ -32,6 +32,8 @@ extern "C" {
 #endif
 #include <windows.h>
 #define sleep(n) Sleep(1000 * n)
+#include <stdint.h>
+#undef interface
 #endif
 
 #define APPLE_VENDOR_ID 0x05AC
@@ -156,40 +158,45 @@ extern "C" {
 		unsigned int board_id;
 		unsigned int chip_id;
 		const char *url;
+		const char *colloquial_name;
 	};
 
+#ifndef MSVC_VER
 	static struct irecv_device irecv_devices[] __attribute__ ((unused)) = {
+#else
+	static struct irecv_device irecv_devices[] = {
+#endif
 		{
 		0, "iPhone1,1", "m68ap", 0, 8900,
-			    "http://appldnld.apple.com.edgesuite.net/content.info.apple.com/iPhone/061-7481.20100202.4orot/iPhone1,1_3.1.3_7E18_Restore.ipsw"},
+			    "http://appldnld.apple.com.edgesuite.net/content.info.apple.com/iPhone/061-7481.20100202.4orot/iPhone1,1_3.1.3_7E18_Restore.ipsw", "iPhone 2G"},
 		{
-		1, "iPod1,1", "n45ap", 2, 8900, NULL}, {
+		1, "iPod1,1", "n45ap", 2, 8900, NULL, "iPod touch (1G)"}, {
 		2, "iPhone1,2", "n82ap", 4, 8900,
-			    "http://appldnld.apple.com/iPhone4/061-7932.20100908.3fgt5/iPhone1,2_4.1_8B117_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/061-7932.20100908.3fgt5/iPhone1,2_4.1_8B117_Restore.ipsw", "iPhone 3G"},
 		{
 		3, "iPod2,1", "n72ap", 0, 8720,
-			    "http://appldnld.apple.com/iPhone4/061-7937.20100908.ghj4f/iPod2,1_4.1_8B117_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/061-7937.20100908.ghj4f/iPod2,1_4.1_8B117_Restore.ipsw", "iPod touch (2G)"},
 		{
 		4, "iPhone2,1", "n88ap", 0, 8920,
-			    "http://appldnld.apple.com/iPhone4/061-7938.20100908.F3rCk/iPhone2,1_4.1_8B117_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/061-7938.20100908.F3rCk/iPhone2,1_4.1_8B117_Restore.ipsw", "iPhone 3GS"},
 		{
 		5, "iPod3,1", "n18ap", 2, 8922,
-			    "http://appldnld.apple.com/iPhone4/061-7941.20100908.sV9KE/iPod3,1_4.1_8B117_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/061-7941.20100908.sV9KE/iPod3,1_4.1_8B117_Restore.ipsw", "iPod touch (3G)"},
 		{
 		6, "iPad1,1", "k48ap", 2, 8930,
-			    "http://appldnld.apple.com/iPad/061-8801.20100811.CvfR5/iPad1,1_3.2.2_7B500_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPad/061-8801.20100811.CvfR5/iPad1,1_3.2.2_7B500_Restore.ipsw", "iPad (1G)"},
 		{
 		7, "iPhone3,1", "n90ap", 0, 8930,
-			    "http://appldnld.apple.com/iPhone4/061-7939.20100908.Lcyg3/iPhone3,1_4.1_8B117_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/061-7939.20100908.Lcyg3/iPhone3,1_4.1_8B117_Restore.ipsw", "iPhone 4 (GSM)"},
 		{
 		8, "iPod4,1", "n81ap", 8, 8930,
-			    "http://appldnld.apple.com/iPhone4/061-8490.20100901.hyjtR/iPod4,1_4.1_8B117_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/061-8490.20100901.hyjtR/iPod4,1_4.1_8B117_Restore.ipsw", "iPod touch (4G)"},
 		{
 		9, "AppleTV2,1", "k66ap", 10, 8930,
-			    "http://appldnld.apple.com/AppleTV/061-8940.20100926.Tvtnz/AppleTV2,1_4.1_8M89_Restore.ipsw"},
+			    "http://appldnld.apple.com/AppleTV/061-8940.20100926.Tvtnz/AppleTV2,1_4.1_8M89_Restore.ipsw", "Apple TV (2G)"},
 		{
 		10, "iPhone3,3", "n92ap", 6, 8930,
-			    "http://appldnld.apple.com/iPhone4/041-0177.20110131.Pyvrz/iPhone3,3_4.2.6_8E200_Restore.ipsw"},
+			    "http://appldnld.apple.com/iPhone4/041-0177.20110131.Pyvrz/iPhone3,3_4.2.6_8E200_Restore.ipsw", "iPhone 4 (CDMA)"},
 		{
 		-1, NULL, NULL, -1, -1, NULL}
 	};
