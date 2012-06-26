@@ -149,10 +149,8 @@ int patch_kernel(char *buffer, size_t length)
 		PATCH_FILE(candidate, kernel_IOAESAccelerator, "IOAESAccelerator usage");
 		PATCH_FILE(candidate, kernel_sigcheck, "Code signature enforcement 2");
 		PATCH_FILE(candidate, kernel_vm, "vm");
-		PATCH_FILE(candidate, kernel_spec_close, 
-"spec_close");
-		PATCH_FILE(candidate, kernel_sandbox, 
-"sandbox");
+		PATCH_FILE(candidate, kernel_spec_close, "spec_close");
+		PATCH_FILE(candidate, kernel_sandbox, "sandbox");
 		PATCH_FILE(candidate, kernel_nor0, "NOR patch 0");
 		PATCH_FILE(candidate, kernel_nor1, "NOR patch 1");
 		PATCH_FILE(candidate, kernel_nor2, "NOR patch 2");
