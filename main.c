@@ -29,6 +29,9 @@
 #if defined __MINGW_H
 #define _WIN32_IE 0x0400
 #endif
+#if defined(__APPLE__) && (__XCODE_BUILD__)
+#include "main.h"
+#endif
 #include <commctrl.h>
 #include <commdlg.h>
 #include <fcntl.h>
@@ -2513,6 +2516,8 @@ void greenpois0n_inject(void) {
  */
 #ifdef MSVC_VER
 int __cdecl main(int argc, char **argv)
+#elif defined(__APPLE__) && defined(__XCODE_BUILD__)
+int opensn0w_main(int argc, char **argv)
 #else
 int main(int argc, char **argv)
 #endif
