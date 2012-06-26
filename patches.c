@@ -125,38 +125,32 @@ unsigned char kernel_sigcheck_patch[] =
 	0x00, 0x0D, 0xF0, 0xBD
 };
 
-unsigned char kernel_redsn0w_unknown0_original[] =
-    { 0x06, 0x28, 0x04, 0xbf, 0x19, 0x98, 0x00, 0x28 // vm
+unsigned char kernel_vm_original[] =
+    { 0x06, 0x28, 0x04, 0xbf, 0x19, 0x98, 0x00, 0x28
 };
 
-unsigned char kernel_redsn0w_unknown0_patch[] =
-    { 0xff, 0x28, 0x04, 0xbf, 0x19, 0x98, 0x00, 0x28, // vm
+unsigned char kernel_vm_patch[] =
+    { 0xff, 0x28, 0x04, 0xbf, 0x19, 0x98, 0x00, 0x28
 };
 
-unsigned char kernel_redsn0w_unknown1_original[] =
+/* spec_close will become deprecated */
+
+unsigned char kernel_spec_close_original[] =
     { 0xe8, 0x6c, 0x00, 0x69, 0xb0, 0xf1, 0xff, 0x3f, 0xdc, 0xbf, 0x43, 0x48,
-	0x5e, 0xf7, 0x0e, 0xfb // spec_close (this should become depricated)
+	0x5e, 0xf7, 0x0e, 0xfb
 };
 
-unsigned char kernel_redsn0w_unknown1_patch[] =
+unsigned char kernel_spec_close_patch[] =
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00 //spec_close (this should become depricated)
+	0x00, 0x00, 0x00, 0x00
 };
 
-unsigned char kernel_redsn0w_unknown2_original[] =
-    { 0xd0, 0x47, 0x01, 0x21, 0x40, 0xb1, 0x13, 0x35 // AMFI
+unsigned char kernel_sandbox_original[] =
+    { 0x00, 0x78, 0x10, 0xf0, 0x04, 0x0f, 0x04, 0xd0
 };
 
-unsigned char kernel_redsn0w_unknown2_patch[] =
-    { 0x00, 0x20, 0x01, 0x21, 0x40, 0xb1, 0x13, 0x35 //AMFI
-};
-
-unsigned char kernel_redsn0w_unknown3_original[] =
-    { 0x00, 0x78, 0x10, 0xf0, 0x04, 0x0f, 0x04, 0xd0 // sandbox
-};
-
-unsigned char kernel_redsn0w_unknown3_patch[] =
-    { 0x00, 0x78, 0x01, 0x23, 0x01, 0x23, 0x04, 0xd0 // sandbox
+unsigned char kernel_sandbox_patch[] =
+    { 0x00, 0x78, 0x01, 0x23, 0x01, 0x23, 0x04, 0xd0
 };
 
 unsigned char kernel_xattr_original[] = { "com.apple.system." };
@@ -182,25 +176,19 @@ patch kernel_sigcheck = { kernel_sigcheck_original, kernel_sigcheck_patch,
 patch kernel_xattr =
     { kernel_xattr_original, kernel_xattr_patch, sizeof(kernel_xattr) };
 
-// unknown redsn0w patches
-patch kernel_redsn0w_unknown0 =
-    { kernel_redsn0w_unknown0_original, kernel_redsn0w_unknown0_patch,
-	sizeof(kernel_redsn0w_unknown0_original)
+patch kernel_vm =
+    { kernel_vm_original, kernel_vm_patch,
+	sizeof(kernel_vm_original)
 };
 
-patch kernel_redsn0w_unknown1 =
-    { kernel_redsn0w_unknown1_original, kernel_redsn0w_unknown1_patch,
-	sizeof(kernel_redsn0w_unknown1_original)
+patch kernel_spec_close =
+    { kernel_spec_close_original, kernel_spec_close_patch,
+	sizeof(kernel_spec_close_original)
 };
 
-patch kernel_redsn0w_unknown2 =
-    { kernel_redsn0w_unknown2_original, kernel_redsn0w_unknown2_patch,
-	sizeof(kernel_redsn0w_unknown2_original)
-};
-
-patch kernel_redsn0w_unknown3 =
-    { kernel_redsn0w_unknown3_original, kernel_redsn0w_unknown3_patch,
-	sizeof(kernel_redsn0w_unknown3_original)
+patch kernel_sandbox =
+    { kernel_sandbox_original, kernel_sandbox_patch,
+	sizeof(kernel_sandbox_original)
 };
 
 unsigned char devicetree_root_name_original[] = { "secure-root-prefix" };
