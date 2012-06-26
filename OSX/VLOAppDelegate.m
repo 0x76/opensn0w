@@ -24,16 +24,42 @@
 
 @synthesize window = _window;
 @synthesize windowView;
+@synthesize windowSubviewFrame;
+@synthesize currentSubview;
 @synthesize mainView;
 @synthesize extrasView;
-@synthesize mainSubviewFrame;
+@synthesize DFUView;
+@synthesize recoveryFixView;
+@synthesize leetView;
+@synthesize topLabel; 
+@synthesize bottomLabel;
+@synthesize DFUModeHelperText;
+@synthesize controlTimer;
+@synthesize timerRunning;
 
-- (void)dealloc
+-(void)dealloc
 {
     [super dealloc];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+-(NSString*)version
+{
+    NSString * version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    NSString * build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    return [NSString stringWithFormat:@"%@%@", version, build];
+}
+
+-(void)updateSubview:(NSView *)newView
+{
+    [newView setFrame:windowSubviewFrame];
+    if(currentSubview != nil)
+    {
+        [[_window contentView] replaceSubview:currentSubview with:newView];
+    }
+    [self setCurrentSubview:newView];
+}
+
+-(void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Disable window resizing
     [[_window standardWindowButton:NSWindowZoomButton] setEnabled:NO];
@@ -42,51 +68,98 @@
     // Keep window visible when inactive
     [_window setHidesOnDeactivate:NO];
 	
-    // Display start screen
-    [mainView setFrame:[windowView frame]];
-    [[_window contentView] replaceSubview:windowView with:mainView];
+    // Set top label
+    [topLabel setStringValue:@"what would you like to do?"];
+    
+    // Set bottom label
+    [bottomLabel setStringValue:[NSString stringWithFormat:@"opensn0w - version %@ - by vlo and friends", [self version]]];
+    
+    // Remember current view
+    [self setWindowSubviewFrame:[windowView frame]];
+    [self setCurrentSubview:windowView];
+    
+    // Display main menu
+    [self updateSubview:mainView];
 }
 
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
+-(BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
 { 
     return YES; 
 }
 
+-(void)DFUModeHelper
+{   
+    // Should probably go back and care about thread safety
+    [self setTimerRunning:NO];
+    [controlTimer setTitle:@"Start Timer"];
+    [DFUModeHelperText setStringValue:@"Waiting for device in DFU mode.\n\nFor assistance in entering DFU mode, connect device to computer, then power off. After device is off, press \"Start Timer\" below."];
+    while(1)
+    {
+        
+    }
+    return;
+}
+
 -(IBAction)buttonJailbreak:(id)sender
 {
-    
+    [topLabel setStringValue:@"let's get ready"];
+    [self updateSubview:DFUView];
+    [NSThread detachNewThreadSelector:@selector(DFUModeHelper) toTarget:self withObject:nil];
 }
 
 -(IBAction)buttonExtras:(id)sender
 {
-    [extrasView setFrame:[mainView frame]];
-    [[_window contentView] replaceSubview:mainView with:extrasView];
+    [topLabel setStringValue:@"what would you like to do?"];
+    [self updateSubview:extrasView];
 }
 
 -(IBAction)buttonPwnDFU:(id)sender
 {
-    
+    [topLabel setStringValue:@"let's get ready"];
+    [self updateSubview:DFUView];
+    [NSThread detachNewThreadSelector:@selector(DFUModeHelper) toTarget:self withObject:nil];
 }
 
 -(IBAction)buttonExitRecovery:(id)sender
 {
-    
+    //[topLabel setStringValue:@"fixing recovery loop"];
+    [topLabel setStringValue:@"not implemented yet"];
+    [self updateSubview:recoveryFixView];
 }
 
 -(IBAction)buttonBootTethered:(id)sender
 {
-    
+    [topLabel setStringValue:@"let's get ready"];
+    [self updateSubview:DFUView];
+    [NSThread detachNewThreadSelector:@selector(DFUModeHelper) toTarget:self withObject:nil];
 }
 
--(IBAction)button1337Mode:(id)sender
+-(IBAction)buttonLeetMode:(id)sender
 {
-    
+    [topLabel setStringValue:@"not implemented yet"];
+    [self updateSubview:leetView];
 }
 
 -(IBAction)buttonMainMenu:(id)sender
 {
-    [mainView setFrame:[extrasView frame]];
-    [[_window contentView] replaceSubview:extrasView with:mainView];
+    [topLabel setStringValue:@"what would you like to do?"];
+    [self updateSubview:mainView];
+}
+
+-(IBAction)buttonControlTimer:(id)sender
+{
+    if(timerRunning)
+    {
+        // Reset timer
+        [self setTimerRunning:NO];
+        [controlTimer setTitle:@"Start Timer"];
+    }
+    else
+    {
+        // Start timer
+        [self setTimerRunning:YES];
+        [controlTimer setTitle:@"Reset Timer"];
+    }
 }
 
 @end

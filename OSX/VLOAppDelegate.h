@@ -24,16 +24,26 @@
 
 @property (assign) IBOutlet NSWindow * window;
 @property (assign) IBOutlet NSView * windowView;
+@property (assign) NSRect windowSubviewFrame;
+@property (assign) NSView * currentSubview;
 @property (nonatomic, retain) IBOutlet NSView * mainView;
 @property (nonatomic, retain) IBOutlet NSView * extrasView;
-@property (assign) NSRect mainSubviewFrame;
+@property (nonatomic, retain) IBOutlet NSView * DFUView;
+@property (nonatomic, retain) IBOutlet NSView * recoveryFixView;
+@property (nonatomic, retain) IBOutlet NSView * leetView;
+@property (nonatomic, retain) IBOutlet NSTextField * topLabel;
+@property (nonatomic, retain) IBOutlet NSTextField * bottomLabel;
+@property (nonatomic, retain) IBOutlet NSTextField * DFUModeHelperText;
+@property (nonatomic, retain) IBOutlet NSButton * controlTimer;
+@property (assign) BOOL timerRunning;
 
 -(IBAction)buttonJailbreak:(id)sender;
 -(IBAction)buttonExtras:(id)sender;
 -(IBAction)buttonPwnDFU:(id)sender;
 -(IBAction)buttonExitRecovery:(id)sender;
 -(IBAction)buttonBootTethered:(id)sender;
--(IBAction)button1337Mode:(id)sender;
+-(IBAction)buttonLeetMode:(id)sender;
 -(IBAction)buttonMainMenu:(id)sender;
+-(IBAction)buttonControlTimer:(id)sender;
 
 @end

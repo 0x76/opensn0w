@@ -24,7 +24,7 @@
 int main(int argc, char *argv[])
 {
 //SUX: If trying to debug in Xcode, s/(argc == 1)/(argc == 3)/
-    if(argc == 1)
+    if(argc == 3)
         return NSApplicationMain(argc, (const char **)argv);
     else
         return opensn0w_main(argc, argv);
