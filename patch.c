@@ -148,10 +148,9 @@ int patch_kernel(char *buffer, size_t length)
 		PATCH_FILE(candidate, kernel__PE_i_can_has_debugger, "_PE_i_can_has_debugger");
 		PATCH_FILE(candidate, kernel_IOAESAccelerator, "IOAESAccelerator usage");
 		PATCH_FILE(candidate, kernel_sigcheck, "Code signature enforcement 2");
-		PATCH_FILE(candidate, kernel_redsn0w_unknown0, "redsn0w unknown 0");
-		PATCH_FILE(candidate, kernel_redsn0w_unknown1, "redsn0w unknown 1");
-		PATCH_FILE(candidate, kernel_redsn0w_unknown2, "redsn0w unknown 2");
-		PATCH_FILE(candidate, kernel_redsn0w_unknown3, "redsn0w unknown 3");
+		PATCH_FILE(candidate, kernel_vm, "vm");
+		PATCH_FILE(candidate, kernel_spec_close, "spec_close");
+		PATCH_FILE(candidate, kernel_sandbox, "sandbox");
 		PATCH_FILE(candidate, kernel_nor0, "NOR patch 0");
 		PATCH_FILE(candidate, kernel_nor1, "NOR patch 1");
 		PATCH_FILE(candidate, kernel_nor2, "NOR patch 2");
